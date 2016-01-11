@@ -1,7 +1,7 @@
 define [], () ->
 
   class Parse
-    @query: (qs = self.location.search) ->
+    @parseQuery: (qs = self.location.search) ->
       obj = {}
       for pair in qs.replace('?', '').split('&')
         i = pair.indexOf '='
@@ -11,7 +11,7 @@ define [], () ->
       obj
 
     # returns undefined if not a legal url
-    @url: (url) ->
+    @parseUrl: (url) ->
       # http://www.w3.org/Addressing/URL/5_BNF.html
       m = url.match ///
         (([A-Za-z]+):(//)?)?      # protocol

@@ -11,13 +11,10 @@ Chrome 33 callstack example:
     at Object.InjectedScript.evaluate (<anonymous>:492:21)"
 ###
 define [
-  './namespace'
-  './browser/parse'
-], (Foundation, BrowserParse) ->
+  './parse'
+], ({parseURL}) ->
 
-  parseURL = BrowserParse.url
-
-  class Foundation.CallStackLine
+  class CallStackLine
     @getter: (map) ->
       Object.defineProperty @::, prop, {get: getter, configurable: yes} for prop, getter of map
 
@@ -96,7 +93,7 @@ define [
         @class = f[f.length-2]
         @classPath = f.slice 0, f.length-2
 
-  class Foundation.CallStack
+  class CallStack
     @rawCallStack: if (new Error).stack
       (ignoreTop = 0)->
         (new Error).stack.split(/\n  */).slice ignoreTop + 2

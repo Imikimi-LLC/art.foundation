@@ -1,5 +1,5 @@
 define [
-  !self.Promise && 'extlib/es6-promise'
+  'es6-promise'
 ], (PromiseLib) ->
   Promise = self.Promise || PromiseLib.Promise
 

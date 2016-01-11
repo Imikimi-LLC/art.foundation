@@ -4,7 +4,6 @@ define [
   "../types"
   "./inspector"
   "../string"
-  "../neptune_coffee"
 ], (Foundation, Inspect, Types, Inspector) ->
 
   {isString, isArray, isFunction, isObject} = Types

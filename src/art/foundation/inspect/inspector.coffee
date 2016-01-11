@@ -3,10 +3,8 @@ define [
   "../types"
   "../string"
   "../map"
-  "../neptune_coffee"
   "./namespace"
-], (BaseObject, Types, StringExtensions, Map, NeptuneCoffee, Inspect) ->
-  {classPathName} = NeptuneCoffee
+], (BaseObject, Types, StringExtensions, Map, Inspect) ->
   {escapeJavascriptString} = StringExtensions
   {isString, isArray, isFunction, isObject, isClass, objectName, isBrowserObject} = Types
 

@@ -2,11 +2,10 @@ define [
   './call_stack'
   './log'
   './types'
-  './neptune_coffee'
   './unique'
   './string'
   './shallow_clone'
-], (CallStack, Log, Types, NeptuneCoffee, Unique, String, ShallowClone) ->
+], (CallStack, Log, Types, Unique, String, ShallowClone) ->
   {capitalize, decapitalize} = String
   {log} = Log
   {callStack} = CallStack
@@ -24,10 +23,11 @@ define [
     @createWithPostCreate: (klass) -> klass?.postCreate() || klass
     @postCreate: -> @
 
+    excludedKeys = ["__super__", "namespace", "namespacePath"].concat Object.keys Neptune.Base
     @mixInto = mixInto = (intoClass, klass, keys...)->
       if keys.length == 0
         keys = Object.keys klass
-      for k in keys
+      for k in keys when k not in excludedKeys
         v = klass[k]
         console.error "Foundation.mixInto - mix #{klass.name} into #{intoClass.name}: #{k} already exists." if intoClass[k]
         intoClass[k] = v
@@ -182,14 +182,11 @@ define [
 
     ######################################################
     # Class Info
-    #
-    # NOTE: These are only valid if, at some point, the defining
-    #   file's parent NeptuneCoffee module file was loaded.
     ######################################################
     @classGetter
-      classPath:      -> NeptuneCoffee.classPathArray @
-      classPathArray: -> NeptuneCoffee.classPath @
-      classPathName:  -> NeptuneCoffee.classPathName @
+      classPath:      -> @parentNamespace.namespacePath
+      classPathArray: -> @namespacePathArray ||= @classPath.split "."
+      classPathName:  -> @namespacePath
       className: -> @prototype.constructor.name
 
     ######################################################
@@ -219,20 +216,12 @@ define [
       className: -> @class.name
       class: -> @constructor
       keys: -> Object.keys @
-      classPathArray: -> NeptuneCoffee.classPathArray @
-      classPath: -> NeptuneCoffee.classPath @
-      classPathName: -> NeptuneCoffee.classPathName @
+      classPathArray: -> @class.classPathArray
+      classPath:      -> @class.classPath
+      classPathName:  -> @class.classPathName
       classPathNameAndId: -> "#{@classPathName}:#{@objectId}"
       uniqueId: -> @__uniqueId ||= nextUniqueObjectId() # unique across all things
       objectId: -> @__uniqueId ||= nextUniqueObjectId() # number unique across objects
-
-    # the "F" versions of these methods are provided so if you don't know if you
-    # have the Class or an Instance you can still use the same API.
-    # The getter methods are still provided for Instances since they are the RIGHT API. It's just
-    # Not possible to do that API on classes the way CoffeeScript inheritance works.
-    classPathArrayF: -> NeptuneCoffee.classPathArray @
-    classPathF: -> NeptuneCoffee.classPath @
-    classPathNameF: -> NeptuneCoffee.classPathName @
 
     implementsInterface: (methods) -> Function.BaseObject.implementsInterface @, methods
     tap: (f)-> f(@);@
