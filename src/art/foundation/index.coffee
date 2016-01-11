@@ -19,7 +19,6 @@ Foundation.JsonStore               = require './json_store'
 Foundation.Log                     = require './log'
 Foundation.Map                     = require './map'
 Foundation.Math                    = require './math'
-Foundation.Parse                   = require './parse'
 Foundation.Promise                 = require './promise'
 Foundation.Regexp                  = require './regexp'
 Foundation.Ruby                    = require './ruby'
@@ -36,8 +35,9 @@ Foundation.WebWorker               = require './web_worker'
 Foundation.WorkerRpc               = require './worker_rpc'
 Foundation.Async                   = require './async'
 Foundation.Binary                  = require './binary'
+Foundation.Browser                 = require './browser'
 Foundation.Inspect                 = require './inspect'
 Foundation.finishLoad(
-  ["All","Analytics","Array","BaseModule","BaseObject","BatchLoader","CallStack","Clone","Epoch","Eq","Function","Hash","JsonStore","Log","Map","Math","Parse","Promise","Regexp","Ruby","SequencedEventManager","ShallowClone","SingleObjectTransaction","Stat","String","Time","Transaction","Types","Unique","WebWorker","WorkerRpc"]
-  ["Async","Binary","Inspect"]
+  ["All","Analytics","Array","BaseModule","BaseObject","BatchLoader","CallStack","Clone","Epoch","Eq","Function","Hash","JsonStore","Log","Map","Math","Promise","Regexp","Ruby","SequencedEventManager","ShallowClone","SingleObjectTransaction","Stat","String","Time","Transaction","Types","Unique","WebWorker","WorkerRpc"]
+  ["Async","Binary","Browser","Inspect"]
 )

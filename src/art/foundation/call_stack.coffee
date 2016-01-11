@@ -11,8 +11,9 @@ Chrome 33 callstack example:
     at Object.InjectedScript.evaluate (<anonymous>:492:21)"
 ###
 define [
-  './parse'
-], ({parseURL}) ->
+  './browser/parse'
+], (Parse) ->
+  parseURL = Parse.url
 
   class CallStackLine
     @getter: (map) ->
