@@ -8,4 +8,7 @@ Binary.RestClient   = require './rest_client'
 Binary.Stream       = require './stream'
 Binary.String       = require './string'
 Binary.Utf8         = require './utf8'
-Binary.finishLoad ["EncodedImage","RestClient","Stream","String","Utf8"]
+Binary.finishLoad(
+  ["EncodedImage","RestClient","Stream","String","Utf8"]
+  []
+)

@@ -7,4 +7,7 @@ Async.All      = require './all'
 Async.Basic    = require './basic'
 Async.Join     = require './join'
 Async.Sequence = require './sequence'
-Async.finishLoad ["All","Basic","Join","Sequence"]
+Async.finishLoad(
+  ["All","Basic","Join","Sequence"]
+  []
+)

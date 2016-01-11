@@ -37,4 +37,7 @@ Foundation.WorkerRpc               = require './worker_rpc'
 Foundation.Async                   = require './async'
 Foundation.Binary                  = require './binary'
 Foundation.Inspect                 = require './inspect'
-Foundation.finishLoad ["All","Analytics","Array","BaseModule","BaseObject","BatchLoader","CallStack","Clone","Epoch","Eq","Function","Hash","JsonStore","Log","Map","Math","Parse","Promise","Regexp","Ruby","SequencedEventManager","ShallowClone","SingleObjectTransaction","Stat","String","Time","Transaction","Types","Unique","WebWorker","WorkerRpc"]
+Foundation.finishLoad(
+  ["All","Analytics","Array","BaseModule","BaseObject","BatchLoader","CallStack","Clone","Epoch","Eq","Function","Hash","JsonStore","Log","Map","Math","Parse","Promise","Regexp","Ruby","SequencedEventManager","ShallowClone","SingleObjectTransaction","Stat","String","Time","Transaction","Types","Unique","WebWorker","WorkerRpc"]
+  ["Async","Binary","Inspect"]
+)

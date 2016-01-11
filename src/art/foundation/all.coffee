@@ -19,6 +19,7 @@ define [
   "./async"
   "./ruby"
   "./promise"
+
   "./web_worker"
 ], (Foundation, Inspect, Types, Log, Eq, Clone, ShallowClone, Map, CallStack, Time, String, Math, BaseObject, Array, Regexp, Hash, Function, Async, Ruby, Promise, WebWorker) ->
   {createAllClass} = BaseObject

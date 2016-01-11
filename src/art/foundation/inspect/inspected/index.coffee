@@ -7,4 +7,7 @@ Inspected.Array  = require './array'
 Inspected.Core   = require './core'
 Inspected.Object = require './object'
 Inspected.String = require './string'
-Inspected.finishLoad ["Array","Core","Object","String"]
+Inspected.finishLoad(
+  ["Array","Core","Object","String"]
+  []
+)
