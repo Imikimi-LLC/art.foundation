@@ -1,5 +1,21 @@
+# TestPlugin = require "./test_plugin"
+Webpack = require "webpack"
+
 module.exports =
-  entry: "./webpack_test/entry.js"
+  entry: "./src/art/foundation"
+
+  resolve:
+    extensions: ["", ".webpack.js", ".web.js", ".js", ".coffee"]
+
   output:
-    path: __dirname
-    filename: "./webpack_test/bundle.js"
+    path: __dirname + "/build/art"
+    filename: "foundation.js"
+
+  # plugins: [
+  #   new TestPlugin ["index.myjs"]
+  # ]
+  module:
+    loaders: [
+      { test: /\.coffee$/, loader: "coffee-loader" }
+      { test: /\.(coffee\.md|litcoffee)$/, loader: "coffee-loader?literate" }
+    ]
