@@ -1,12 +1,8 @@
-define [
-  "./namespace" #inspected
-  "../../base_object"
-  "../../namespace" #foundation
-  "../../string"
-], (Inspected, BaseObject, Foundation) ->
-  class Inspected.String extends BaseObject
-    constructor: (clonedString) ->
-      super
-      @string = clonedString
+BaseObject = require "../../base_object"
+Foundation = require "../../namespace" #foundation
+module.exports = class String extends BaseObject
+  constructor: (clonedString) ->
+    super
+    @string = clonedString
 
-    toString: -> Foundation.String.escapeJavascriptString @string
+  toString: -> Foundation.String.escapeJavascriptString @string

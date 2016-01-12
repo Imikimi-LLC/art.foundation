@@ -1,16 +1,14 @@
-define [
-  './namespace'
-  '../../base_object'
-], (Inspected, BaseObject) ->
-  class Inspected.Array extends BaseObject
-    constructor: (inspectedArray) ->
-      super
-      @array = inspectedArray
+BaseObject = require '../../base_object'
 
-    @getter
-      arrayOfStrings: -> v.toString() for v in @array
-      children: -> @array.slice()
+module.exports = class Array extends BaseObject
+  constructor: (inspectedArray) ->
+    super
+    @array = inspectedArray
 
-    delimitedString: (delimiter = ", ") -> @arrayOfStrings.join(", ")
+  @getter
+    arrayOfStrings: -> v.toString() for v in @array
+    children: -> @array.slice()
 
-    toString: -> "[#{@delimitedString()}]"
+  delimitedString: (delimiter = ", ") -> @arrayOfStrings.join(", ")
+
+  toString: -> "[#{@delimitedString()}]"

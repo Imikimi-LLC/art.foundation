@@ -1,150 +1,144 @@
-define [
-  "./log"
-  "./inspect"
-  "./async"
-], (Log, Inspect, Async) ->
-  rawLog = Log.rawLog
+{rawLog} = require "./log"
+{nextTick} = require "./async"
 
-  {nextTick} = Async
+module.exports = class EventStackNode
+  constructor: (eventFunction, options, parent)->
+    @catch = options?.catch
+    @parent = parent
+    @eventFunction = eventFunction
+    @nextSubNode = null
+    @lastSubNode = null
+    @nextPeer = null
+    @done = false
+    @started = false
 
-  class EventStackNode
-    constructor: (eventFunction, options, parent)->
-      @catch = options?.catch
-      @parent = parent
-      @eventFunction = eventFunction
-      @nextSubNode = null
-      @lastSubNode = null
-      @nextPeer = null
-      @done = false
-      @started = false
+  addSubNode: (node) ->
+    node.parent = @
+    if !@lastSubNode
+      # if @parent && @parent.lastSubNode == @
+      #   # tail recursion detected
+      #   # This works in my artificial tests, but doesn't work in perf.html... ???
+      #   @parent.addSubNode node
+      # else
+        @lastSubNode = @nextSubNode = node
+    else
+      @lastSubNode.nextPeer = node
+      @lastSubNode = node
 
-    addSubNode: (node) ->
-      node.parent = @
-      if !@lastSubNode
-        # if @parent && @parent.lastSubNode == @
-        #   # tail recursion detected
-        #   # This works in my artificial tests, but doesn't work in perf.html... ???
-        #   @parent.addSubNode node
-        # else
-          @lastSubNode = @nextSubNode = node
-      else
-        @lastSubNode.nextPeer = node
-        @lastSubNode = node
+  queue: (eventFunction, options) ->
+    @addSubNode new EventStackNode eventFunction, options
 
-    queue: (eventFunction, options) ->
-      @addSubNode new EventStackNode eventFunction, options
+  evaluateFunction: ->
+    try
+      SequencedEventManager.currentNode = @
+      @eventFunction()
+    catch error
+      SequencedEventManager.throw error
 
-    evaluateFunction: ->
-      try
-        SequencedEventManager.currentNode = @
-        @eventFunction()
-      catch error
-        SequencedEventManager.throw error
+  topmostParent: ->
+    parent = @
+    parent = parent.parent while parent.parent
+    parent
 
-    topmostParent: ->
-      parent = @
-      parent = parent.parent while parent.parent
-      parent
+  notDoneParent: ->
+    parent = @parent
+    parent = parent.parent while parent && parent.done
+    parent
 
-    notDoneParent: ->
-      parent = @parent
-      parent = parent.parent while parent && parent.done
-      parent
+  # return null if done
+  unstartedSelfOrChild: ->
+    return @ if !@started
+    return null if @done
+    @nextSubNode = @nextSubNode.nextPeer while @nextSubNode && !result = @nextSubNode.unstartedSelfOrChild()
+    if result
+      result
+    else
+      @done = true
+      null
 
-    # return null if done
-    unstartedSelfOrChild: ->
-      return @ if !@started
-      return null if @done
-      @nextSubNode = @nextSubNode.nextPeer while @nextSubNode && !result = @nextSubNode.unstartedSelfOrChild()
-      if result
-        result
-      else
-        @done = true
-        null
+  unstartedParentOrChild: ->
+    result = null
+    while !result && notDoneParent = @notDoneParent()
+      result = notDoneParent.unstartedSelfOrChild()
+    result
 
-    unstartedParentOrChild: ->
-      result = null
-      while !result && notDoneParent = @notDoneParent()
-        result = notDoneParent.unstartedSelfOrChild()
+  nextUnstartedNode: ->
+    @unstartedSelfOrChild() || @unstartedParentOrChild()
+
+  next: ->
+    @nextUnstartedNode()?.start()
+
+  start: ->
+    @started = true
+    @done = false
+    @evaluateFunction()
+    true
+
+  inspectStructure: ->
+    result = if !@eventFunction then ""
+    else if @done then "d"
+    else if @started then "s"
+    else "p"
+
+    if @nextSubNode
+      node = @nextSubNode
+      result+="(#{node.inspectStructure()}"
+      result+=", #{node.inspectStructure()}" while node = node.nextPeer
+      result+")"
+    else
       result
 
-    nextUnstartedNode: ->
-      @unstartedSelfOrChild() || @unstartedParentOrChild()
+class SequencedEventManager
+  @currentNode: null
+  @resetIds: ->
+    EventStackNode.resetIds()
 
-    next: ->
-      @nextUnstartedNode()?.start()
+  @queue: (eventFunction, options={}) ->
+    @scheduleNextTick()
+    unless @currentNode
+      @currentNode = new EventStackNode
+      @currentNode.started = true
+    @currentNode.queue eventFunction, options
 
-    start: ->
-      @started = true
-      @done = false
-      @evaluateFunction()
-      true
+  @inspectStructure: ->
+    @currentNode && @currentNode.topmostParent().inspectStructure()
 
-    inspectStructure: ->
-      result = if !@eventFunction then ""
-      else if @done then "d"
-      else if @started then "s"
-      else "p"
+  ###
+  User should not call methods below directly
+  private:
+  ###
 
-      if @nextSubNode
-        node = @nextSubNode
-        result+="(#{node.inspectStructure()}"
-        result+=", #{node.inspectStructure()}" while node = node.nextPeer
-        result+")"
+  @throw: (error) ->
+    while @currentNode
+      if @currentNode.catch
+        @currentNode.done = true
+        @currentNode.catch error
+        return
       else
-        result
+        @currentNode = @currentNode.parent
+    rawLog "SequencedEventManager. Uncaught exception: #{error.name}"
+    rawLog error
+    throw error
 
-  class SequencedEventManager
-    @currentNode: null
-    @resetIds: ->
-      EventStackNode.resetIds()
+  @next: ->
+    @currentNode = @currentNode.parent while @currentNode?.done
+    if @currentNode
+      @currentNode.next()
+    else
+      @rootNode = @currentNode = null
+      rawLog "SequencedEventManager.next: everything is already done!"
+      false
 
-    @queue: (eventFunction, options={}) ->
-      @scheduleNextTick()
-      unless @currentNode
-        @currentNode = new EventStackNode
-        @currentNode.started = true
-      @currentNode.queue eventFunction, options
-
-    @inspectStructure: ->
-      @currentNode && @currentNode.topmostParent().inspectStructure()
-
-    ###
-    User should not call methods below directly
-    private:
-    ###
-
-    @throw: (error) ->
-      while @currentNode
-        if @currentNode.catch
-          @currentNode.done = true
-          @currentNode.catch error
-          return
+  @scheduleNextTick: ->
+    unless @nextTickScheduled
+      @nextTickScheduled = true
+      nextTick =>
+        @nextTickScheduled = false
+        @next()
+        if @currentNode?.nextUnstartedNode()
+          @scheduleNextTick()
         else
-          @currentNode = @currentNode.parent
-      rawLog "SequencedEventManager. Uncaught exception: #{error.name}"
-      rawLog error
-      throw error
-
-    @next: ->
-      @currentNode = @currentNode.parent while @currentNode?.done
-      if @currentNode
-        @currentNode.next()
-      else
-        @rootNode = @currentNode = null
-        rawLog "SequencedEventManager.next: everything is already done!"
-        false
-
-    @scheduleNextTick: ->
-      unless @nextTickScheduled
-        @nextTickScheduled = true
-        nextTick =>
-          @nextTickScheduled = false
-          @next()
-          if @currentNode?.nextUnstartedNode()
-            @scheduleNextTick()
-          else
-            @currentNode = null
+          @currentNode = null
 
 ###
 each time we execute a user eventFunction, we push an item onto the stack

@@ -10,22 +10,42 @@ but when recursing, pass in a new function bound to that closure which is differ
 populateClone would need to take an additional argument - the clone function to use for recursive cloning.
 ###
 
-define [
-  "./namespace"
-  "./map"
-  "./unique"
-  "./inspect"
-], (Foundation, Map, Unique, Inspect) ->
-  uniquePropertyName = Unique.PropertyName
-  inspect = Inspect.inspect
+Foundation = require "./namespace"
+Map = require        "./map"
+Unique = require     "./unique"
+Inspect = require    "./inspect"
+uniquePropertyName = Unique.PropertyName
+inspect = Inspect.inspect
 
-  clonedMap = null
-  byStructure = false
-  byProperties = false
-  topObject = null
+clonedMap = null
+byStructure = false
+byProperties = false
+topObject = null
+
+# in perf tests using array.slice instead of array.push to build up the new array is:
+#   10-element array - slightly faster
+#   100-element array - 1.6x faster
+#   1000+ - about 2x faster
+# (Test array contained only numbers and copied them by-value in both cases - no function calls, no conditionals).
+cloneArray = (array) ->
+  clonedArray = clonedMap.set array, array.slice()
+  clonedArray[index] = clone value for value, index in clonedArray
+  clonedArray
+
+cloneObject = (obj) ->
+  clonedObject = clonedMap.set obj, emptyClone obj
+
+  if (obj!=topObject || !byProperties) && obj.populateClone
+    obj.populateClone clonedObject
+  else
+    clonedObject[k] = clone v for k, v of obj
+
+  clonedObject
+
+module.exports = class Clone
 
   # clone the object "type", but none of its properties.
-  emptyClone = (obj) ->
+  @emptyClone: emptyClone = (obj) ->
     if obj.constructor == Array then [] # the next line works with Arrays in all ways except in Chrome 30 the resulting array object makes the "length" property enumerable whereas normally it is not. You must add at least one element ot the array to make "length" appear.
     else Object.create Object.getPrototypeOf obj
 
@@ -33,7 +53,7 @@ define [
   # modes:
   #   "byProperties" - on the topmost cloned object, don't use custom clones; clone "by properties"
   #   "byStructure" - only clone pure Arrays and Objects. Any other derived object, just copy by-reference.
-  clone = (obj, mode) ->
+  @clone: clone = (obj, mode) ->
     switch mode
       when "byStructure"  then byStructure = true
       when "byProperties" then byProperties = true
@@ -61,42 +81,5 @@ define [
 
     clonedObject
 
-  # in perf tests using array.slice instead of array.push to build up the new array is:
-  #   10-element array - slightly faster
-  #   100-element array - 1.6x faster
-  #   1000+ - about 2x faster
-  # (Test array contained only numbers and copied them by-value in both cases - no function calls, no conditionals).
-  cloneArray = (array) ->
-    clonedArray = clonedMap.set array, array.slice()
-    clonedArray[index] = clone value for value, index in clonedArray
-    clonedArray
-
-  cloneObject = (obj) ->
-    clonedObject = clonedMap.set obj, emptyClone obj
-
-    if (obj!=topObject || !byProperties) && obj.populateClone
-      obj.populateClone clonedObject
-    else
-      clonedObject[k] = clone v for k, v of obj
-
-    clonedObject
-
-
-  cloneByProperties = (obj) -> clone obj, "byProperties"
-  cloneByStructure = (obj) -> clone obj, "byStructure"
-
-  # clone all containers ([], {}, & Map), but mirror values and other objects
-  # cloneStructure = () =>
-
-  class Foundation.TestMe
-    constructor: ->
-      @count ||= 1
-      @count += 1
-
-  class Foundation.Clone
-    @emptyClone: emptyClone
-    @clone: clone
-    # @cloneArray: cloneArray
-    @cloneByProperties: cloneByProperties
-
-    @cloneByStructure: cloneByStructure
+  @cloneByProperties: cloneByProperties = (obj) -> clone obj, "byProperties"
+  @cloneByStructure:  cloneByStructure = (obj) -> clone obj, "byStructure"

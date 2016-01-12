@@ -1,16 +1,10 @@
-define [
-  "./namespace"
-  './basic'
-  './join'
-  './sequence'
-  ], (Async, Basic) ->
-    addAll = (klass)->
-      for k, v of klass
-        # console.log "addAll #{klass.name}.#{k}"
-        console.log "addAll to Foundation: conflict on #{k} from #{klass.name}" if Async[k]
-        Async[k] = v
+Async = require "./namespace"
+Basic = require './basic'
 
-    addAll Basic
+addAll = (klass)->
+  for k, v of klass
+    # console.log "addAll #{klass.name}.#{k}"
+    console.log "addAll to Foundation: conflict on #{k} from #{klass.name}" if Async[k]
+    Async[k] = v
 
-    class All extends Async
-
+addAll Basic

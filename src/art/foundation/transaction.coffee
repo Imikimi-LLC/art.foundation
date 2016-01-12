@@ -57,121 +57,111 @@ Example initializers:
     to:   noo:4, mar:5
 ###
 
-define [
-  './single_object_transaction'
-  './map'
-  './ruby'
-  './base_object'
-  './eq'
-  './inspect'
-  './clone'
-], (SingleObjectTransaction, Map, Ruby, BaseObject, Eq, Inspect, Clone) ->
+SingleObjectTransaction = require './single_object_transaction'
+Map = require                     './map'
+BaseObject = require              './base_object'
+{rubyTrue} = require              './ruby'
+{eq} = require                    './eq'
+{inspect} = require               './inspect'
+{cloneByStructure} = require      './clone'
 
-  cloneByStructure = Clone.cloneByStructure
-  rubyTrue = Ruby.true
-  eq = Eq.eq
-  inspect = Inspect.inspect
-  implementsInterface = BaseObject.implementsInterface
+module.exports = class Transaction extends BaseObject
+  @SingleObjectTransaction: SingleObjectTransaction
 
-  interpolateableObjectInterface = ["add", "sub", "mul"]
+  # "objects" can be:
+  #   1) object
+  #   2) [object1, object2, ...]
+  #   3) [[object1, objectOneOptions], [object2, objectTwoOptions], ... ]
+  #   4) [[object1, objectOneOptions], object2, ... ] # or a mix of 3 and 4
+  # for objectOneOptions options see SingleObjectTransaction#constructor
+  #
+  # "options" can be any options allowed for SingleObjectTransaction#constructor
+  #   Each SingleObjectTransaction option is applied to every object in "objects"
+  constructor: (objects, options={}) ->
+    super
+    @_objects = new Map
+    if objects.constructor == Array then @addObjects objects
+    else                                 @addObject objects
 
-  class Transaction extends BaseObject
-    @SingleObjectTransaction: SingleObjectTransaction
+    @addProperties options.properties if options.properties
+    @addProperties [options.property] if options.property
+    @addFromValues options.from if options.from
+    @addToValues options.to if options.to
+    @saveFromValues()
 
-    # "objects" can be:
-    #   1) object
-    #   2) [object1, object2, ...]
-    #   3) [[object1, objectOneOptions], [object2, objectTwoOptions], ... ]
-    #   4) [[object1, objectOneOptions], object2, ... ] # or a mix of 3 and 4
-    # for objectOneOptions options see SingleObjectTransaction#constructor
-    #
-    # "options" can be any options allowed for SingleObjectTransaction#constructor
-    #   Each SingleObjectTransaction option is applied to every object in "objects"
-    constructor: (objects, options={}) ->
-      super
-      @_objects = new Map
-      if objects.constructor == Array then @addObjects objects
-      else                                 @addObject objects
+  inspect: (inspector)->
+    inspector.put "#{@classPathName}:"
+    @inspectParts inspector
 
-      @addProperties options.properties if options.properties
-      @addProperties [options.property] if options.property
-      @addFromValues options.from if options.from
-      @addToValues options.to if options.to
-      @saveFromValues()
+  inspectParts: (inspector)->
+    @_objects.each (k,v) =>
+      inspector.put "\n  "
+      inspector.inspect v
 
-    inspect: (inspector)->
-      inspector.put "#{@classPathName}:"
-      @inspectParts inspector
+  ###########################################
+  # PUBLIC API
+  ###########################################
 
-    inspectParts: (inspector)->
-      @_objects.each (k,v) =>
-        inspector.put "\n  "
-        inspector.inspect v
+  # return array of objects in the transaction
+  @getter objects: -> @_objects.keys
 
-    ###########################################
-    # PUBLIC API
-    ###########################################
+  # return the properties, from or two values for a specific object
+  properties: (obj) -> @_objects.get(obj).properties
+  from: (obj) -> @_objects.get(obj).from
+  to: (obj) -> @_objects.get(obj).to
 
-    # return array of objects in the transaction
-    @getter objects: -> @_objects.keys
+  # set all values using "from" values
+  rollBack: -> @_objects.forEach (oi) => oi.rollBack()
 
-    # return the properties, from or two values for a specific object
-    properties: (obj) -> @_objects.get(obj).properties
-    from: (obj) -> @_objects.get(obj).from
-    to: (obj) -> @_objects.get(obj).to
+  # set all values using "to" values
+  rollForward: -> @_objects.forEach (oi) => oi.rollForward()
 
-    # set all values using "from" values
-    rollBack: -> @_objects.forEach (oi) => oi.rollBack()
+  # set all values according to this formula: (to - from) * p + from
+  interpolate: (p) -> @_objects.forEach (oi) => oi.interpolate p
 
-    # set all values using "to" values
-    rollForward: -> @_objects.forEach (oi) => oi.rollForward()
+  # remove any non-changing properties and non-changing objects
+  optimize: ->
+    @optimizeProperties()
+    @optimizeObjects()
 
-    # set all values according to this formula: (to - from) * p + from
-    interpolate: (p) -> @_objects.forEach (oi) => oi.interpolate p
+  # returns true if at least one object has to-values set
+  @getter
+    hasToValues: ->
+      result = false
+      @_objects.forEach (oi) => result = true if oi.hasToValues
+      result
+    valuesChanged: ->
+      result = false
+      @_objects.forEach (object) =>
+        result = true if object.valuesChanged
+      result
 
-    # remove any non-changing properties and non-changing objects
-    optimize: ->
-      @optimizeProperties()
-      @optimizeObjects()
+  toString: ->
+    "#{@className}\n  " + (@_objects.map (obj, single) -> single.toString()).join "  \n"
 
-    # returns true if at least one object has to-values set
-    @getter
-      hasToValues: ->
-        result = false
-        @_objects.forEach (oi) => result = true if oi.hasToValues
-        result
-      valuesChanged: ->
-        result = false
-        @_objects.forEach (object) =>
-          result = true if object.valuesChanged
-        result
+  ###########################################
+  # PRIVATE API
+  ###########################################
 
-    toString: ->
-      "#{@className}\n  " + (@_objects.map (obj, single) -> single.toString()).join "  \n"
+  addFromValues: (from)       -> @_objects.forEach (oi) => oi.addFromValues from
+  addToValues:   (to)         -> @_objects.forEach (oi) => oi.addToValues to
+  addProperties: (properties) -> @_objects.forEach (oi) => oi.addProperties properties
 
-    ###########################################
-    # PRIVATE API
-    ###########################################
+  addObject: (obj) ->
+    oi = new SingleObjectTransaction obj
+    @_objects.set oi.object, oi
 
-    addFromValues: (from)       -> @_objects.forEach (oi) => oi.addFromValues from
-    addToValues:   (to)         -> @_objects.forEach (oi) => oi.addToValues to
-    addProperties: (properties) -> @_objects.forEach (oi) => oi.addProperties properties
+  addObjects: (objects)-> @addObject obj for obj in objects
 
-    addObject: (obj) ->
-      oi = new SingleObjectTransaction obj
-      @_objects.set oi.object, oi
+  saveFromValues: -> @_objects.forEach (oi) => oi.saveFromValues()
+  saveToValues:   -> @_objects.forEach (oi) => oi.saveToValues()
 
-    addObjects: (objects)-> @addObject obj for obj in objects
+  # call this after saving To and From values to eliminate any non-changing properties
+  optimizeProperties: -> @_objects.forEach (oi) => oi.optimizeProperties()
 
-    saveFromValues: -> @_objects.forEach (oi) => oi.saveFromValues()
-    saveToValues:   -> @_objects.forEach (oi) => oi.saveToValues()
-
-    # call this after saving To and From values to eliminate any non-changing properties
-    optimizeProperties: -> @_objects.forEach (oi) => oi.optimizeProperties()
-
-    # removes any objects with no property changes
-    optimizeObjects: ->
-      objs = @_objects
-      @_objects = new Map
-      objs.forEach (oi) =>
-        @_objects.set oi.object, oi unless oi.noChanges
+  # removes any objects with no property changes
+  optimizeObjects: ->
+    objs = @_objects
+    @_objects = new Map
+    objs.forEach (oi) =>
+      @_objects.set oi.object, oi unless oi.noChanges

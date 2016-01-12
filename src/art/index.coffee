@@ -3,8 +3,9 @@
 
 module.exports =
 Art            = require './namespace'
+Art.DevTools   = require './dev_tools'
 Art.Foundation = require './foundation'
 Art.finishLoad(
   []
-  ["Foundation"]
+  ["DevTools","Foundation"]
 )

@@ -1,0 +1,114 @@
+$divider-color: #e0e0e0
+$hover-bg-color: #f8f8f8
+
+.domConsole
+  position: fixed
+  top: 0
+  right: 0
+  width: 500px
+  bottom: 0
+  border-left: 1px solid #aaa
+  padding: 5px
+  overflow: auto
+  background-color: white
+
+  img
+    image-rendering: -moz-crisp-edges         /* Firefox */
+    image-rendering:   -o-crisp-edges         /* Opera */
+    image-rendering: -webkit-optimize-contrast/* Webkit (non-standard naming) */
+    image-rendering: crisp-edges
+    -ms-interpolation-mode: nearest-neighbor  /* IE (non-standard property) */
+    border: 1px solid rgba(255, 255, 255, 0)
+
+    &:hover
+      border: 1px solid #bbb
+
+  // .closed
+  //   padding-left:12px
+
+  ul
+    list-style-type: none
+
+  .collapsable
+    cursor: pointer
+    margin: 0
+    padding: 0
+    padding-left: 12px
+    margin-bottom: 5px
+    position: relative
+    border-left: 1px solid transparent
+    &:before
+      content: "▾"
+      position: absolute
+      left: 2px
+      top: 0
+      bottom: 0
+
+    &:hover
+      border-left: 1px solid #cc4
+      border-radius: 5px
+      // background-color: rgba(240,240,240,.5)
+
+  .collapsable.closed.array
+    &:before
+      content: "▹"
+
+  .collapsable.open.array
+    &:before
+      content: "▿"
+
+  .collapsable.closed.object
+    &:before
+      content: "▸"
+
+  .collapsable.open.object
+    &:before
+      content: "▾"
+
+  pre
+    margin: 0
+    color: #555
+
+
+  .logLine
+    font-family: 'Courier'
+    font-size: 12px
+    color: #aaa
+    // padding-bottom: 5px
+    // margin-bottom: 5px
+    border-right: 2px solid transparent
+
+    .literal
+      color: green
+
+    .object .key
+      color: #bb0
+
+
+    &:hover
+      border-right: 2px solid $divider-color
+
+  h1
+    margin-bottom: 20px
+    margin-top: 40px
+
+  h2
+    margin-bottom: 15px
+    margin-top: 30px
+
+  h3
+    margin-bottom: 10px
+    margin-top: 20px
+
+  h1 .logLine
+    font-size: 24px
+    border-bottom: 4px solid $divider-color
+
+  h2 .logLine
+    font-size: 20px
+    border-bottom: 3px solid $divider-color
+
+  h3 .logLine
+    font-size: 16px
+    border-bottom: 2px solid $divider-color
+
