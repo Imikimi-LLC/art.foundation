@@ -27,22 +27,23 @@ topObject = null
 #   100-element array - 1.6x faster
 #   1000+ - about 2x faster
 # (Test array contained only numbers and copied them by-value in both cases - no function calls, no conditionals).
-cloneArray = (array) ->
-  clonedArray = clonedMap.set array, array.slice()
-  clonedArray[index] = clone value for value, index in clonedArray
-  clonedArray
-
-cloneObject = (obj) ->
-  clonedObject = clonedMap.set obj, emptyClone obj
-
-  if (obj!=topObject || !byProperties) && obj.populateClone
-    obj.populateClone clonedObject
-  else
-    clonedObject[k] = clone v for k, v of obj
-
-  clonedObject
 
 module.exports = class Clone
+
+  cloneArray = (array) ->
+    clonedArray = clonedMap.set array, array.slice()
+    clonedArray[index] = clone value for value, index in clonedArray
+    clonedArray
+
+  cloneObject = (obj) ->
+    clonedObject = clonedMap.set obj, emptyClone obj
+
+    if (obj!=topObject || !byProperties) && obj.populateClone
+      obj.populateClone clonedObject
+    else
+      clonedObject[k] = clone v for k, v of obj
+
+    clonedObject
 
   # clone the object "type", but none of its properties.
   @emptyClone: emptyClone = (obj) ->

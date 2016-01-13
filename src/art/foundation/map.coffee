@@ -18,7 +18,7 @@ Foundation  = require "./namespace"
 Unique      = require "./unique"
 BaseObject  = require "./base_object"
 
-module.exports = class Node
+class Node
   constructor: (key, value, prev, next) ->
     @key = key
     @value = value
@@ -37,10 +37,9 @@ module.exports = class Node
       n.prev = p
       @next = null
 
-
 # this class exists because javascript hash keys must be strings
 # this simple and inefficient class allows us to use objects as keys
-class Map extends BaseObject
+module.exports = class Map extends BaseObject
   @inverseMap: (array) ->
     result = new Map
     result.set v, k for v, k in array

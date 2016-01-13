@@ -2,6 +2,8 @@ BaseObject = require "../base_object"
 Basic      = require "./basic"
 {nextTick} = Basic
 
+console.log "Foundation.Async.Sequence is depricated. Use Promises."
+
 module.exports = class Sequence extends BaseObject
   constructor: ->
     super

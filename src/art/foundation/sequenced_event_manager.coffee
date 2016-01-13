@@ -1,7 +1,9 @@
 {rawLog} = require "./log"
 {nextTick} = require "./async"
 
-module.exports = class EventStackNode
+console.log "SequencedEventManager is depricated."
+
+class EventStackNode
   constructor: (eventFunction, options, parent)->
     @catch = options?.catch
     @parent = parent
@@ -88,7 +90,7 @@ module.exports = class EventStackNode
     else
       result
 
-class SequencedEventManager
+module.exports = class SequencedEventManager
   @currentNode: null
   @resetIds: ->
     EventStackNode.resetIds()

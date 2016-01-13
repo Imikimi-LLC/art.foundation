@@ -6,15 +6,13 @@ Types = require  '../types'
 
 encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 
-jString = self.String
-
 Binary.binary = (arg) ->
-  if arg instanceof Binary.String
+  if arg instanceof BinaryString
     arg
   else
-    new Binary.String arg
+    new BinaryString arg
 
-module.exports = class String
+module.exports = class BinaryString
   @binary = Binary.binary
 
   @cloneUint8Array: (srcU8A) ->
@@ -23,11 +21,11 @@ module.exports = class String
     dstU8A
 
   constructor: (arg) ->
-    @bytes = if arg instanceof Binary.String  then Binary.String.cloneUint8Array(arg.bytes)
+    @bytes = if arg instanceof BinaryString  then BinaryString.cloneUint8Array(arg.bytes)
     else if isFunction arg.uint8Array         then arg.uint8Array()
     else if arg instanceof ArrayBuffer        then new Uint8Array arg
     else if arg instanceof Uint8Array         then arg
-    else if isString arg                      then Binary.UTF8.toBuffer arg
+    else if isString arg                      then Utf8.toBuffer arg
     else throw new Error "invalid argument: #{arg}"
     @length = @bytes.length
 
@@ -40,7 +38,7 @@ module.exports = class String
     for i in [0...len] by 1
       uInt8Array[i] = byteString.charCodeAt i
 
-    new Binary.String uInt8Array
+    new BinaryString uInt8Array
 
   toDataURI: (callback) ->
     blob = new Blob [@bytes]
@@ -57,7 +55,7 @@ module.exports = class String
     @fromBase64 base64encoding
 
   toString: ->
-    Binary.UTF8.toString @bytes
+    Utf8.toString @bytes
 
   toBlob: ->
     new Blob [@bytes]
@@ -65,7 +63,7 @@ module.exports = class String
   toBase64: ->
     # TODO - test speed; is this faster than the old implementation below?
     # it probably is...
-    return btoa jString.fromCharCode.apply null, Array.prototype.slice.call @bytes
+    return btoa String.fromCharCode.apply null, Array.prototype.slice.call @bytes
 
     # src: https:#gist.github.com/jonleighton/958841
     # bytes = @bytes

@@ -1,85 +1,86 @@
 Parse = require './browser/parse'
 parseURL = Parse.url
-class CallStackLine
-  @getter: (map) ->
-    Object.defineProperty @::, prop, {get: getter, configurable: yes} for prop, getter of map
 
-  @setter: (map) ->
-    Object.defineProperty @::, prop, {set: setter, configurable: yes} for prop, setter of map
+module.exports = class CallStack
+  @CallStackLine: class CallStackLine
+    @getter: (map) ->
+      Object.defineProperty @::, prop, {get: getter, configurable: yes} for prop, getter of map
 
-  constructor: (line) ->
-    @original = line
-    @function = null
-    @source = null
-    @class = null
-    @classPath = null
-    @sourceFileName = null
-    @sourcePath = null
-    @sourceHostWithPort = null
-    @sourceLine = 0
-    @sourceColumn = 0
+    @setter: (map) ->
+      Object.defineProperty @::, prop, {set: setter, configurable: yes} for prop, setter of map
 
-    if @parseLineWithFunction line
-    else @parseLineWithoutFunction line
-    @subParseFunction()
-    @subParseSource()
+    constructor: (line) ->
+      @original = line
+      @function = null
+      @source = null
+      @class = null
+      @classPath = null
+      @sourceFileName = null
+      @sourcePath = null
+      @sourceHostWithPort = null
+      @sourceLine = 0
+      @sourceColumn = 0
 
-  toString: -> @original
+      if @parseLineWithFunction line
+      else @parseLineWithoutFunction line
+      @subParseFunction()
+      @subParseSource()
 
-  @getter
-    fileWithLocation: -> @_fileWithLocation ||=
-      if @sourceFileName
-        "#{@sourcePath}/#{@sourceFileName}:#{@sourceLine}:#{@sourceColumn}"
-      else
-        @original
+    toString: -> @original
 
-  #################
-  # PRIVATE
-  #################
-  # example: "at myFunc (http://0.0.0.0:9000/scripts/spec/art/foundation/call_stack.js:10:30)"
-  parseLineWithFunction: (line) ->
-    if r = line.match ///
-        \s*at\s
-        ((new\s)?[a-zA-Z0-9_.<>]+)
-        \s\(
+    @getter
+      fileWithLocation: -> @_fileWithLocation ||=
+        if @sourceFileName
+          "#{@sourcePath}/#{@sourceFileName}:#{@sourceLine}:#{@sourceColumn}"
+        else
+          @original
+
+    #################
+    # PRIVATE
+    #################
+    # example: "at myFunc (http://0.0.0.0:9000/scripts/spec/art/foundation/call_stack.js:10:30)"
+    parseLineWithFunction: (line) ->
+      if r = line.match ///
+          \s*at\s
+          ((new\s)?[a-zA-Z0-9_.<>]+)
+          \s\(
+            ([^)]*)
+            :([0-9]+)
+            :([0-9]+)
+          \)
+        ///
+        @function = r[1]
+        @source = r[3]
+        @sourceLine = r[4] | 0
+        @sourceColumn = r[5] | 0
+
+
+    parseLineWithoutFunction: (line) ->
+      if r = line.match  ///
+          \s*at\s
           ([^)]*)
           :([0-9]+)
           :([0-9]+)
-        \)
-      ///
-      @function = r[1]
-      @source = r[3]
-      @sourceLine = r[4] | 0
-      @sourceColumn = r[5] | 0
+        ///
+        @source = r[1]
+        @sourceLine = r[2] | 0
+        @sourceColumn = r[3] | 0
 
+    subParseSource: ->
+      if @source
+        url = parseURL @source
+        @sourceFileName = url.fileName
+        @sourcePath = url.path
+        @sourceHostWithPort = url.hostWithPort
 
-  parseLineWithoutFunction: (line) ->
-    if r = line.match  ///
-        \s*at\s
-        ([^)]*)
-        :([0-9]+)
-        :([0-9]+)
-      ///
-      @source = r[1]
-      @sourceLine = r[2] | 0
-      @sourceColumn = r[3] | 0
+    subParseFunction: ->
+      if @function
+        f = @function.split "."
+        @function = f[f.length-1]
+        @function = undefined if @function == "<anonymous>"
+        @class = f[f.length-2]
+        @classPath = f.slice 0, f.length-2
 
-  subParseSource: ->
-    if @source
-      url = parseURL @source
-      @sourceFileName = url.fileName
-      @sourcePath = url.path
-      @sourceHostWithPort = url.hostWithPort
-
-  subParseFunction: ->
-    if @function
-      f = @function.split "."
-      @function = f[f.length-1]
-      @function = undefined if @function == "<anonymous>"
-      @class = f[f.length-2]
-      @classPath = f.slice 0, f.length-2
-
-module.exports = class CallStack
   @rawCallStack: if (new Error).stack
     (ignoreTop = 0)->
       (new Error).stack.split(/\n  */).slice ignoreTop + 2

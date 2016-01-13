@@ -183,9 +183,13 @@ module.exports = class BaseObject
   # Class Info
   ######################################################
   @classGetter
-    classPath:      -> @parentNamespace.namespacePath
-    classPathArray: -> @namespacePathArray ||= @classPath.split "."
-    classPathName:  -> @namespacePath
+    classPath:      -> @namespace.namespacePath
+    classPathArray: -> @namespacePathArray ||= @getClassPath().split "."
+    classPathName:  ->
+      if p = @namespace?.namespacePath
+        p + "." + @name
+      else
+        @name
     className: -> @prototype.constructor.name
 
   ######################################################
@@ -215,9 +219,9 @@ module.exports = class BaseObject
     className: -> @class.name
     class: -> @constructor
     keys: -> Object.keys @
-    classPathArray: -> @class.classPathArray
-    classPath:      -> @class.classPath
-    classPathName:  -> @class.classPathName
+    classPathArray: -> @class.getClassPathArray()
+    classPath:      -> @class.getClassPath()
+    classPathName:  -> @class.getClassPathName()
     classPathNameAndId: -> "#{@classPathName}:#{@objectId}"
     uniqueId: -> @__uniqueId ||= nextUniqueObjectId() # unique across all things
     objectId: -> @__uniqueId ||= nextUniqueObjectId() # number unique across objects

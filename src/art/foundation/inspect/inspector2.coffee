@@ -6,8 +6,10 @@ Inspected =        require "./inspected"
 
 {escapeJavascriptString} = StringExtensions
 {isString, isArray, isFunction, isObject, isPlainObject, isClass, isDate, isRegExp, objectName, isBrowserObject} = Types
-isHTMLImageElement = (obj) ->
-  obj instanceof HTMLImageElement
+isHTMLImageElement = if self.HTMLImageElement
+  (obj) -> obj instanceof HTMLImageElement
+else
+  -> false
 
 parentString = (distance) =>
   switch distance

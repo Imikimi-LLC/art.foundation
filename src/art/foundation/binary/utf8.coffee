@@ -1,12 +1,12 @@
 # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays
 # should look into using: https://developer.mozilla.org/en-US/docs/Code_snippets/StringView?redirectlocale=en-US&redirectslug=Web%2FJavaScript%2FTyped_arrays%2FStringView
 
-module.exports = class UTF8
-  # string -> Uint8Array representing bytes in UTF8 string
+module.exports = class Utf8
+  # string -> Uint8Array representing bytes in Utf8 string
   @toBuffer = (string) ->
     new Uint8Array @toArray(string)
 
-  # string -> array of integers representing bytes in UTF8 string
+  # string -> array of integers representing bytes in Utf8 string
   @toArray = (string) ->
     uriEncoded = encodeURIComponent string
     i = 0
@@ -20,7 +20,7 @@ module.exports = class UTF8
 
   # Input can be one of:
   #   array of intergers
-  #   Uint8Array representing bytes in UTF8 string -> string
+  #   Uint8Array representing bytes in Utf8 string -> string
   #
   @toString = (a) ->
     return "<undefined>" if a == undefined
