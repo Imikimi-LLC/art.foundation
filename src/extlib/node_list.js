@@ -196,8 +196,9 @@
   div = document.createElement( 'div' );
   for( prop in div ) setterGetter( prop );
   div = prop = null;
-  window.$$ = function NodeListJS() {
+  module.exports = {}
+  module.exports.$$ = function NodeListJS() {
     return new NodeList( arguments );
   }
-  window.$$.NL = NL;
+  module.exports.$$.NL = NL;
 })();
