@@ -5,8 +5,6 @@
 promisedMapStackTrace = (stack) ->
   new Promise (resolve)-> mapStackTrace stack, resolve
 
-# console.log Mocha.reporters.HTML
-
 class SuiteReporter
   constructor: (@suite)->
     @failedTests = []
@@ -17,10 +15,6 @@ class SuiteReporter
     @tests.push test
 
   addFailure: (test, err) ->
-    # console.error "SuiteReporter: #{test}", err
-    # console.log err.stack
-    #   console.log "#{test}:stack", stack
-    #   console.log "#{test}:mappedStack", mappedStack.join '\n'
     @failedTests.push (
       promisedMapStackTrace stack = err.stack
       .then (mappedStack) ->
@@ -40,7 +34,7 @@ class SuiteReporter
       for line, i in rest
         mappedLine = mappedStackTrace[i]
         url = mappedLine.match(findSourceReferenceUrlRegexp)?[0]
-        rest[i] = log line.replace findSourceReferenceUrlRegexp, url if url
+        rest[i] = line.replace findSourceReferenceUrlRegexp, url if url
 
     "#{normalStackTraceArray[0]}\n#{rest.join "\n"}"
 

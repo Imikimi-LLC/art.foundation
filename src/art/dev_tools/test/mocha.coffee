@@ -1,5 +1,5 @@
 # {log} = require '../../foundation'
-# DomConsole = require '../dom_console'
+DomConsole = require '../dom_console'
 # require "mocha/mocha"
 # require "mocha/mocha.css"
 
@@ -48,7 +48,7 @@ module.exports = class MyMocha
     # mocha.setup 'tdd'
     # defineMySuite()
 
-    # DomConsole.enable()
+    DomConsole.enable()
 
     defineTestSuites chai
 

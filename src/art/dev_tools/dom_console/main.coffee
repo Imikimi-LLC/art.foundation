@@ -5,13 +5,14 @@
 
 ###
 
+require "!style!css!./style.css"
+
 define [
-  'extlib/jquery'
-  'require'
+  'jquery'
   'art.foundation'
-  'lib/art/atomic'
+  'art.atomic'
   './namespace'
-], ($, Require, Foundation, Atomic, DomConsole) ->
+], ($, Foundation, Atomic, DomConsole) ->
 
   {color, Color, point, Point, matrix, Matrix, rect, Rectangle} = Atomic
   {BaseObject, inspect, clone, merge, Map, nextTick, timeout, flatten,
@@ -87,7 +88,7 @@ define [
       $('<link>')
         .appendTo($('head'))
         .attr({type : 'text/css', rel : 'stylesheet'})
-        .attr('href', Require.toUrl 'lib/art/dev_tools/dom_console/style.css');
+        # .attr('href', Require.toUrl 'lib/art/dev_tools/dom_console/style.css');
 
     reset: -> @domContainer.html ""
     hide: -> @domContainer.hide()

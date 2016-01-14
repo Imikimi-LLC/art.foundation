@@ -1,5 +1,5 @@
 define [
-  'lib/art/atomic'
+  'art.atomic'
   'art.foundation'
 ], (
   Atomic
