@@ -1,60 +1,67 @@
-# {log} = require '../../foundation'
-DomConsole = require '../dom_console'
-# require "mocha/mocha"
-# require "mocha/mocha.css"
-
-require("!style!css!mocha/mocha.css");
-require("!script!mocha/mocha.js");
-
+require "!style!css!mocha/mocha.css"
+require "!script!mocha/mocha.js"
 chai = require 'art.foundation/src/art/dev_tools/test/art_chai'
+DomConsole = require '../dom_console'
+{log} = require 'art.foundation'
+
 mocha.setup reporter: require './mocha_browser_reporter'
 
-suites = []
+###
+Use mocha as normal, but if you added dots (.) in your suite names, this will
+break them out into nested test suites and group suites with the same path together.
+It also alphabetizes them.
 
-defineMySuite = ->
-  baseSuite = self.suite
-  log baseSuite:baseSuite
-  self.suite = (name, f) ->
-    recursiveSuite = (suites) =>
-      if suites.length == 1
-        baseSuite suites[0], f
-      else
-        baseSuite suites[0], =>
-          suites = suites.slice 1, suites.length
-          recursiveSuite suites
+Ex:
 
-    recursiveSuite name.split "."
+  suite "Art.Foundation.Async", asyncTests
+  suite "Art.Foundation.Binary", binaryTests
+  suite "Art.Atomic", atomicTests
 
-unless self.suite
-  self.suite = mySuite = (name, f) ->
-    suites.push name:name, f:f
+Becomes:
 
-module.exports = class MyMocha
-  @assert: chai.assert
+  suite "Art", ->
+    suite "Atomic", atomicTests
+    suite "Foundation", ->
+      suite "Async", asyncTests
+      suite "Binary", binaryTests
+###
+class NestedSuites
+  constructor: ->
+    @suites = {}
+    @suiteFunctions = {}
 
-  # @initCss: ->
-  #   $('<link>')
-  #     .appendTo $ 'head'
-  #     .attr type: 'text/css', rel: 'stylesheet'
-  #     .attr 'href', log __dirname + '/extlib/mocha/mocha.css'
+  addSuite: (name, f) ->
+    (@suiteFunctions[name] ||= []).push f
 
-  # @initDom: ->
-  #   $("<div id='mocha'/>").appendTo $ 'body'
+    splitName = name.split '.'
+    suiteMap = @suites
+    for suitePart in splitName
+      suiteMap = (suiteMap[suitePart] ||= {})
 
-  @run: (defineTestSuites)=>
-    # window.suite = null if window.suite == mySuite
-    # @initCss()
-    # @initDom()
-    # mocha.setup 'tdd'
-    # defineMySuite()
+  _createMochaSuites: (suites = @suites, suitePath = null)->
+    for suitePart in Object.keys suites
+      subSuites = suites[suitePart]
+      do (suitePart, subSuites) =>
+        path = if suitePath then suitePath + "." + suitePart else suitePart
+        suite suitePart, =>
+          @_createMochaSuites subSuites, path
+          if functions = @suiteFunctions[path]
+            for f in functions
+              f()
 
-    DomConsole.enable()
+  groupTestSuites: (defineAllTests) ->
+    self.suite = (name, f) =>
+      @addSuite name, f
 
-    defineTestSuites chai
+    defineAllTests chai
 
     mocha.setup 'tdd'
 
-    for {name, f} in suites
-      suite name, f
+    @_createMochaSuites()
 
+module.exports = class MyMocha
+  @assert: chai.assert
+  @run: (defineAllTests)=>
+    DomConsole.enable()
+    (new NestedSuites).groupTestSuites defineAllTests
     mocha.run()
