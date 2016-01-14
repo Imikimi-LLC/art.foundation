@@ -4,11 +4,14 @@
   "description": "Foundation classes for the Art framework. Javascript extensions",
   "main": "main.js",
   "dependencies": {
+    "neptune-namespaces": "^0.0.1",
     "es6-promise": "^3.0.2",
     "jquery": "^2.2.0",
     "jquery.cookie": "^1.4.1",
-    "neptune-namespaces": "^0.0.1",
+    "coffee-loader": "^0.7.2",
+    "css-loader": "^0.23.1",
     "script-loader": "^0.6.1",
+    "style-loader": "^0.13.0",
     "sourcemapped-stacktrace": "^1.0.0"
   },
   "devDependencies": {
