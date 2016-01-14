@@ -6,3 +6,5 @@ module.exports = DevTools.Profiler ||
 class DevTools.Profiler extends Neptune.Base
   @namespace: DevTools
   @namespacePath: "Neptune.Art.DevTools.Profiler"
+
+DevTools.addNamespace DevTools.Profiler

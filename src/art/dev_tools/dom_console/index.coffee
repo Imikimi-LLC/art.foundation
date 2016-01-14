@@ -7,5 +7,4 @@ DomConsole.Chart = require './chart'
 DomConsole.Main  = require './main'
 DomConsole.finishLoad(
   ["Chart","Main"]
-  []
 )

@@ -9,5 +9,4 @@ Browser.File   = require './file'
 Browser.Parse  = require './parse'
 Browser.finishLoad(
   ["Cookie","Dom","File","Parse"]
-  []
 )

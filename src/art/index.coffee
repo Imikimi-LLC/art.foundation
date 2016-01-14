@@ -7,5 +7,4 @@ Art.DevTools   = require './dev_tools'
 Art.Foundation = require './foundation'
 Art.finishLoad(
   []
-  ["DevTools","Foundation"]
 )

@@ -6,3 +6,5 @@ module.exports = Foundation.Async ||
 class Foundation.Async extends Neptune.Base
   @namespace: Foundation
   @namespacePath: "Neptune.Art.Foundation.Async"
+
+Foundation.addNamespace Foundation.Async

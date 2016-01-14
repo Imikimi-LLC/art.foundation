@@ -6,3 +6,5 @@ module.exports = Foundation.Browser ||
 class Foundation.Browser extends Neptune.Base
   @namespace: Foundation
   @namespacePath: "Neptune.Art.Foundation.Browser"
+
+Foundation.addNamespace Foundation.Browser

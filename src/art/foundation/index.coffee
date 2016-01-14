@@ -39,5 +39,4 @@ Foundation.WebWorker               = require './web_worker'
 Foundation.WorkerRpc               = require './worker_rpc'
 Foundation.finishLoad(
   ["All","Analytics","Array","BaseModule","BaseObject","BatchLoader","CallStack","Clone","Epoch","Eq","Function","Hash","JsonStore","Log","Map","Math","Promise","Regexp","Ruby","SequencedEventManager","ShallowClone","SingleObjectTransaction","Stat","String","Time","Transaction","Types","Unique","WebWorker","WorkerRpc"]
-  ["Async","Binary","Browser","Inspect"]
 )

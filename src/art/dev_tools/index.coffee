@@ -8,5 +8,4 @@ DevTools.Profiler   = require './profiler'
 DevTools.Test       = require './test'
 DevTools.finishLoad(
   []
-  ["DomConsole","Profiler","Test"]
 )

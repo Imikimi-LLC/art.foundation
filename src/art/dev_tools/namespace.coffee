@@ -6,3 +6,5 @@ module.exports = Art.DevTools ||
 class Art.DevTools extends Neptune.Base
   @namespace: Art
   @namespacePath: "Neptune.Art.DevTools"
+
+Art.addNamespace Art.DevTools

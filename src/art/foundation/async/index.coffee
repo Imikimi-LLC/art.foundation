@@ -9,5 +9,4 @@ Async.Join     = require './join'
 Async.Sequence = require './sequence'
 Async.finishLoad(
   ["All","Basic","Join","Sequence"]
-  []
 )

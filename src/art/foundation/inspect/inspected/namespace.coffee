@@ -6,3 +6,5 @@ module.exports = Inspect.Inspected ||
 class Inspect.Inspected extends Neptune.Base
   @namespace: Inspect
   @namespacePath: "Neptune.Art.Foundation.Inspect.Inspected"
+
+Inspect.addNamespace Inspect.Inspected

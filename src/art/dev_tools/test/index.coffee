@@ -8,5 +8,4 @@ Test.MochaBrowserReporter = require './mocha_browser_reporter'
 Test.Mocha                = require './mocha'
 Test.finishLoad(
   ["ArtChai","MochaBrowserReporter","Mocha"]
-  []
 )

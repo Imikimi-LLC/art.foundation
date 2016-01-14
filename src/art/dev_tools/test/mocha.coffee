@@ -1,56 +1,60 @@
-define [
-  'art.foundation'
-  'require'
-  'extlib/jquery'
-  'lib/art/dev_tools/dom_console'
-  'extlib/mocha/mocha'
-  './mocha_browser_reporter'
-], (Foundation, Require, $, DomConsole, _Mocha, MochaBrowserReporter) ->
-  {log} = Foundation
-  mocha.setup reporter: MochaBrowserReporter
+# {log} = require '../../foundation'
+# DomConsole = require '../dom_console'
+# require "mocha/mocha"
+# require "mocha/mocha.css"
 
-  suites = []
+require("!style!css!mocha/mocha.css");
+require("!script!mocha/mocha.js");
 
-  defineMySuite = ->
-    baseSuite = window.suite
-    log baseSuite:baseSuite
-    window.suite = (name, f) ->
-      recursiveSuite = (suites) =>
-        if suites.length == 1
-          baseSuite suites[0], f
-        else
-          baseSuite suites[0], =>
-            suites = suites.slice 1, suites.length
-            recursiveSuite suites
+chai = require 'art.foundation/src/art/dev_tools/test/art_chai'
+mocha.setup reporter: require './mocha_browser_reporter'
 
-      recursiveSuite name.split "."
-  # unless window.suite
-  #   window.suite = mySuite = (name, f) ->
-  #     suites.push name:name, f:f
+suites = []
 
-  class MyMocha
-
-    @initCss: ->
-      $('<link>')
-        .appendTo $ 'head'
-        .attr type: 'text/css', rel: 'stylesheet'
-        .attr 'href', log Require.toUrl 'extlib/mocha/mocha.css'
-
-    @initDom: ->
-      $("<div id='mocha'/>").appendTo $ 'body'
-
-    @run: (testFiles...)=>
-      # window.suite = null if window.suite == mySuite
-      @initCss()
-      @initDom()
-      mocha.setup 'tdd'
-      defineMySuite()
-      DomConsole.enable()
-      for {name, f} in suites
-        suite name, f
-
-      if testFiles.length > 0
-        require testFiles, ->
-          mocha.run()
+defineMySuite = ->
+  baseSuite = self.suite
+  log baseSuite:baseSuite
+  self.suite = (name, f) ->
+    recursiveSuite = (suites) =>
+      if suites.length == 1
+        baseSuite suites[0], f
       else
-        mocha.run()
+        baseSuite suites[0], =>
+          suites = suites.slice 1, suites.length
+          recursiveSuite suites
+
+    recursiveSuite name.split "."
+
+unless self.suite
+  self.suite = mySuite = (name, f) ->
+    suites.push name:name, f:f
+
+module.exports = class MyMocha
+  @assert: chai.assert
+
+  # @initCss: ->
+  #   $('<link>')
+  #     .appendTo $ 'head'
+  #     .attr type: 'text/css', rel: 'stylesheet'
+  #     .attr 'href', log __dirname + '/extlib/mocha/mocha.css'
+
+  # @initDom: ->
+  #   $("<div id='mocha'/>").appendTo $ 'body'
+
+  @run: (defineTestSuites)=>
+    # window.suite = null if window.suite == mySuite
+    # @initCss()
+    # @initDom()
+    # mocha.setup 'tdd'
+    # defineMySuite()
+
+    # DomConsole.enable()
+
+    defineTestSuites chai
+
+    mocha.setup 'tdd'
+
+    for {name, f} in suites
+      suite name, f
+
+    mocha.run()

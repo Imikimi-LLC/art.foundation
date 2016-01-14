@@ -6,3 +6,5 @@ module.exports = DevTools.DomConsole ||
 class DevTools.DomConsole extends Neptune.Base
   @namespace: DevTools
   @namespacePath: "Neptune.Art.DevTools.DomConsole"
+
+DevTools.addNamespace DevTools.DomConsole

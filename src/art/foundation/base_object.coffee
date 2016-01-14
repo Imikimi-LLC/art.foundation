@@ -19,6 +19,15 @@ module.exports = class BaseObject
     @objectsCreated = 0
     @objectsCreatedByType = {}
 
+  @inspect: -> @getClassPathName()
+
+  ###
+  TODO: consolidated on one inspector system
+  NOTE: "inspector" parameter is part of the old inspect system
+    The purpose was to resolve recurson on recursive structures.
+    But it ended up being ungainly most the time.
+  ###
+
   @createWithPostCreate: (klass) -> klass?.postCreate() || klass
   @postCreate: -> @
 

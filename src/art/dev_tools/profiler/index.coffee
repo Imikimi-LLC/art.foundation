@@ -6,5 +6,4 @@ Profiler      = require './namespace'
 Profiler.Main = require './main'
 Profiler.finishLoad(
   ["Main"]
-  []
 )

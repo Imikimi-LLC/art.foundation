@@ -10,5 +10,4 @@ Binary.String       = require './string'
 Binary.Utf8         = require './utf8'
 Binary.finishLoad(
   ["EncodedImage","RestClient","Stream","String","Utf8"]
-  []
 )
