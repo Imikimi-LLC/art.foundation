@@ -1,6 +1,6 @@
 chai = require 'art.foundation/src/art/dev_tools/test/art_chai'
 require "!style!css!mocha/mocha.css"
-require "mocha/mocha.js"
+require "!script!mocha/mocha.js"
 DomConsole = require '../dom_console'
 {log} = require 'art.foundation'
 
