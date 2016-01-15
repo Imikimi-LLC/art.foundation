@@ -12,26 +12,26 @@ suite "Art.Foundation.Binary.EncodedImage", ->
     assert.equal base64, btoa("hi")
 
   test "base64 png", (done)->
-    RestClient.get "/neptune/test/assets/array_buffer_image_test/sample.png", (binaryString, url) ->
+    RestClient.get "#{testAssetRoot}/array_buffer_image_test/sample.png", (binaryString, url) ->
       base64 = binaryString.toBase64()
       assert.equal base64[0..9], "iVBORw0KGg"
       done()
 
   test "jpg toImage", (done)->
-    RestClient.get "/neptune/test/assets/array_buffer_image_test/sample.jpg", (binaryString, url) ->
+    RestClient.get "#{testAssetRoot}/array_buffer_image_test/sample.jpg", (binaryString, url) ->
       EncodedImage.toImage binaryString, (image)->
         assert.equal image.width, 256
         assert.equal image.height, 256
         done()
 
   test "EncodedImage.get", (done)->
-    EncodedImage.get "/neptune/test/assets/array_buffer_image_test/sample.jpg", (image) ->
+    EncodedImage.get "#{testAssetRoot}/array_buffer_image_test/sample.jpg", (image) ->
       assert.equal image.width, 256
       assert.equal image.height, 256
       done()
 
   test "png toImage", (done)->
-    RestClient.get "/neptune/test/assets/array_buffer_image_test/sample.png", (binaryString, url) ->
+    RestClient.get "#{testAssetRoot}/array_buffer_image_test/sample.png", (binaryString, url) ->
       EncodedImage.toImage binaryString, (image)->
         assert.equal image.width, 256
         assert.equal image.height, 256

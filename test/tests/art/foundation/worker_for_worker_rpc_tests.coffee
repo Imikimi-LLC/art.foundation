@@ -1,24 +1,24 @@
 isBrowser = !!(typeof window != 'undefined' && typeof navigator != 'undefined' && window.document)
-return unless isWebWorker = !isBrowser && typeof importScripts != 'undefined'
+if isWebWorker = !isBrowser && typeof importScripts != 'undefined'
 
-importScripts "/neptune/extlib/require.js"
-require.config baseUrl: "/neptune"
+  importScripts "/neptune/extlib/require.js"
+  require.config baseUrl: "/neptune"
 
-Foundation = require 'art.foundation'
-{log, WorkerRpc} = Foundation
-self.log = log
-log "worker: worker_for_worker_rpc_tests started"
-self.WorkerRpc = WorkerRpc
+  Foundation = require 'art.foundation'
+  {log, WorkerRpc} = Foundation
+  self.log = log
+  log "worker: worker_for_worker_rpc_tests started"
+  self.WorkerRpc = WorkerRpc
 
-{workerRpc} = WorkerRpc
+  {workerRpc} = WorkerRpc
 
-WorkerRpc.register
-  HelloTest: hello: (name) -> "Hello, #{name}."
-  InvokeBackTestWorkerHalf: invokeBack: (value) ->
-    WorkerRpc.lastMessageReceivedFrom.InvokeBackTestBrowserHalf.result value
+  WorkerRpc.register
+    HelloTest: hello: (name) -> "Hello, #{name}."
+    InvokeBackTestWorkerHalf: invokeBack: (value) ->
+      WorkerRpc.lastMessageReceivedFrom.InvokeBackTestBrowserHalf.result value
 
-workerRpc.bind
-  InvokeBackTestBrowserHalf: ["result"]
-  Setup: ["ready"]
+  workerRpc.bind
+    InvokeBackTestBrowserHalf: ["result"]
+    Setup: ["ready"]
 
-workerRpc.Setup.ready()
+  workerRpc.Setup.ready()

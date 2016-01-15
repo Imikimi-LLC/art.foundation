@@ -3,12 +3,12 @@
 
 suite "Art.Foundation.Binary.RestClient", ->
   test "GET", (done)->
-    Binary.RestClient.get "/neptune/test/assets/array_buffer_rest_client_test/hello.txt", (binaryString, url) ->
+    Binary.RestClient.get "#{testAssetRoot}/array_buffer_rest_client_test/hello.txt", (binaryString, url) ->
       assert.equal "hello in a file.", binaryString.toString()
       done()
 
   test "onprogress", (done)->
-    Binary.RestClient.get "/neptune/test/assets/array_buffer_rest_client_test/hello.txt", (binaryString, url) ->
+    Binary.RestClient.get "#{testAssetRoot}/array_buffer_rest_client_test/hello.txt", (binaryString, url) ->
       assert.equal "hello in a file.", binaryString.toString()
     , null, (e) -> #onprogress
       if e.lengthComputable
@@ -16,7 +16,7 @@ suite "Art.Foundation.Binary.RestClient", ->
         done()
 
   test "onerror", (done)->
-    Binary.RestClient.get "/neptune/test/assets/array_buffer_rest_client_test/doesnotexist.txt", (binaryString, url) ->
+    Binary.RestClient.get "#{testAssetRoot}/array_buffer_rest_client_test/doesnotexist.txt", (binaryString, url) ->
       assert.equal "hello in a file.", binaryString.toString()
     , (e) -> #onerror
       done()

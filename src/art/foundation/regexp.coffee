@@ -5,7 +5,7 @@ module.exports = class Regexp
   @findDomainRegexp: /[\w]+(?:-[\w]+)*(?:\.[\w]+(?:-[\w]+)*)*(?:\.[a-z]{2,20})?/
   urlQueryRegexp = '(?:[-=+*._\\w]|%[a-f\\d]{2})*'
   @findUrlPathRegexp: /(?:\/~?(?:[-+*._\w]|%[a-f\d]{2})*)*/
-  @findUrlPortRegexp: /\:\d+/
+  @findUrlPortRegexp: /\:(\d+)/
 
   @emailRegexp: ///^([_\w-]+(?:\.[_\w]+)*)@(#{@findDomainRegexp.source})$///i
 
@@ -28,7 +28,7 @@ module.exports = class Regexp
   @findUrlRegexp:  ///
     (#{@findUrlProtocolRegexp.source})
     (#{@findDomainRegexp.source})
-    (#{@findUrlPortRegexp.source})?
+    (?:#{@findUrlPortRegexp.source})?
     (#{@findUrlPathRegexp.source})?
     (?:\?(#{urlQueryRegexp}))?
     ///i
@@ -36,7 +36,7 @@ module.exports = class Regexp
   @findSourceReferenceUrlRegexp: ///
     (#{@findUrlProtocolRegexp.source})
     (#{@findDomainRegexp.source})?
-    (#{@findUrlPortRegexp.source})?
+    (?:#{@findUrlPortRegexp.source})?
     (#{@findUrlPathRegexp.source})?
     (?:\?(#{urlQueryRegexp}))?
     (?:\:(\d+))?
