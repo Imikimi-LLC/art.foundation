@@ -1,3 +1,6 @@
+if !document.getElementById "mocha"
+  document.write "<div id=\"mocha\"></div>"
+
 chai = require 'art.foundation/src/art/dev_tools/test/art_chai'
 require "!style!css!mocha/mocha.css"
 require "!script!mocha/mocha.js"
