@@ -1,8 +1,7 @@
 isBrowser = !!(typeof window != 'undefined' && typeof navigator != 'undefined' && window.document)
-if isWebWorker = !isBrowser && typeof importScripts != 'undefined'
-
-  importScripts "/neptune/extlib/require.js"
-  require.config baseUrl: "/neptune"
+isWebWorker = !isBrowser && typeof importScripts != 'undefined'
+console.log "worker_for_worker_rpc_tests starting - isWebWorker:", isWebWorker
+if isWebWorker
 
   Foundation = require 'art.foundation'
   {log, WorkerRpc} = Foundation
@@ -22,3 +21,5 @@ if isWebWorker = !isBrowser && typeof importScripts != 'undefined'
     Setup: ["ready"]
 
   workerRpc.Setup.ready()
+
+console.log isWebWorker:isWebWorker, isBrowser:isBrowser, typeofImportScripts:typeof importScripts

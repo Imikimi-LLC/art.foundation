@@ -156,7 +156,10 @@ module.exports = class WorkerRpc extends BaseObject
       bindWithPromises: map # invokes: @bindWithPromises map
   ###
   constructor: (thread, options) ->
-    thread = new Worker thread if isString thread
+    if isString thread
+      log "WorkerRpc starting worker: #{thread}"
+      thread = new Worker thread
+      log "WorkerRpc starting worker: #{thread}, started?:", thread
     thread = self unless thread || self == self.window
 
     @_reset()
@@ -221,7 +224,7 @@ module.exports = class WorkerRpc extends BaseObject
   _applyOptions: ({register, bind, bindWithPromises})->
     @register register
     @bind bind
-    @bind bindWithPromises, true
+    @bindWithPromises bindWithPromises
     @
 
   _send: (namespaceName, functionName, promiseId, args)->

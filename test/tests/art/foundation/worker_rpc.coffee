@@ -51,7 +51,7 @@ suite "Art.Foundation.WorkerRpc", ->
   suite "using real worker thread", ->
     workerRpc = null
     suiteSetup (done) ->
-      workerRpc = new WorkerRpc "./worker_for_worker_rpc_tests.js",
+      workerRpc = new WorkerRpc "/worker_for_worker_rpc_tests.js",
         bindWithPromises: HelloTest: ["hello"]
         bind: InvokeBackTestWorkerHalf: ["invokeBack"]
         register: Setup: ready: -> done()
