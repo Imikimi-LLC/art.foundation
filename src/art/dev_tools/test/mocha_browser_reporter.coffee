@@ -3,7 +3,8 @@
 {mapStackTrace} = require 'sourcemapped-stacktrace'
 
 promisedMapStackTrace = (stack) ->
-  new Promise (resolve)-> mapStackTrace stack, resolve
+  deQueriedStack = stack.replace(/\?[a-zA-Z0-9]+=[^:]*/,"")
+  new Promise (resolve)-> mapStackTrace deQueriedStack, resolve
 
 class SuiteReporter
   constructor: (@suite)->
@@ -21,8 +22,6 @@ class SuiteReporter
         [test, err, mappedStack]
     )
 
-      # resolve [test, err,  err.stack]
-
   addPass: (test) ->
     @passedTests.push test
 
@@ -30,17 +29,20 @@ class SuiteReporter
     normalStackTraceArray = normalStackTrace.split '\n'
     output = normalStackTraceArray.slice 0,1
     rest = normalStackTraceArray.slice 1
+
+    sourceRefRegex = /\([^)]+\:\d+\:\d+\)/
     if rest.length == mappedStackTrace?.length # good mappedStackTrace
       for line, i in rest
         mappedLine = mappedStackTrace[i]
-        url = mappedLine.match(findSourceReferenceUrlRegexp)?[0]
-        rest[i] = line.replace findSourceReferenceUrlRegexp, url if url
+        url = mappedLine.match(sourceRefRegex)?[0]
+        rest[i] = line.replace sourceRefRegex, url if url
 
     "#{normalStackTraceArray[0]}\n#{rest.join "\n"}"
 
   outputFailedTests: (failedTests)->
     console.group "Failures"
     for [test, err, mappedStackTrace] in failedTests
+      # console.error test.err.stack
       # console.error test.err.stack
       console.error @mergeStackTraces test.err.stack, mappedStackTrace
       console.log Expected: err.expected, Actual: err.actual
