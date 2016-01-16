@@ -2,6 +2,7 @@ if !document.getElementById "mocha"
   document.write "<div id=\"mocha\"></div>"
 
 chai = require 'art.foundation/src/art/dev_tools/test/art_chai'
+self.assert = chai.assert
 require "!style!css!mocha/mocha.css"
 require "!script!mocha/mocha.js"
 DomConsole = require '../dom_console'
