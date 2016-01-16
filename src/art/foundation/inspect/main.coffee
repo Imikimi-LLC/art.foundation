@@ -5,7 +5,7 @@ Inspector = require  "./inspector"
 
 {isString, isArray, isFunction, isObject} = Types
 
-customInspectable = (obj) => obj && obj.inspect2 && !(typeof obj == "function")
+customInspectable = (obj) => obj && obj.getInspectedString && !(typeof obj == "function")
 
   # a non-recursive inspect
 Inspect.miniInspect = (obj) =>
@@ -22,7 +22,7 @@ Inspect.inspectLean = inspectLean = (obj, options) =>
   #   (inspect i, options for i in obj).join ', '
   # else
   if customInspectable obj
-    obj.inspect2()
+    obj.getInspectedString()
   else if isObject obj
     keys = Object.keys obj
     last = keys.length - 1
