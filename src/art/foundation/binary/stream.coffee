@@ -11,7 +11,7 @@ Binary.stream = (arg) ->
   else
     new Binary.Stream(binary(arg).bytes)
 
-class Stream
+module.exports = class Stream
 
   @from_array_buffer = (array_buffer) ->
     new Binary.Stream(new Uint8Array(array_buffer, 0, array_buffer.byteLength))
