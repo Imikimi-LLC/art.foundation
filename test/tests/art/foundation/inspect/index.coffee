@@ -8,5 +8,4 @@ Inspect.Inspector2 = require './inspector2'
 Inspect.Main       = require './main'
 Inspect.finishLoad(
   ["Inspected","Inspector2","Main"]
-  []
 )

@@ -6,5 +6,4 @@ Browser         = require './namespace'
 Browser.Browser = require './browser'
 Browser.finishLoad(
   ["Browser"]
-  []
 )

@@ -6,5 +6,4 @@ Art            = require './namespace'
 Art.Foundation = require './foundation'
 Art.finishLoad(
   []
-  ["Foundation"]
 )

@@ -2,11 +2,8 @@
 # this file: tests/art/foundation/async/index.coffee
 
 module.exports =
-Async          = require './namespace'
-Async.Basic    = require './basic'
-Async.Join     = require './join'
-Async.Sequence = require './sequence'
+Async       = require './namespace'
+Async.Basic = require './basic'
 Async.finishLoad(
-  ["Basic","Join","Sequence"]
-  []
+  ["Basic"]
 )

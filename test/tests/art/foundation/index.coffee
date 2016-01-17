@@ -22,7 +22,6 @@ Foundation.PlainData               = require './plain_data'
 Foundation.Promise                 = require './promise'
 Foundation.Regexp                  = require './regexp'
 Foundation.Ruby                    = require './ruby'
-Foundation.SequencedEventManager   = require './sequenced_event_manager'
 Foundation.Stat                    = require './stat'
 Foundation.String                  = require './string'
 Foundation.Time                    = require './time'
@@ -33,6 +32,5 @@ Foundation.WebWorker               = require './web_worker'
 Foundation.WorkerForWorkerRpcTests = require './worker_for_worker_rpc_tests'
 Foundation.WorkerRpc               = require './worker_rpc'
 Foundation.finishLoad(
-  ["Array","BaseObject","BatchLoader","CallStack","Clone","Epoch","Eq","Hash","JsonStore","Map","Math","PlainData","Promise","Regexp","Ruby","SequencedEventManager","Stat","String","Time","Transaction","Types","Unique","WebWorker","WorkerForWorkerRpcTests","WorkerRpc"]
-  ["Async","Binary","Browser","Inspect"]
+  ["Array","BaseObject","BatchLoader","CallStack","Clone","Epoch","Eq","Hash","JsonStore","Map","Math","PlainData","Promise","Regexp","Ruby","Stat","String","Time","Transaction","Types","Unique","WebWorker","WorkerForWorkerRpcTests","WorkerRpc"]
 )
