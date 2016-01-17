@@ -26,7 +26,6 @@ Foundation.Math                    = require './math'
 Foundation.Promise                 = require './promise'
 Foundation.Regexp                  = require './regexp'
 Foundation.Ruby                    = require './ruby'
-Foundation.SequencedEventManager   = require './sequenced_event_manager'
 Foundation.ShallowClone            = require './shallow_clone'
 Foundation.SingleObjectTransaction = require './single_object_transaction'
 Foundation.Stat                    = require './stat'
@@ -38,5 +37,5 @@ Foundation.Unique                  = require './unique'
 Foundation.WebWorker               = require './web_worker'
 Foundation.WorkerRpc               = require './worker_rpc'
 Foundation.finishLoad(
-  ["All","Analytics","Array","BaseModule","BaseObject","BatchLoader","CallStack","Clone","Epoch","Eq","Function","Hash","JsonStore","Log","Map","Math","Promise","Regexp","Ruby","SequencedEventManager","ShallowClone","SingleObjectTransaction","Stat","String","Time","Transaction","Types","Unique","WebWorker","WorkerRpc"]
+  ["All","Analytics","Array","BaseModule","BaseObject","BatchLoader","CallStack","Clone","Epoch","Eq","Function","Hash","JsonStore","Log","Map","Math","Promise","Regexp","Ruby","ShallowClone","SingleObjectTransaction","Stat","String","Time","Transaction","Types","Unique","WebWorker","WorkerRpc"]
 )

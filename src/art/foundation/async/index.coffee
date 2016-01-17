@@ -2,11 +2,9 @@
 # this file: src/art/foundation/async/index.coffee
 
 module.exports =
-Async          = require './namespace'
-Async.All      = require './all'
-Async.Basic    = require './basic'
-Async.Join     = require './join'
-Async.Sequence = require './sequence'
+Async       = require './namespace'
+Async.All   = require './all'
+Async.Basic = require './basic'
 Async.finishLoad(
-  ["All","Basic","Join","Sequence"]
+  ["All","Basic"]
 )

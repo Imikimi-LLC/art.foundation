@@ -4,8 +4,8 @@
 module.exports =
 Test                      = require './namespace'
 Test.ArtChai              = require './art_chai'
-Test.MochaBrowserReporter = require './mocha_browser_reporter'
 Test.Mocha                = require './mocha'
+Test.MochaBrowserReporter = require './mocha_browser_reporter'
 Test.finishLoad(
-  ["ArtChai","MochaBrowserReporter","Mocha"]
+  ["ArtChai","Mocha","MochaBrowserReporter"]
 )
