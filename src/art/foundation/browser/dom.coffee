@@ -1,14 +1,19 @@
 # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input
 
-$ = require "jquery"
+$$ = require "art.foundation/src/extlib/node_list" if self.window
 
 module.exports = class Dom
+  @createElementFromHtml: (html) ->
+    div = document.createElement 'div'
+    div.innerHTML = html
+    div.firstChild
+
   @getDevicePixelRatio: -> (self.devicePixelRatio? && self.devicePixelRatio) || 1
   @zIndex: ( target, setZIndex ) ->
-    target = $ target
+    target = $$ target
     return target.css "zIndex", setZIndex if setZIndex != undefined
 
-    elem = $ target[0]
+    elem = $$ target[0]
     while elem.length && elem[0] != document
       # Ignore z-index if position is set to a value where z-index is ignored by the browser
       # This makes behavior of this function consistent across browsers

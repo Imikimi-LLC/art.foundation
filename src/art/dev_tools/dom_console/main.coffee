@@ -84,18 +84,11 @@ define [
       @_devicePixelRatio = Foundation.Browser.Dom.getDevicePixelRatio()
       @initDom()
 
-    initCss: ->
-      $('<link>')
-        .appendTo($('head'))
-        .attr({type : 'text/css', rel : 'stylesheet'})
-        # .attr('href', Require.toUrl 'lib/art/dev_tools/dom_console/style.css');
-
     reset: -> @domContainer.html ""
     hide: -> @domContainer.hide()
     show: -> @domContainer.show()
 
     initDom: ->
-      @initCss()
       domEl = $ "<div></div>",
         id: domConsoleId
         class: "domConsole"

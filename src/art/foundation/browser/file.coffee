@@ -1,4 +1,4 @@
-$ = require "jquery"
+{createElementFromHtml} = require './dom'
 
 module.exports = class File
 
@@ -15,9 +15,9 @@ module.exports = class File
   @request: (options={}) ->
     if @hiddenDivForFileInput
       @hiddenDivForFileInput.detach()
-    @hiddenDivForFileInput = $ "<div style='height: 0px;width: 0px; overflow:hidden; position:absolute;'/>"
-    body = $ "body"
-    fileInput = $ "<input type='file' #{'accept='+options.accept if options.accept} #{'multiple=true' if options.multiple}/>"
+    @hiddenDivForFileInput = createElementFromHtml "<div style='height: 0px;width: 0px; overflow:hidden; position:absolute;'/>"
+    body = document.body
+    fileInput = createElementFromHtml "<input type='file' #{'accept='+options.accept if options.accept} #{'multiple=true' if options.multiple}/>"
     fileInput.appendTo @hiddenDivForFileInput
     @hiddenDivForFileInput.appendTo body
     fileInput.change (e) ->
