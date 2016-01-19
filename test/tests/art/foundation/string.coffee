@@ -1,5 +1,5 @@
-{assert} = require 'art.foundation/src/art/dev_tools/test/art_chai'
-Foundation = require "art.foundation"
+{assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
+Foundation = require "art-foundation"
 {
   eq, clone, inspect, capitalize, upperCamelCase, lowerCamelCase
   snakeCase, pluralize, allIndexes, randomString

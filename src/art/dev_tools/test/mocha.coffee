@@ -1,12 +1,12 @@
 if !document.getElementById "mocha"
   document.write "<div id=\"mocha\"></div>"
 
-chai = require 'art.foundation/src/art/dev_tools/test/art_chai'
+chai = require 'art-foundation/src/art/dev_tools/test/art_chai'
 self.assert = chai.assert
 require "!style!css!mocha/mocha.css"
 require "!script!mocha/mocha.js"
 DomConsole = require '../dom_console'
-{log} = require 'art.foundation'
+{log} = require 'art-foundation'
 
 mocha.setup reporter: require './mocha_browser_reporter'
 

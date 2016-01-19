@@ -1,5 +1,5 @@
 {assert} = Chai = require 'chai'
-Foundation = require 'art.foundation'
+Foundation = require 'art-foundation'
 {log, eq, inspect, inspectLean, floatEq} = Foundation
 
 {assert} = Chai

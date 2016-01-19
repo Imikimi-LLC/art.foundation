@@ -1,5 +1,5 @@
-{assert} = require 'art.foundation/src/art/dev_tools/test/art_chai'
-Foundation = require "art.foundation"
+{assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
+Foundation = require "art-foundation"
 Unique = Foundation.Unique
 
 suite "Art.Foundation.Unique", ->

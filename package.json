@@ -1,5 +1,5 @@
 {
-  "name": "art.foundation",
+  "name": "art-foundation",
   "version": "0.0.1",
   "description": "Foundation classes for the Art framework. Javascript extensions",
   "main": "main.js",

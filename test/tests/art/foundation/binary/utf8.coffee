@@ -1,5 +1,5 @@
-{assert} = require 'art.foundation/src/art/dev_tools/test/art_chai'
-{Binary, log} = require 'art.foundation'
+{assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
+{Binary, log} = require 'art-foundation'
 
 pairs = [
   {s:"✓",  a:[0xE2, 0x9C, 0x93]},

@@ -1,6 +1,6 @@
 # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input
 
-$$ = require "art.foundation/src/extlib/node_list" if self.window
+$$ = require "art-foundation/src/extlib/node_list" if self.window
 
 module.exports = class Dom
   @createElementFromHtml: (html) ->

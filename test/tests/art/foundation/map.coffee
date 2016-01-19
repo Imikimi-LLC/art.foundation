@@ -1,5 +1,5 @@
-{assert} = require 'art.foundation/src/art/dev_tools/test/art_chai'
-{Map, inspect} = require "art.foundation"
+{assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
+{Map, inspect} = require "art-foundation"
 
 suite "Art.Foundation.Map.inspect", ->
   test "inspect just string keys", ->

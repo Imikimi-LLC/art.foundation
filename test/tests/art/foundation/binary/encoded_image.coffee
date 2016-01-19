@@ -1,5 +1,5 @@
-{assert} = require 'art.foundation/src/art/dev_tools/test/art_chai'
-{Binary} = require 'art.foundation'
+{assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
+{Binary} = require 'art-foundation'
 EncodedImage = Binary.EncodedImage
 binary = Binary.binary
 RestClient = Binary.RestClient

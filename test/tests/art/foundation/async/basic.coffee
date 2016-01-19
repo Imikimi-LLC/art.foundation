@@ -1,5 +1,5 @@
-{assert} = require 'art.foundation/src/art/dev_tools/test/art_chai'
-Foundation = require "art.foundation"
+{assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
+Foundation = require "art-foundation"
 {nextTick, eq, inspect, clone} = Foundation
 
 suite "Art.Foundation.Async.Basic", ->

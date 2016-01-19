@@ -9,8 +9,8 @@ require "!style!css!./style.css"
 
 define [
   'jquery'
-  'art.foundation'
-  'art.atomic'
+  'art-foundation'
+  'art-atomic'
   './namespace'
 ], ($, Foundation, Atomic, DomConsole) ->
 

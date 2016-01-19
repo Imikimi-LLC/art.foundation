@@ -1,4 +1,4 @@
-{log, fastBind, Promise, findSourceReferenceUrlRegexp} = require 'art.foundation'
+{log, fastBind, Promise, findSourceReferenceUrlRegexp} = require 'art-foundation'
 
 {mapStackTrace} = require 'sourcemapped-stacktrace'
 

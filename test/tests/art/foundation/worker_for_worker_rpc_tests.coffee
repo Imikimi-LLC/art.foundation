@@ -3,7 +3,7 @@ isWebWorker = !isBrowser && typeof importScripts != 'undefined'
 console.log "worker_for_worker_rpc_tests starting - isWebWorker:", isWebWorker
 if isWebWorker
 
-  Foundation = require 'art.foundation'
+  Foundation = require 'art-foundation'
   {log, WorkerRpc} = Foundation
   self.log = log
   log "worker: worker_for_worker_rpc_tests started"

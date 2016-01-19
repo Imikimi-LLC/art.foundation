@@ -1,5 +1,5 @@
-{assert} = require 'art.foundation/src/art/dev_tools/test/art_chai'
-{Math} = require 'art.foundation'
+{assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
+{Math} = require 'art-foundation'
 
 # 'lib/art'
 # point = Art.Atomic.Point.point

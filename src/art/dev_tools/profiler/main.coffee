@@ -1,6 +1,6 @@
 define [
   './namespace'
-  'art.foundation'
+  'art-foundation'
 ], (Profiler, Foundation) ->
   {BaseObject, inspect, clone, merge, Map} = Foundation
 

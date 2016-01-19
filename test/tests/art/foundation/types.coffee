@@ -1,5 +1,5 @@
-{assert} = require 'art.foundation/src/art/dev_tools/test/art_chai'
-{Map, inspect} = require "art.foundation"
+{assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
+{Map, inspect} = require "art-foundation"
 
 {
   isArray
@@ -12,7 +12,7 @@
   isBrowserObject
   present
   Map
-} = require "art.foundation"
+} = require "art-foundation"
 
 suite "Art.Foundation.Types", ->
   test "isArray [] is true", -> assert.eq true, isArray []
