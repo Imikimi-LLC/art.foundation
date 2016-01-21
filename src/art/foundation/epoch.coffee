@@ -22,7 +22,10 @@ module.exports = class Epoch extends BaseObject
 
   @propGetter "processingEpoch", "epochQueued", "epochCount", "emptyQueueAfterProcessing"
   @getter
-    epochLength: -> @_queuedItems.length + @_nextReadyQueue.length
+    epochLength: ->
+      @_queuedItems.length
+      # NOTE: I removed adding in the _nextReadyQueue because it breaks the new onNextReady forceNextEpoch == false option
+      #+ @_nextReadyQueue.length
 
   updateGlobalCounts: ->
     Foundation.globalCount "#{@class.name}_queuedItems", @_queuedItems.length
@@ -30,10 +33,14 @@ module.exports = class Epoch extends BaseObject
 
   # This guarantess there will be a next "ready" event.
   # If there were no setStates this epoch, then there won't be a next "ready" - unless you use this method.
-  onNextReady: (f) ->
+  onNextReady: (f, forceNextEpoch = true) ->
+    if forceNextEpoch
+      @queueNextEpoch() if !@_processingEpoch
+    # else
+    #   @log "#{@classPathName}#onNextReady: forceNextEpoch: #{forceNextEpoch}, _epochQueued: #{@_epochQueued}"
+
     if f
       throw new Error "not a function: #{inspect f}" unless typeof f is "function"
-      @queueNextEpoch() unless @_processingEpoch
       @_nextReadyQueue.push f
     else
       new Promise (resolve) => @_nextReadyQueue.push -> resolve()

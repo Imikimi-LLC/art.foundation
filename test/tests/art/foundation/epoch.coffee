@@ -15,12 +15,22 @@ suite "Art.Foundation.Epoch", ->
       assert.eq count, 1
       done()
     count++
+    assert.eq epoch.epochLength, 1
 
-  test "onNextReady works even if there are no changingElements", (done)->
+  test "onNextReady works even if there are no changingElements", ->
     # call twice in case there are some channgingElements
     assert.eq epoch.epochLength, 0
 
-    epoch.onNextReady ->
-      done()
+    promise = epoch.onNextReady()
+    assert.eq epoch._epochQueued, true
+    assert.eq epoch.epochLength, 0
+    promise
 
-    assert.eq epoch.epochLength, 1
+  test "onNextReady forceNextEpoch = false: shouldn't force an epoch", ->
+    # call twice in case there are some channgingElements
+    assert.eq epoch.epochLength, 0
+
+    epoch.onNextReady (->), false
+
+    assert.eq epoch._epochQueued, false
+    assert.eq epoch.epochLength, 0
