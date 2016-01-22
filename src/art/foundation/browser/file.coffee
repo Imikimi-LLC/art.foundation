@@ -18,10 +18,10 @@ module.exports = class File
     @hiddenDivForFileInput = createElementFromHtml "<div style='height: 0px;width: 0px; overflow:hidden; position:absolute;'/>"
     body = document.body
     fileInput = createElementFromHtml "<input type='file' #{'accept='+options.accept if options.accept} #{'multiple=true' if options.multiple}/>"
-    fileInput.appendTo @hiddenDivForFileInput
-    @hiddenDivForFileInput.appendTo body
-    fileInput.change (e) ->
-      fileList = (file for file in fileInput[0].files)
+    @hiddenDivForFileInput.appendChild fileInput
+    body.appendChild @hiddenDivForFileInput
+    fileInput.onchange = (e) ->
+      fileList = (file for file in fileInput.files)
       fileTypes = (file.type for file in fileList)
       fileSizes = (file.size for file in fileList)
       options.onChange && options.onChange fileList
