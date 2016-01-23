@@ -3,6 +3,7 @@
 #  http://www.html5rocks.com/en/tutorials/file/xhr2/
 {binary}   = require "./string"
 BaseObject = require "../base_object"
+Promise = require '../promise'
 
 module.exports = class RestClient extends BaseObject
 
@@ -34,6 +35,21 @@ module.exports = class RestClient extends BaseObject
     (request.onerror = (rawEvent) -> onError rawEvent, url, request) if onError
 
     request.send null
+
+  @getJson: (url) ->
+    console.log getJson: url
+    new Promise (resolve, reject) ->
+      request = new XMLHttpRequest
+      request.open "GET", url, true
+      request.withCredentials = true
+      request.setRequestHeader "X-Requested-With", "XMLHttpRequest"
+
+      request.onload = (rawEvent) ->
+        console.log getJson_success: url, response:request.response
+        resolve JSON.parse(request.response), request, rawEvent
+      request.onerror = (rawEvent) -> reject rawEvent
+
+      request.send null
 
   # http://stackoverflow.com/questions/15668339/can-onprogress-functionality-be-added-to-jquery-ajax-by-using-xhrfields
   @multipartPost: (url, parts, onSuccess, onError, onProgress) ->
