@@ -1,7 +1,13 @@
 {log} = require "../log"
+Promise = require '../promise'
 
 module.exports = class Basic
-  @timeout: timeout = (ms, f) => setTimeout f, ms
+  @timeout: timeout = (ms, f) =>
+    new Promise (resolve) ->
+      setTimeout ->
+        f?()
+        resolve()
+      , ms
 
   @requestAnimationFrame:
     self.requestAnimationFrame       ||
