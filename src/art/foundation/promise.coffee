@@ -12,6 +12,7 @@ otherwise a polyfill is used.
 
 ###
 module.exports = class ArtPromise #extends Promise
+  @ES6Promise: Promise
   @all: Promise.all
   @race: Promise.race
   @reject: Promise.reject
