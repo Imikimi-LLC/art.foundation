@@ -27,3 +27,4 @@ module.exports = class ArtPromise #extends Promise
   then: (a, b) -> @_nativePromise.then a, b
   catch: (a) -> @_nativePromise.catch a
 
+self.Promise ||= ArtPromise
