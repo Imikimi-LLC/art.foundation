@@ -4,7 +4,6 @@
 module.exports =
 DevTools            = require './namespace'
 DevTools.DomConsole = require './dom_console'
-DevTools.Profiler   = require './profiler'
 DevTools.Test       = require './test'
 DevTools.Webpack    = require './webpack'
 DevTools.finishLoad(
