@@ -4,6 +4,7 @@
 {binary}   = require "./string"
 BaseObject = require "../base_object"
 Promise = require '../promise'
+{log} = require '../log'
 
 module.exports = class RestClient extends BaseObject
 
@@ -71,4 +72,21 @@ module.exports = class RestClient extends BaseObject
 
     request.send formData
 
+  @send: (verb, url, data, headers, onProgress) ->
+    new Promise (resolve, reject) ->
+      request = new XMLHttpRequest
+      request.open verb, url, true
+      request.setRequestHeader k, v for k, v of headers if headers
+      request.onerror = (event) -> reject event, request
+      request.onload  = (event) ->
+        if (request.status / 100 | 0) == 2
+          resolve event, request
+        else
+          reject event, request
+
+      request.upload.onprogress = onProgress if onProgress
+      request.send data
+
+  @put:  (url, data, headers, onProgress) -> RestClient.send "PUT",  url, data, headers, onProgress
+  @post: (url, data, headers, onProgress) -> RestClient.send "POST", url, data, headers, onProgress
 
