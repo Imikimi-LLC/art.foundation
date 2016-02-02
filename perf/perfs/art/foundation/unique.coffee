@@ -2,6 +2,7 @@ Foundation = require 'art-foundation'
 {inspect, log, time, eq, plainObjectsDeepEq, shallowEq, Unique, BaseObject} = Foundation
 
 suite "Art.Foundation.Unique", ->
+  @timeout 100000
   suite "Object", ->
     benchmark "Unique.id new object", -> Unique.id {}
     existingObject = {}

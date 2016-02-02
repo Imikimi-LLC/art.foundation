@@ -47,11 +47,13 @@ class NestedSuites
       subSuites = suites[suitePart]
       do (suitePart, subSuites) =>
         path = if suitePath then suitePath + "." + suitePart else suitePart
-        suite suitePart, =>
-          @_createMochaSuites subSuites, path
-          if functions = @suiteFunctions[path]
+
+        self = @
+        suite suitePart, ->
+          self._createMochaSuites subSuites, path
+          if functions = self.suiteFunctions[path]
             for f in functions
-              f()
+              f.call @
 
   groupTestSuites: (defineAllTests) ->
     self.suite = (name, f) =>
