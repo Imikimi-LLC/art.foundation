@@ -190,3 +190,21 @@ module.exports = class Types
         o
       else
         "#{o}"
+
+  #https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm
+  @toPostMessageStructure: toPostMessageStructure = (o) ->
+    deepMap o, (o) ->
+      switch o.constructor
+        when ArrayBuffer, Date, RegExp, Blob, File, FileList, ImageData, Boolean, String
+          o
+        else
+          if isObject o
+            if o.toPostMessageStructure
+              o.toPostMessageStructure()
+            else
+              if o.toPlainStructure
+                toPostMessageStructure o.toPlainStructure()
+              else
+                "#{o}"
+          else
+            "#{o}"
