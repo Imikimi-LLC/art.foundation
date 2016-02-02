@@ -5,6 +5,7 @@
 BaseObject = require "../base_object"
 Promise = require '../promise'
 {log} = require '../log'
+{merge} = require '../hash'
 
 module.exports = class RestClient extends BaseObject
 
@@ -72,19 +73,48 @@ module.exports = class RestClient extends BaseObject
 
     request.send formData
 
+  ###
+  There are three possible events:
+
+    Promise is resolved
+    Promise is rejected
+    onProgress is called
+
+  All three events provide a single object with info about the event.
+  They all have these common fields:
+
+    event:    # the HTML event object
+    request:  # the XMLHttpRequest
+    location: # the url location of the object just PUT or POSTEd
+    progress:
+      a value between 0 and 1
+      If the progress is indeterminant, this is 0
+      If this isn't an onProgress event, this is the amount of progress
+      that was made up to the point of the event.
+
+  ###
   @send: (verb, url, data, headers, onProgress) ->
     new Promise (resolve, reject) ->
+
       request = new XMLHttpRequest
       request.open verb, url, true
       request.setRequestHeader k, v for k, v of headers if headers
-      request.onerror = (event) -> reject event, request
+      request.onerror = (event) -> reject merge status, event:event
       request.onload  = (event) ->
         if (request.status / 100 | 0) == 2
-          resolve event, request
+          resolve merge status, event:event
         else
-          reject event, request
+          reject merge status, event:event
 
-      request.upload.onprogress = onProgress if onProgress
+      status =
+        progress: 0
+        request: request
+        location: url
+
+      request.upload.onprogress = (event) ->
+        {total, loaded} = event
+        onProgress? status = merge status, event:event, progress: (if total > 0 then loaded / total else 0)
+
       request.send data
 
   @put:  (url, data, headers, onProgress) -> RestClient.send "PUT",  url, data, headers, onProgress
