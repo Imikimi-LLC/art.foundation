@@ -3,6 +3,7 @@ module.exports =
   entry:
     index: ["./index.coffee"]
     test: ["./test"]
+    perf: ["./perf"]
     worker_for_worker_rpc_tests: ["./test/tests/art/foundation/worker_for_worker_rpc_tests"]
     # must wrap source in array due to bug in webpack:
     # https://github.com/webpack/webpack/issues/300

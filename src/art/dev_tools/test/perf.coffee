@@ -27,7 +27,7 @@ targetCycleDuration = .02
 defaultTestDuration = 1
 defaultWarmUpRatio = .1
 
-class Perf
+module.exports = class Perf
 
   @isAsyncBenchmark: isAsyncBenchmark =(f) ->
     f.length > 0 # uses 'done' callback
