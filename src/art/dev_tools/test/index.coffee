@@ -6,6 +6,7 @@ Test                      = require './namespace'
 Test.ArtChai              = require './art_chai'
 Test.Mocha                = require './mocha'
 Test.MochaBrowserReporter = require './mocha_browser_reporter'
+Test.Perf                 = require './perf'
 Test.finishLoad(
-  ["ArtChai","Mocha","MochaBrowserReporter"]
+  ["ArtChai","Mocha","MochaBrowserReporter","Perf"]
 )
