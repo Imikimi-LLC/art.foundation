@@ -36,7 +36,7 @@ else
 
 module.exports = class Types
   @isRegExp: (obj) => obj instanceof RegExp
-  @isNumber: (obj) => typeof obj == "number"
+  @isNumber: isNumber = (obj) => typeof obj == "number"
 
   # tests for all built-in array-like types
   @isArray: isArray
@@ -53,6 +53,10 @@ module.exports = class Types
         (obj.prototype && hasKeys obj.prototype)
       )
     )
+
+  @isJsonAtomicType: isJsonAtomicType = (a) -> isString(a) || isNumber(a) || a == true || a == false || a == null
+  @isJsonType: -> isJsonAtomicType(a) || isPlainObject(a) || isPlainArray(a)
+
 
 
   ###
@@ -140,13 +144,14 @@ module.exports = class Types
         res[k] = r
     res || obj
 
+  noopMapper = (v) -> v
   ###
   Applies "f" to every -value- in a nested structure of plain arrays and objects.
   Pure functional efficient:
     If an array or object, and all its sub values, didn't change, the original array/object is reused.
-  ###
-  noopMapper = (v) -> v
 
+  NOTE: deepMap only yields values to 'mapper' which are NOT plain arrays nor plain objects.
+  ###
   @deepMap: deepMap = (v, mapper, options) ->
     arrayMapper  = options?.arrays  || noopMapper
     objectMapper = options?.objects || noopMapper
@@ -161,10 +166,27 @@ module.exports = class Types
   # Non-PlainObjects are converted to their objectName string
   @toPlainStructure: (o) ->
     deepMap o, (o) ->
-      if isObject(o) && !isPlainObject o
+      if isObject o
         if o.toPlainStructure
           o.toPlainStructure()
         else
           objectName o
       else o
 
+  ###
+  similar to toPlainStructure, except all non-JSON types are converted to strings
+  ###
+  @toJsonStructure: toJsonStructure = (o) ->
+    deepMap o, (o) ->
+      if isObject o
+        if o.toJsonStructure
+          o.toJsonStructure()
+        else
+          toJsonStructure if o.toPlainStructure
+            o.toPlainStructure()
+          else
+            "#{o}"
+      else if isJsonAtomicType o
+        o
+      else
+        "#{o}"

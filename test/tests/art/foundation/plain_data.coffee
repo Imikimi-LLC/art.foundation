@@ -1,6 +1,6 @@
 {assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
 Foundation = require "art-foundation"
-{deepEach, deepMap, log, inspect} = Foundation
+{deepEach, deepMap, log, inspect, toJsonStructure} = Foundation
 
 suite "Art.Foundation.PlainData", ->
 
@@ -33,6 +33,28 @@ suite "Art.Foundation.PlainData", ->
       tester [{a:12}], 1, 12
       tester {a:[12]}, 1, 12
       tester {a:[10], b:20, c:{d:30}}, 3, 60
+
+
+  suite "toJsonStructure", ->
+    tester = (v, expectedResult) ->
+      test "toJsonStructure #{inspect v} -> #{inspect expectedResult}", ->
+        result = toJsonStructure v
+        assert.eq expectedResult, result
+
+    suite "json atomic types", ->
+      tester 123, 123
+      tester "hi", "hi"
+      tester true, true
+      tester false, false
+
+    suite "json collection types", ->
+      tester {}, {}
+      tester [], []
+
+    suite "non-json types", ->
+      tester (->), "function () {}"
+      d = new Date
+      tester d, d.toString()
 
   suite "deepMap", ->
     tester = (v, expectedResult, f) ->
