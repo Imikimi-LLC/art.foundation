@@ -167,6 +167,9 @@ module.exports = class BaseObject
   @propGetter: (props...) -> console.error("DEPRICATED: propGetter. Use @getter");defProperties @::, props, true, false
   @propSetter: (props...) -> console.error("DEPRICATED: propSetter. Use @setter");defProperties @::, props, false, true
 
+  @_propListStringToArray: (propList) ->
+    propList.replace(/^[,\s]+|[,\s]+$/g, '').split /[,\s]+/
+
   @_getterSetterHelper: (isGetter, args, obj = @::) ->
     for arg in args
       if isPlainObject arg
@@ -175,7 +178,7 @@ module.exports = class BaseObject
         else
           addSetters obj, arg
       else if isString arg
-        defProperties obj, arg.split(/[,\s]+/), isGetter, !isGetter
+        defProperties obj, @_propListStringToArray(arg), isGetter, !isGetter
       else
         throw new Error "invalid value. Expected string or plain-object:", arg
 

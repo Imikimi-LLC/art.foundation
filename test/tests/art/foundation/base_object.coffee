@@ -59,19 +59,49 @@ suite "Art.Foundation.BaseObject.properties", ->
     f = new Foo 10
     assert.equal f.bar, 20
 
-  test "@getter 'bar fab' defines two propGetters", ->
+  test "@getter 'bar fab' defines two property getters", ->
     class Foo extends BaseObject
       constructor: (@_bar, @_fab) ->
       @getter "bar fab"
 
+    assert.eq ["constructor", "getBar", "getFab"], Object.keys Foo.prototype
     f = new Foo 123, 456
     assert.equal f.bar, 123
     assert.equal f.fab, 456
+
+  test "@getter multi-line string defines all property getters", ->
+    class Foo extends BaseObject
+      @getter """
+        foo
+        bar
+        fab
+        """
+
+    assert.eq ["constructor", "getBar", "getFab", "getFoo"], Object.keys(Foo.prototype).sort()
+
+  test "@getter '  bar ' extra spaces ignored", ->
+    class Foo extends BaseObject
+      constructor: (@_bar) ->
+      @getter "  bar  "
+
+    assert.eq ["constructor", "getBar"], Object.keys Foo.prototype
+    f = new Foo 123
+    assert.equal f.bar, 123
+
+  test "@getter ',baz,' extra commas ignored", ->
+    class Foo extends BaseObject
+      constructor: (@_bar) ->
+      @getter ",bar,"
+
+    f = new Foo 123
+    assert.eq ["constructor", "getBar"], Object.keys Foo.prototype
+    assert.equal f.bar, 123
 
   test "@setter 'x' defines property setter", ->
     class Foo extends BaseObject
       @setter "x"
 
+    assert.eq ["constructor", "setX"], Object.keys Foo.prototype
     f = new Foo
     f.x = 10
     assert.equal f._x, 10
