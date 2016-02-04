@@ -44,25 +44,68 @@ module.exports = class ProgressAdapter extends BaseObject
 
   @getter "steps currentStep currentProgress warningCount",
     currentProgressPercent: -> "#{@_currentProgress * 100 | 0}%"
+    currentProgressBase: ->
+      if @_currentStep <= 0
+        0
+      else if @_currentStep >= @_steps.length
+        1
+      else
+        @_steps[@_currentStep]
 
   @setter
     currentProgress: (p) ->
       @progressCallback? min 1, @_currentProgress = max p, @_currentProgress
 
   makeProgress: ->
-    if @_currentStep + 1 > @_steps.length
+    @_currentStep++
+    if @_currentStep > @_steps.length
       @_warningCount++
       console.warn "ProgressAdapter: makeProgress/Callback called too many times!",
         currentStep: @_currentStep
         steps: @_steps
         stepWeights: @stepWeights
 
-    @setCurrentProgress @_steps[@_currentStep++] || 1
+    @setCurrentProgress @currentProgressBase
 
   makeProgressCallback: ->
-    rangeStart = @_steps[@_currentStep-1] || 0
-    rangeEnd = @_steps[@_currentStep++] || 1
+    @_finishLastProgress()
+
+    rangeStart = @currentProgressBase
+    @_currentStep++
+    rangeEnd = @currentProgressBase
     (progress) => @setCurrentProgress rangeStart + (rangeEnd - rangeStart) * progress
+
+  _finishLastProgress: ->
+    if @_currentProgress < progress = @currentProgressBase
+      @setCurrentProgress progress
+
+  _executePromiseSequence: (sequence, lastResult, index, resolve) ->
+    if index >= sequence.length
+      @_finishLastProgress()
+      return resolve lastResult
+
+    Promise.resolve sequence[index] lastResult, @makeProgressCallback()
+    .then (nextResult) => @_executePromiseSequence sequence, nextResult, index + 1, resolve
+
+  executePromiseSequence: (sequence) ->
+    new Promise (resolve) =>
+      @_executePromiseSequence sequence, null, 0, resolve
+
+  ###
+  IN: (progressCallback, promiseSequence) ->
+    # stepWeights implicitly == promiseSequence.length
+  IN: (progressCallback, stepWeights, promiseSequence) ->
+
+  ###
+  @executePromiseSequence: (progressCallback, a, b) ->
+    if b
+      weights = a
+      sequence = b
+    else
+      sequence = a
+      weights = sequence.length
+    pa = new ProgressAdapter weights, progressCallback
+    pa.executePromiseSequence sequence
 
   ##################
   # PRIVATE
@@ -71,12 +114,14 @@ module.exports = class ProgressAdapter extends BaseObject
   _generateSteps: ->
     if isNumber numSteps = @stepWeights
       @_steps = for i in [0...numSteps] by 1
-        (i + 1) / numSteps
+        i / numSteps
     else
       total = 0
       total += w for w in @stepWeights
 
       step = 0
       @_steps = for w in @stepWeights
+        s = step
         step += w / total
+        s
 

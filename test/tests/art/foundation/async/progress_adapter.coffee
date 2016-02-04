@@ -1,6 +1,6 @@
 {assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
 Foundation = require "art-foundation"
-{ProgressAdapter, eq, inspect, clone} = Foundation
+{ProgressAdapter, eq, inspect, clone, timeout} = Foundation
 
 suite "Art.Foundation.Async.ProgressAdapter", ->
   test "checks parameters", ->
@@ -14,18 +14,18 @@ suite "Art.Foundation.Async.ProgressAdapter", ->
 suite "Art.Foundation.Async.ProgressAdapter.steps", ->
   test "new ProgressAdapter 4", ->
     pa = new ProgressAdapter 4, ->
-    assert.eq pa.steps, [.25, .5, .75, 1]
+    assert.eq pa.steps, [0, .25, .5, .75]
 
   test "new ProgressAdapter [1, 1]", ->
     pa = new ProgressAdapter [1, 1], ->
-    assert.eq pa.steps, [.5, 1]
+    assert.eq pa.steps, [0, .5]
 
   test "new ProgressAdapter [1, 2, 1]", ->
     pa = new ProgressAdapter [1, 2, 1], ->
-    assert.eq pa.steps, [.25, .75, 1]
+    assert.eq pa.steps, [0, .25, .75]
 
 suite "Art.Foundation.Async.ProgressAdapter.makeProgress", ->
-  test "new ProgressAdapter 2", ->
+  test "new ProgressAdapter 2 basic", ->
     callbackValues = []
     pa = new ProgressAdapter 2, (v) -> callbackValues.push v
     pa.makeProgress()
@@ -85,3 +85,55 @@ suite "Art.Foundation.Async.ProgressAdapter.makeProgressCallback", ->
     pa.makeProgress()
     assert.eq pa.warningCount, 0
     assert.eq callbackValues, [0, .25, .25, .5, .75, 1]
+
+suite "Art.Foundation.Async.ProgressAdapter.executePromiseSequence", ->
+  test "new ProgressAdapter 2", ->
+    callbackValues = []
+    events = []
+    pa = new ProgressAdapter 2, (v) -> callbackValues.push v
+    pa.executePromiseSequence([
+      (_, progressCallback) ->
+        events.push "first step"
+        timeout 10
+        .then ->
+          progressCallback .25
+          timeout 10
+        .then ->
+          progressCallback .50
+          timeout 10
+        .then ->
+          progressCallback .75
+          timeout 10
+        .then ->
+          events.push "timeout"
+      ->
+        events.push "second step"
+    ])
+    .then ->
+      assert.eq callbackValues, [0, 0.125, 0.25, 0.375, 0.5, 1]
+      assert.eq events, ["first step", "timeout", "second step"]
+
+  test "ProgressAdapter.executePromiseSequence implicit weights", ->
+    callbackValues = []
+    events = []
+    ProgressAdapter.executePromiseSequence(((v) -> callbackValues.push v), [
+      (_, progressCallback) ->
+        events.push "first step"
+        timeout 10
+        .then ->
+          progressCallback .25
+          timeout 10
+        .then ->
+          progressCallback .50
+          timeout 10
+        .then ->
+          progressCallback .75
+          timeout 10
+        .then ->
+          events.push "timeout"
+      ->
+        events.push "second step"
+    ])
+    .then ->
+      assert.eq callbackValues, [0, 0.125, 0.25, 0.375, 0.5, 1]
+      assert.eq events, ["first step", "timeout", "second step"]
