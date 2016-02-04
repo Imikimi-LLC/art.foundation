@@ -6,6 +6,9 @@ suite "Art.Foundation.Async.Basic", ->
   test "one nextTick", (done)->
     nextTick done
 
+  test "nextTick with Promise", ->
+    nextTick()
+
   test "two nextTicks", (done)->
     count = 0
     nextTick ->

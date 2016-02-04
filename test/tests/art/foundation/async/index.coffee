@@ -2,8 +2,9 @@
 # this file: tests/art/foundation/async/index.coffee
 
 module.exports =
-Async       = require './namespace'
-Async.Basic = require './basic'
+Async                 = require './namespace'
+Async.Basic           = require './basic'
+Async.ProgressAdapter = require './progress_adapter'
 Async.finishLoad(
-  ["Basic"]
+  ["Basic","ProgressAdapter"]
 )

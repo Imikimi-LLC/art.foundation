@@ -1,7 +1,9 @@
-{isNumber} = require '../types'
+{isNumber, isFunction, isArray} = require '../types'
+BaseObject = require '../base_object'
+{log} = require '../log'
 {max, min} = Math
 
-module.exports = class ProgressAdapter
+module.exports = class ProgressAdapter extends BaseObject
 
   ###
   IN:
@@ -33,24 +35,32 @@ module.exports = class ProgressAdapter
 
   ###
   constructor: (@stepWeights, @progressCallback) ->
-    @currentStep = 0
+    throw new Error "invalid params" unless isFunction(@progressCallback) && (isArray(@stepWeights) || isNumber(@stepWeights))
+    @_currentStep = 0
     @_generateSteps()
-    @_progressAchieved = 0
-    @_progress 0
+    @_currentProgress = 0
+    @setCurrentProgress 0
 
-  makeProgressCallback: ->
-    rangeStart = @steps[@currentStep-1] || 0
-    rangeEnd = @steps[@currentStep++] || 1
-    (progress) => @_progress rangeStart + (rangeEnd - rangeStart) * progress
+  @getter "steps currentStep currentProgress",
+    currentProgressPercent: -> "#{@_currentProgress * 100 | 0}%"
+
+  @setter
+    currentProgress: (p) ->
+      @progressCallback? min 1, @_currentProgress = max p, @_currentProgress
 
   makeProgress: ->
-    if @currentStep + 1 >= @steps.length
+    if @_currentStep + 1 >= @_steps.length
       console.warn "ProgressAdapter: makeProgress/Callback called too many times!",
-        currentStep: @currentStep
-        steps: @steps
+        currentStep: @_currentStep
+        steps: @_steps
         stepWeights: @stepWeights
 
-    @_progress @steps[@currentStep++] || 1
+    @setCurrentProgress @_steps[@_currentStep++] || 1
+
+  makeProgressCallback: ->
+    rangeStart = @_steps[@_currentStep-1] || 0
+    rangeEnd = @_steps[@_currentStep++] || 1
+    (progress) => @setCurrentProgress rangeStart + (rangeEnd - rangeStart) * progress
 
   ##################
   # PRIVATE
@@ -58,15 +68,13 @@ module.exports = class ProgressAdapter
 
   _generateSteps: ->
     if isNumber numSteps = @stepWeights
-      @steps = for i in [0...numSteps] by 1
-        i / numSteps
+      @_steps = for i in [0...numSteps] by 1
+        (i + 1) / numSteps
     else
       total = 0
       total += w for w in @stepWeights
 
       step = 0
-      @steps = for w in @stepWeights
+      @_steps = for w in @stepWeights
         step += w / total
 
-  _progress: (v) ->
-    @progressCallback? min 1, @_progressAchieved = max v, @_progressAchieved
