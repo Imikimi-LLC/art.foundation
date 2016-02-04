@@ -30,7 +30,17 @@ suite "Art.Foundation.Async.ProgressAdapter.makeProgress", ->
     pa = new ProgressAdapter 2, (v) -> callbackValues.push v
     pa.makeProgress()
     pa.makeProgress()
+    assert.eq pa.warningCount, 0
     assert.eq callbackValues, [0, .5, 1]
+
+  test "new ProgressAdapter 2 when called 3 times outputs console.warn", ->
+    callbackValues = []
+    pa = new ProgressAdapter 2, (v) -> callbackValues.push v
+    pa.makeProgress()
+    pa.makeProgress()
+    pa.makeProgress()
+    assert.eq pa.warningCount, 1
+    assert.eq callbackValues, [0, .5, 1, 1]
 
   test "new ProgressAdapter [1, 2, 1]", ->
     callbackValues = []
@@ -49,6 +59,7 @@ suite "Art.Foundation.Async.ProgressAdapter.makeProgressCallback", ->
     cb 0
     cb .5
     cb 1
+    assert.eq pa.warningCount, 0
     assert.eq callbackValues, [0, .5, .5, .75, 1]
 
   test "new ProgressAdapter 2 cant go backwards", ->
@@ -60,6 +71,7 @@ suite "Art.Foundation.Async.ProgressAdapter.makeProgressCallback", ->
     cb .5
     cb 0
     cb 1
+    assert.eq pa.warningCount, 0
     assert.eq callbackValues, [0, .5, .5, .75, .75, 1]
 
   test "new ProgressAdapter [1, 2, 1]", ->
@@ -71,4 +83,5 @@ suite "Art.Foundation.Async.ProgressAdapter.makeProgressCallback", ->
     cb .5
     cb 1
     pa.makeProgress()
+    assert.eq pa.warningCount, 0
     assert.eq callbackValues, [0, .25, .25, .5, .75, 1]

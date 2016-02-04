@@ -39,9 +39,10 @@ module.exports = class ProgressAdapter extends BaseObject
     @_currentStep = 0
     @_generateSteps()
     @_currentProgress = 0
+    @_warningCount = 0
     @setCurrentProgress 0
 
-  @getter "steps currentStep currentProgress",
+  @getter "steps currentStep currentProgress warningCount",
     currentProgressPercent: -> "#{@_currentProgress * 100 | 0}%"
 
   @setter
@@ -49,7 +50,8 @@ module.exports = class ProgressAdapter extends BaseObject
       @progressCallback? min 1, @_currentProgress = max p, @_currentProgress
 
   makeProgress: ->
-    if @_currentStep + 1 >= @_steps.length
+    if @_currentStep + 1 > @_steps.length
+      @_warningCount++
       console.warn "ProgressAdapter: makeProgress/Callback called too many times!",
         currentStep: @_currentStep
         steps: @_steps
