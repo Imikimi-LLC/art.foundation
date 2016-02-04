@@ -168,7 +168,7 @@ module.exports = class BaseObject
   @propSetter: (props...) -> console.error("DEPRICATED: propSetter. Use @setter");defProperties @::, props, false, true
 
   @_propListStringToArray: (propList) ->
-    propList.replace(/^[,\s]+|[,\s]+$/g, '').split /[,\s]+/
+    propList.match /[_a-zA-Z][_a-zA-Z0-9]*/g
 
   @_getterSetterHelper: (isGetter, args, obj = @::) ->
     for arg in args
