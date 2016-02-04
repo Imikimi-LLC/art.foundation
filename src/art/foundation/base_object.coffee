@@ -9,7 +9,7 @@ ShallowClone = require './shallow_clone'
 {log} = Log
 {callStack} = CallStack
 {extendClone} = ShallowClone
-{isFunction, objectName, isPlainObject, functionName} = Types
+{isFunction, objectName, isPlainObject, functionName, isString} = Types
 {nextUniqueObjectId} = Unique
 
 module.exports = class BaseObject
@@ -120,12 +120,9 @@ module.exports = class BaseObject
     Object.defineProperty obj, prop, {get: getter, configurable: yes}
     prop
 
-  @_addGetters: addGetters = (obj, a, b) ->
-    if isPlainObject map = a
-      addGetter obj, prop, getter for prop, getter of map
-      map
-    else
-      addGetter obj, a, b
+  @_addGetters: addGetters = (obj, map) ->
+    addGetter obj, prop, getter for prop, getter of map
+    map
 
   # we define "o.setFoo(v) as well as "o.foo = v" since setFoo is 100x faster on Safari 7 (OSX & iOS)
   # use o.setFoo(v) wherever speed is a concern
@@ -134,12 +131,9 @@ module.exports = class BaseObject
     Object.defineProperty obj, prop, {set: setter, configurable: yes}
     prop
 
-  @_addSetters: addSetters = (obj, a, b) ->
-    if isPlainObject map = a
-      addSetter obj, prop, setter for prop, setter of map
-      map
-    else
-      addSetter obj, a, b
+  @_addSetters: addSetters = (obj, map) ->
+    addSetter obj, prop, setter for prop, setter of map
+    map
 
   # If the property is null or undefined:
   #   If initialier is not a function, the property is set to intializer before its value is returned
@@ -170,23 +164,35 @@ module.exports = class BaseObject
   #  * strings are just the names of the properties
   #  * objects map from prop names to initializers
   @property:   (props...) -> defProperties @::, props, true, true
-  @propGetter: (props...) -> defProperties @::, props, true, false
-  @propSetter: (props...) -> defProperties @::, props, false, true
+  @propGetter: (props...) -> console.error("DEPRICATED: propGetter. Use @getter");defProperties @::, props, true, false
+  @propSetter: (props...) -> console.error("DEPRICATED: propSetter. Use @setter");defProperties @::, props, false, true
+
+  @_getterSetterHelper: (isGetter, args, obj = @::) ->
+    for arg in args
+      if isPlainObject arg
+        if isGetter
+          addGetters obj, arg
+        else
+          addSetters obj, arg
+      else if isString arg
+        defProperties obj, arg.split(/[,\s]+/), isGetter, !isGetter
+      else
+        throw new Error "invalid value. Expected string or plain-object:", arg
 
   # 2 signatures for @getter and @setter declarations:
   #   (map from props to getter/setter functions) -> # => map
   #   (property, getter/setter function) -> # => property
-  @getter: (a, b) -> addGetters @::, a, b
-  @setter: (a, b) -> addSetters @::, a, b
+  @getter: -> @_getterSetterHelper true, arguments
+  @setter: -> @_getterSetterHelper false, arguments
 
   # NOTE: parts of classGetters and classSetters are NOT inherited with CoffeeScript-style inheritance
   #   NOT INHERITED: obj.prop & obj.prop=
   #   INHERITED:     setProp and getProp
-  @classGetter: (a, b) -> addGetters @, a, b
-  @classSetter: (a, b) -> addSetters @, a, b
+  @classGetter: -> @_getterSetterHelper true, arguments, @
+  @classSetter: -> @_getterSetterHelper false, arguments, @
   @classProperty:   (props...) -> defProperties @::, props, true, true
-  @classPropGetter: (props...) -> defProperties @::, props, true, false
-  @classPropSetter: (props...) -> defProperties @::, props, false, true
+  @classPropGetter: (props...) -> console.error("DEPRICATED: classPropGetter. Use @classGetter");defProperties @::, props, true, false
+  @classPropGetter: (props...) -> console.error("DEPRICATED: classPropGetter. Use @classSetter");defProperties @::, props, false, true
 
   ######################################################
   # Class Info

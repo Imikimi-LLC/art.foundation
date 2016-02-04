@@ -20,8 +20,7 @@ module.exports = class Epoch extends BaseObject
     @_processingEpoch = false
     @_epochCount = 0
 
-  @propGetter "processingEpoch", "epochQueued", "epochCount", "emptyQueueAfterProcessing"
-  @getter
+  @getter "processingEpoch epochQueued epochCount emptyQueueAfterProcessing",
     epochLength: ->
       @_queuedItems.length
       # NOTE: I removed adding in the _nextReadyQueue because it breaks the new onNextReady forceNextEpoch == false option

@@ -1,8 +1,8 @@
 {assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
 Foundation = require "art-foundation"
-{BaseObject, clone, eq, inspect, nextTick} = Foundation
+{log, BaseObject, clone, eq, inspect, nextTick} = Foundation
 
-suite "Art.Foundation.BaseObject#tap", ->
+suite "Art.Foundation.BaseObject.tap", ->
   test "tap", ->
     class Foo extends BaseObject
       constructor: (a) -> @a = a
@@ -14,7 +14,7 @@ suite "Art.Foundation.BaseObject#tap", ->
     assert.eq bar, foo
     assert.eq foo.a, 125
 
-suite "Art.Foundation.BaseObject class helpers", ->
+suite "Art.Foundation.BaseObject.class helpers", ->
   test "include", ->
     class ToInclude
       @f: -> 10
@@ -42,25 +42,61 @@ suite "Art.Foundation.BaseObject class helpers", ->
     v = new IncludeInto
     assert.equal v.f(), 2
 
-  test "getter", ->
+suite "Art.Foundation.BaseObject.properties", ->
+  test "@getter 'bar' defines propGetter", ->
     class Foo extends BaseObject
-      @getter 'x': -> @y * 2
+      constructor: (@_bar) ->
+      @getter "bar"
+
+    f = new Foo 123
+    assert.equal f.bar, 123
+
+  test "@getter bar: -> defines custom getter", ->
+    class Foo extends BaseObject
+      @getter bar: -> @y * 2
+      constructor: (@y) ->
+
+    f = new Foo 10
+    assert.equal f.bar, 20
+
+  test "@getter 'bar fab' defines two propGetters", ->
+    class Foo extends BaseObject
+      constructor: (@_bar, @_fab) ->
+      @getter "bar fab"
+
+    f = new Foo 123, 456
+    assert.equal f.bar, 123
+    assert.equal f.fab, 456
+
+  test "@setter 'x' defines property setter", ->
+    class Foo extends BaseObject
+      @setter "x"
 
     f = new Foo
-    f.y = 10
-    assert.equal f.x, 20
+    f.x = 10
+    assert.equal f._x, 10
 
-  test "getter with [] access", ->
+  test "@setter x: -> defines custom setter", ->
     class Foo extends BaseObject
-      @getter 'x': -> @y * 2
+      @setter x: (v) ->
+        log "hi"
+        @y = v / 2
+
+    f = new Foo
+    f.x = 10
+    assert.equal f.y, 5
+
+  test "@getter with [] access", ->
+    class Foo extends BaseObject
+      @getter x: -> @y * 2
 
     f = new Foo
     f.y = 10
     assert.equal f["x"], 20
 
-  test "getter inheritance", ->
+  test "@getter inheritance", ->
     class Foo extends BaseObject
-      @getter 'x': -> @y * 2
+      @getter x: -> @y * 2
 
     class Bar extends Foo
 
@@ -68,26 +104,16 @@ suite "Art.Foundation.BaseObject class helpers", ->
     f.y = 10
     assert.equal f.x, 20
 
-  test "setter", ->
+  test "@property 'x'", ->
     class Foo extends BaseObject
-      @setter 'x': (v) -> @y = v / 2
-
-    f = new Foo
-    f.x = 10
-    assert.equal f.y, 5
-
-
-
-  test "property", ->
-    class Foo extends BaseObject
-      @property "x"
+      @property 'x'
 
     f = new Foo
     f.x = 123
     assert.equal f.x, 123
     assert.equal f._x, 123
 
-  test "property with initializer", ->
+  test "@property x:456", ->
     class Foo extends BaseObject
       @property x:456
 
