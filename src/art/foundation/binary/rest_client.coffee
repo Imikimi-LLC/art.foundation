@@ -1,7 +1,7 @@
 # uses XMLHttpRequest2
 #  http://www.w3.org/TR/XMLHttpRequest2/
 #  http://www.html5rocks.com/en/tutorials/file/xhr2/
-{binary, present}   = require "./string"
+{present} = require '../types'
 BaseObject = require "../base_object"
 Promise = require '../promise'
 {log} = require '../log'
@@ -28,7 +28,7 @@ module.exports = class RestClient extends BaseObject
     (request.upload.onprogress = (rawEvent) -> onProgress rawEvent, url, parts, request) if onProgress
     (request.onerror = (rawEvent) => onError rawEvent, url, parts, request) if onError
 
-    request._sendRequest formData
+    request.send formData
 
   ###
   get/put/post
@@ -70,14 +70,13 @@ module.exports = class RestClient extends BaseObject
       verb: "GET"
       url: url
 
-  # OUT: Promise -> responseData is BinaryString
-  @getBinary: (url, options) ->
-    @get url, data, merge options, responseType: "arraybuffer"
-    .then (arrayBuffer) -> binary arraybuffer
+  # OUT: Promise -> responseData is ArrayBuffer
+  @getArrayBuffer: (url, options) ->
+    @get url, merge options, responseType: "arraybuffer"
 
   # OUT: Promise -> responseData is plainObject (repsonseData string parsed as JSON)
   @getJson: (url, options) ->
-    @get url, data, merge options, responseType: "json"
+    @get url, merge options, responseType: "json"
 
   @put:  (url, data, options) ->
     RestClient._sendRequest merge options,
@@ -117,7 +116,10 @@ module.exports = class RestClient extends BaseObject
       request.onerror = (event) -> reject merge status, event:event
       request.onload  = (event) ->
         if (request.status / 100 | 0) == 2
-          resolve request.response
+          if request.response
+            resolve request.response
+          else
+            reject merge status, event:event
         else
           reject merge status, event:event
 
@@ -136,7 +138,7 @@ module.exports = class RestClient extends BaseObject
         else
           request.upload.onprogress = progressCallbackInternal
 
-      request._sendRequest if data
+      request.send if data
           if data.toArrayBuffer
             data.toArrayBuffer()
           else
