@@ -57,6 +57,9 @@ module.exports = class BinaryString
   toString: ->
     Utf8.toString @bytes
 
+  toArrayBuffer: ->
+    @bytes.buffer
+
   toBlob: ->
     new Blob [@bytes]
 
