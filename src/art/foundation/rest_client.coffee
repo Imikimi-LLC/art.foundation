@@ -1,11 +1,11 @@
 # uses XMLHttpRequest2
 #  http://www.w3.org/TR/XMLHttpRequest2/
 #  http://www.html5rocks.com/en/tutorials/file/xhr2/
-{present} = require '../types'
-BaseObject = require "../base_object"
-Promise = require '../promise'
-{log} = require '../log'
-{merge} = require '../hash'
+{present} = require './types'
+BaseObject = require './base_object'
+Promise = require './promise'
+{log} = require './log'
+{merge} = require './hash'
 
 module.exports = class RestClient extends BaseObject
 

@@ -1,8 +1,7 @@
 {assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
-{Binary} = require 'art-foundation'
+{Binary, RestClient} = require 'art-foundation'
 EncodedImage = Binary.EncodedImage
 binary = Binary.binary
-RestClient = Binary.RestClient
 
 suite "Art.Foundation.Binary.EncodedImage", ->
   test "base64", ->

@@ -1,6 +1,5 @@
 Inspect      = require "../inspect"
 Log          = require "../log"
-RestClient   = require "./rest_client"
 {binary}     = require "./string"
 {inspect} = Inspect
 {log} = Log
