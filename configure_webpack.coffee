@@ -1,10 +1,18 @@
 path = require "path"
+NeptuneNamespacesGenerator = require 'neptune-namespaces/generator'
+
+startNeptuneNamespaces = (dirname) ->
+  Promise.resolve()
+  .then -> NeptuneNamespacesGenerator.generate "#{dirname}/src/*",  watch: true
+  .then -> NeptuneNamespacesGenerator.generate "#{dirname}/test/*", watch: true
 
 module.exports = ({entries, outputPath, dirname}) ->
   outputPath ||= "dist"
   console.log "art-foundation: configure-webpack"
   console.log "  entries:    #{entries}"
   console.log "  outputPath: #{outputPath}"
+
+  startNeptuneNamespaces dirname
 
   entry = ArtWebpackConfigurator._transformEntries entries
   console.log ""
