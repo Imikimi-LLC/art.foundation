@@ -11,10 +11,16 @@
   objectName
   isBrowserObject
   present
+  isPromise
   Map
 } = require "art-foundation"
 
 suite "Art.Foundation.Types", ->
+  test "isPromise Promise.resolve()", -> assert.eq true, isPromise Promise.resolve()
+  test "isPromise Promise.reject()", -> assert.eq true, isPromise Promise.reject()
+  test "isPromise 1 is false", -> assert.eq false, isPromise 1
+  test "isPromise {} is false", -> assert.eq false, isPromise {}
+
   test "isArray [] is true", -> assert.eq true, isArray []
   test "isArray Int8Array is true", -> assert.eq true, isArray new Int8Array(4)
   test "isArray arguments is false", -> assert.eq false, isArray arguments

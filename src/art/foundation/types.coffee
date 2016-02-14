@@ -35,6 +35,7 @@ else
   )
 
 module.exports = class Types
+  @isPromise: (obj) => isFunction obj?.then
   @isRegExp: (obj) => obj instanceof RegExp
   @isNumber: isNumber = (obj) => typeof obj == "number"
 

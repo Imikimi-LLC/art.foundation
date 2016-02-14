@@ -21,6 +21,7 @@ Foundation = require 'art-foundation'
   isFunction
   commaize
   rightAlign
+  isPromise
 } = Foundation
 
 targetCycleDuration = .02
@@ -30,7 +31,7 @@ defaultWarmUpRatio = .1
 module.exports = class Perf
 
   @isAsyncBenchmark: isAsyncBenchmark =(f) ->
-    f.length > 0 # uses 'done' callback
+    f.length > 0 || isPromise f() # uses 'done' callback
     # isFunction f()?.then # returns promise - not supported yet (TODO)
 
   @asyncBenchmark: asyncBenchmark = (name, benchmarkF, options) ->
@@ -57,15 +58,28 @@ module.exports = class Perf
               warmUpDuration: isWarmup && targetDuration
           done?()
 
-        runTest = ->
-          benchmarkF ->
-            totalTests++
-            endTime = currentSecond()
-            duration = endTime - startTime
-            if duration < targetDuration
-              runTest()
-            else
-              finish()
+
+        runTest = if benchmarkF.length > 0
+          ->
+            benchmarkF ->
+              totalTests++
+              endTime = currentSecond()
+              duration = endTime - startTime
+              if duration < targetDuration
+                runTest()
+              else
+                finish()
+        else
+          ->
+            benchmarkF()
+            .then ->
+              totalTests++
+              endTime = currentSecond()
+              duration = endTime - startTime
+              if duration < targetDuration
+                runTest()
+              else
+                finish()
         runTest()
       runTestsForDuration true, ->
         runTestsForDuration false, done

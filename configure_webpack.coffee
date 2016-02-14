@@ -5,6 +5,7 @@ startNeptuneNamespaces = (dirname) ->
   Promise.resolve()
   .then -> NeptuneNamespacesGenerator.generate "#{dirname}/src/*",  watch: true
   .then -> NeptuneNamespacesGenerator.generate "#{dirname}/test/*", watch: true
+  .then -> NeptuneNamespacesGenerator.generate "#{dirname}/perf/*", watch: true
 
 module.exports = ({entries, outputPath, dirname}) ->
   outputPath ||= "dist"

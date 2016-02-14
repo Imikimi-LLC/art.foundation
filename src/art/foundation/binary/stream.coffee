@@ -1,5 +1,5 @@
 Binary   = require "./namespace"
-{binary} = require "./string"
+{binary} = require "./binary_string"
 
 Binary.stream = (arg) ->
   if arg instanceof Binary.Stream

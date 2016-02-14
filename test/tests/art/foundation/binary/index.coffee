@@ -3,9 +3,9 @@
 
 module.exports =
 Binary              = require './namespace'
+Binary.BinaryString = require './binary_string'
 Binary.EncodedImage = require './encoded_image'
-Binary.String       = require './string'
 Binary.Utf8         = require './utf8'
 Binary.finishLoad(
-  ["EncodedImage","String","Utf8"]
+  ["BinaryString","EncodedImage","Utf8"]
 )

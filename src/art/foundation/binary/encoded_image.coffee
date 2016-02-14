@@ -1,6 +1,6 @@
 Inspect      = require "../inspect"
 Log          = require "../log"
-{binary}     = require "./string"
+{binary}     = require "./binary_string"
 Promise      = require '../promise'
 File         = require '../browser/file'
 {inspect} = Inspect
@@ -9,7 +9,7 @@ File         = require '../browser/file'
 module.exports = class EncodedImage
 
   @get: (url, callback) ->
-    throw new Error "callback is no longer supported; use returned Promise" if callback
+    throw new Error "EncodedImage.get: callback is no longer supported; use returned Promise" if callback
     new Promise (resolve, reject) ->
       image = new Image
       ###
@@ -49,7 +49,7 @@ module.exports = class EncodedImage
     , (errorEventOrErrorObject) ->
   ###
   @toDataUri: (data, callback) ->
-    throw new Error "callback is no longer supported; use returned Promise" if callback
+    throw new Error "EncodedImage.toDataUri: callback is no longer supported; use returned Promise" if callback
     p = if data instanceof self.File
       new Promise (resolve, reject) ->
         reader = new FileReader
@@ -70,7 +70,9 @@ module.exports = class EncodedImage
       dataStringUri = if (typeof dataString) == "string" && dataString[0..4] == "data:"
         dataString
       else
-        "data:image/png;base64," + binary(dataString).toBase64()
+        binary(dataString).toBase64()
+        .then (base64) ->
+          "data:image/png;base64,#{base64}"
 
   ###
   OUT:
@@ -86,7 +88,7 @@ module.exports = class EncodedImage
       image.src = self.source = source
 
   @toImage: (data, callback) ->
-    throw new Error "callback is no longer supported; use returned Promise" if callback
+    throw new Error "EncodedImage.toImage: callback is no longer supported; use returned Promise" if callback
     @toDataUri data
     .then (dataUri) =>
       @loadImage dataUri

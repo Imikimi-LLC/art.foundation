@@ -48,7 +48,8 @@ module.exports = class Inspector2 extends BaseObject
 
     res = new Inspected.Object {}, name, obj
     @addPendingTask()
-    obj.toImage (image) =>
+    obj.toImage()
+    .then (image) =>
       res.image = image
       @completePendingTask()
     res
