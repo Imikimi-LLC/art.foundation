@@ -51,7 +51,7 @@ module.exports = class EncodedImage
   @toDataUri: (data, callback) ->
     throw new Error "EncodedImage.toDataUri: callback is no longer supported; use returned Promise" if callback
     p = if data instanceof self.File
-      new Promise (resolve, reject) ->
+      new Promise (resolve, reject) =>
         reader = new FileReader
         reader.readAsDataURL data
         reader.onerror = (e) =>
