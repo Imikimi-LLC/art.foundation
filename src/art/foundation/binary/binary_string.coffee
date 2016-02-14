@@ -45,7 +45,7 @@ module.exports = class BinaryString
     throw new Error "BinaryString.toImage: callback is no longer supported; use returned Promise" if callback
     readFileAsDataUrl new Blob [@bytes]
 
-  @fromDataURI: (dataURI)->
+  @fromDataUri: (dataURI)->
     splitDataURI = dataURI.split ','
     base64encoding = splitDataURI[1]
     @fromBase64 base64encoding
