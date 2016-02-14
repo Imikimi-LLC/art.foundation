@@ -19,6 +19,7 @@ String       = require "./string"
 Time         = require "./time"
 Types        = require "./types"
 WebWorker    = require "./web_worker"
+PFileReader  = require './promised_file_reader'
 
 {createAllClass} = BaseObject
 {select} = Hash
@@ -51,20 +52,21 @@ class GlobalCounts
 createAllClass Foundation,
   select BaseObject, "createWithPostCreate", "mixInto", "createAllClass"
   select Inspect, "inspect", "inspectLean", "miniInspect"
-  GlobalCounts
   Array
-  Ruby
+  Async
   CallStack
   Clone
-  ShallowClone
   Eq
+  Function
+  GlobalCounts
   Hash
   Log
   Math
+  PFileReader
   Regexp
+  Ruby
+  ShallowClone
   String
   Time
   Types
-  Function
-  Async
   WebWorker

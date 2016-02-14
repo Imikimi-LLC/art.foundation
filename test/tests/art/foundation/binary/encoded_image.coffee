@@ -17,24 +17,31 @@ suite "Art.Foundation.Binary.EncodedImage", ->
       assert.equal base64[0..9], "iVBORw0KGg"
       done()
 
-  test "jpg toImage", (done)->
-    RestClient.getArrayBuffer "#{testAssetRoot}/array_buffer_image_test/sample.jpg"
-    .then (arrayBuffer) ->
-      EncodedImage.toImage binary(arrayBuffer), (image)->
-        assert.equal image.width, 256
-        assert.equal image.height, 256
-        done()
 
-  test "EncodedImage.get", (done)->
-    EncodedImage.get "#{testAssetRoot}/array_buffer_image_test/sample.jpg", (image) ->
+  test 'loadImage', ->
+    EncodedImage.loadImage "#{testAssetRoot}/array_buffer_image_test/sample.jpg"
+    .then (image)->
       assert.equal image.width, 256
       assert.equal image.height, 256
-      done()
 
-  test "png toImage", (done)->
+  test "jpg toImage", ->
+    RestClient.getArrayBuffer "#{testAssetRoot}/array_buffer_image_test/sample.jpg"
+    .then (arrayBuffer) ->
+      EncodedImage.toImage binary(arrayBuffer)
+    .then (image)->
+      assert.equal image.width, 256
+      assert.equal image.height, 256
+
+  test "EncodedImage.get", ->
+    EncodedImage.get "#{testAssetRoot}/array_buffer_image_test/sample.jpg"
+    .then (image) ->
+      assert.equal image.width, 256
+      assert.equal image.height, 256
+
+  test "png toImage", ->
     RestClient.getArrayBuffer "#{testAssetRoot}/array_buffer_image_test/sample.png"
     .then (arrayBuffer) ->
-      EncodedImage.toImage binary(arrayBuffer), (image)->
+      EncodedImage.toImage binary(arrayBuffer)
+    .then (image)->
         assert.equal image.width, 256
         assert.equal image.height, 256
-        done()

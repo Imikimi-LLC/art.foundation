@@ -40,14 +40,14 @@ module.exports = class BinaryString
 
     new BinaryString uInt8Array
 
-  toDataURI: (callback) ->
+  toDataUri: (callback) ->
     blob = new Blob [@bytes]
     reader = new FileReader
     reader.readAsDataURL blob
     reader.onloadend = -> callback reader.result
 
   toBase64Callback: (callback) ->
-    @toDataURI (r) -> callback r.split(',')[1]
+    @toDataUri (r) -> callback r.split(',')[1]
 
   @fromDataURI: (dataURI)->
     splitDataURI = dataURI.split ','
