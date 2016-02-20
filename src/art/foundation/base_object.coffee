@@ -21,6 +21,10 @@ module.exports = class BaseObject
 
   @inspect: -> @getClassPathName()
 
+  # @name is not settable, so we have @_name as an override for use with dynamically generated classes
+  @getName: ->
+    @_name || @name
+
   ###
   TODO: consolidated on one inspector system
   NOTE: "inspector" parameter is part of the old inspect system
@@ -37,14 +41,14 @@ module.exports = class BaseObject
       keys = Object.keys klass
     for k in keys when k not in excludedKeys
       v = klass[k]
-      console.error "Foundation.mixInto - mix #{klass.name} into #{intoClass.name}: #{k} already exists." if intoClass[k]
+      console.error "Foundation.mixInto - mix #{getClassName(klass)} into #{getClassName(intoClass)}: #{k} already exists." if intoClass[k]
       intoClass[k] = v
     intoClass
 
   @createAllClass = (namespace, args...)->
     for arg in args
       if arg.prototype instanceof BaseObject
-        console.error "createAllClass arguments cannot be subclasses of BaseObject: #{namespace.name}:#{arg.name}"
+        console.error "createAllClass arguments cannot be subclasses of BaseObject: #{getClassName(namespace)}:#{getClassName(arg)}"
       mixInto namespace, arg
     class All extends namespace
 
@@ -205,10 +209,12 @@ module.exports = class BaseObject
     classPathArray: -> @namespacePathArray ||= @getClassPath().split "."
     classPathName:  ->
       if p = @namespace?.namespacePath
-        p + "." + @name
+        p + "." + @getClassName()
       else
-        @name
-    className: -> @prototype.constructor.name
+        @getClassName()
+
+  @getClassName: (klass = @) ->
+    klass.getName?() || klass.name
 
   ######################################################
   # Class Methods
@@ -234,7 +240,7 @@ module.exports = class BaseObject
   ######################################################
 
   @getter
-    className: -> @class.name
+    className: -> @class.getClassName()
     class: -> @constructor
     keys: -> Object.keys @
     classPathArray: -> @class.getClassPathArray()
