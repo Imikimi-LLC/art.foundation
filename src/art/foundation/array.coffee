@@ -1,5 +1,6 @@
-{bound, max, intRand} = require "./math"
+{bound, max, intRand, modulo} = require "./math"
 {log}                 = require "./log"
+{isNumber}            = require './types'
 
 arraySlice = Array.prototype.slice
 
@@ -10,9 +11,6 @@ isArguments = (o) ->
 
 isArrayOrArguments = (o) ->
   o && (o.constructor == Array || isArguments o)
-
-isArray = (o) ->
-  o && o.constructor == Array
 
 doFlattenInternal = (array, keepTester, output) ->
   output ||= []
@@ -225,9 +223,11 @@ module.exports = class ArrayExtensions
   @moveArrayElement2: moveArrayElement2
 
   # move one element of the array FROM one location TO another.
-  @moveArrayElement: (array, from, to) ->
-    from = bound 0, from|0, array.length -1
-    to   = bound 0, to  |0, array.length -1
+  # IN: from/to are moduloed into valid indexes
+  #   a = intMode a, array.length
+  @moveArrayElement: moveArrayElement = (array, from, to) ->
+    from = modulo from | 0, array.length
+    to   = modulo to   | 0, array.length
 
     # 300 is a somewhat arbitrary value. It's approximately where
     # moveArrayElement1 becomes faster on Chrome 36.0.1985.143 (2014/9/21)
@@ -236,6 +236,19 @@ module.exports = class ArrayExtensions
       moveArrayElement1 array, from, to
     else
       moveArrayElement2 array, from, to
+    array
+
+  @arrayWithElementMoved: arrayWithElementMoved = (array, from, to) ->
+    from = modulo from | 0, array.length
+    to   = modulo to   | 0, array.length
+    return array if from == to
+    array = array.slice()
+    moveArrayElement array, from, to
+
+  @arrayWithElementValueMoved: (array, value, to) ->
+    from = array.indexOf value
+    return array if from < 0
+    arrayWithElementMoved array, from, to
 
   # array.sort is not guaranteed to be stable
   @stableSort: (array, compare) ->
