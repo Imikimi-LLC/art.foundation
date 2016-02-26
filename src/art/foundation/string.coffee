@@ -54,7 +54,7 @@ module.exports = class String
   #snake_case to lowerCamelCase
   @lowerCamelCase: (str) =>
     words = str.split('_')
-    capWords = [words[0]].concat (@capitalize word for word in words.slice(1,words.length))
+    capWords = [@decapitalize words[0]].concat (@capitalize word for word in words.slice(1,words.length))
     capWords.join ""
 
   # camelCase to snake_case
