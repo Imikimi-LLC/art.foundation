@@ -26,14 +26,14 @@ suite "Art.Foundation.Regexp", ->
     assert.eq !!".com".match(domainRegexp), false
 
   test "urlProtocolRegexp successes", ->
-    assert.eq "https://".match(urlProtocolRegexp), ["https://"]
-    assert.eq "http://".match(urlProtocolRegexp), ["http://"]
-    assert.eq "HTTP://".match(urlProtocolRegexp), ["HTTP://"]
-    assert.eq "ftp://".match(urlProtocolRegexp), ["ftp://"]
+    assert.eq "https://".match(urlProtocolRegexp), ["https://", "https", "://"]
+    assert.eq "http://".match(urlProtocolRegexp),  ["http://", "http", "://"]
+    assert.eq "HTTP://".match(urlProtocolRegexp),  ["HTTP://", "HTTP", "://"]
+    assert.eq "ftp://".match(urlProtocolRegexp),   ["ftp://", "ftp", "://"]
 
   test "urlProtocolRegexp failures", ->
     assert.eq !!"http".match(urlProtocolRegexp), false
-    assert.eq "http0://".match(urlProtocolRegexp), ["http0://"]
+    assert.eq "http0://".match(urlProtocolRegexp), ["http0://", "http0", "://"]
     assert.eq !!"http:/".match(urlProtocolRegexp), false
     assert.eq !!"://".match(urlProtocolRegexp), false
 
@@ -53,8 +53,8 @@ suite "Art.Foundation.Regexp", ->
     assert.eq !!"/foo%2zBar".match(urlPathRegexp), false
 
   test "urlQueryRegexp successes", ->
-    assert.eq "foo".match(urlQueryRegexp), ["foo"]
-    assert.eq "foo0".match(urlQueryRegexp), ["foo0"]
+    assert.eq "foo".match(urlQueryRegexp),     ["foo"]
+    assert.eq "foo0".match(urlQueryRegexp),    ["foo0"]
     assert.eq "foo=bar".match(urlQueryRegexp), ["foo=bar"]
     assert.eq "foo-bar".match(urlQueryRegexp), ["foo-bar"]
     assert.eq "foo+bar".match(urlQueryRegexp), ["foo+bar"]
@@ -62,10 +62,10 @@ suite "Art.Foundation.Regexp", ->
     assert.eq "foo%20bar".match(urlQueryRegexp), ["foo%20bar"]
 
   test "urlRegexp successes", ->
-    assert.eq "http://foo.com".match(urlRegexp), ["http://foo.com", "http://", "foo.com", undefined, undefined, undefined]
-    assert.eq "http://foo.com/here".match(urlRegexp), ["http://foo.com/here", "http://", "foo.com", undefined, "/here", undefined]
-    assert.eq "http://foo.com?this=that".match(urlRegexp), ["http://foo.com?this=that", "http://", "foo.com", undefined, undefined, "this=that"]
-    assert.eq "http://foo.com?".match(urlRegexp), ["http://foo.com?", "http://", "foo.com", undefined, undefined, ""]
-    assert.eq "http://foo.com/?this=that".match(urlRegexp), ["http://foo.com/?this=that", "http://", "foo.com", undefined, "/", "this=that"]
-    assert.eq "http://foo.com/here?this=that".match(urlRegexp), ["http://foo.com/here?this=that", "http://", "foo.com", undefined, "/here", "this=that"]
-    assert.eq "http://foo.com:9000/here?this=that".match(urlRegexp), ["http://foo.com:9000/here?this=that", "http://", "foo.com", "9000", "/here", "this=that"]
+    assert.eq "http://foo.com".match(urlRegexp),                      ["http://foo.com",                      "http", "://", "foo.com", undefined, undefined, undefined, undefined, undefined]
+    assert.eq "http://foo.com/here".match(urlRegexp),                 ["http://foo.com/here",                 "http", "://", "foo.com", undefined, undefined, "/here", undefined, undefined]
+    assert.eq "http://foo.com?this=that".match(urlRegexp),            ["http://foo.com?this=that",            "http", "://", "foo.com", undefined, undefined, undefined, "?", "this=that"]
+    assert.eq "http://foo.com?".match(urlRegexp),                     ["http://foo.com?",                     "http", "://", "foo.com", undefined, undefined, undefined, "?", undefined]
+    assert.eq "http://foo.com/?this=that".match(urlRegexp),           ["http://foo.com/?this=that",           "http", "://", "foo.com", undefined, undefined, "/",       "?", "this=that"]
+    assert.eq "http://foo.com/here?this=that".match(urlRegexp),       ["http://foo.com/here?this=that",       "http", "://", "foo.com", undefined, undefined, "/here",   "?", "this=that"]
+    assert.eq "http://foo.com:9000/here?this=that".match(urlRegexp),  ["http://foo.com:9000/here?this=that",  "http", "://", "foo.com", ":",       "9000",    "/here",   "?", "this=that"]
