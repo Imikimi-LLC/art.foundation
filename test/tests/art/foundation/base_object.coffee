@@ -109,7 +109,6 @@ suite "Art.Foundation.BaseObject.properties", ->
   test "@setter x: -> defines custom setter", ->
     class Foo extends BaseObject
       @setter x: (v) ->
-        log "hi"
         @y = v / 2
 
     f = new Foo
