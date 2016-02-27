@@ -1,11 +1,11 @@
 module.exports = class Regexp
   # http://stackoverflow.com/questions/201323/using-a-regular-expression-to-validate-an-email-address
 
-  @findUrlProtocolRegexp: /[\w-]+:\/\//
+  @findUrlProtocolRegexp: /([\w-]+)(:\/\/)/
   @findDomainRegexp: /[\w]+(?:-[\w]+)*(?:\.[\w]+(?:-[\w]+)*)*(?:\.[a-z]{2,20})?/
-  urlQueryRegexp = '(?:[-=+*._\\w]|%[a-f\\d]{2})*'
+  @urlQueryParamsRegexp: /(?:[-+=&*._\w]|%[a-f\\d]{2})+/i
   @findUrlPathRegexp: /(?:\/~?(?:[-+*._\w]|%[a-f\d]{2})*)*/
-  @findUrlPortRegexp: /\:(\d+)/
+  @findUrlPortRegexp: /(\:)(\d+)/
 
   @emailRegexp: ///^([_\w-]+(?:\.[_\w]+)*)@(#{@findDomainRegexp.source})$///i
 
@@ -14,7 +14,7 @@ module.exports = class Regexp
   @urlProtocolRegexp: ///^#{@findUrlProtocolRegexp.source}$///i
   @domainRegexp:      ///^#{@findDomainRegexp.source}$///i
   @urlPathRegexp:     ///^#{@findUrlPathRegexp.source}$///i
-  @urlQueryRegexp:    ///^#{urlQueryRegexp}$///i
+  @urlQueryRegexp:    ///^(#{@urlQueryParamsRegexp})$///i
 
   @isoDateRegexp: /^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/
 
@@ -25,12 +25,18 @@ module.exports = class Regexp
 
   @colorRegex:  new RegExp "(#{@hex16ColorRegex.source})|(#{@hex256ColorRegex.source})|(#{@rgbColorRegex.source})|(#{@rgbaColorRegex.source})"
 
+  ###
+  match OUTPUT: [url, protocol, '://', domain, ':', port, path, '?', query]
+
+  USAGE:
+    [_, protocol, _, domain, _, port, path, _, query] = str.match findUrlRegexp
+  ###
   @findUrlRegexp:  ///
-    (#{@findUrlProtocolRegexp.source})
+    (?:#{@findUrlProtocolRegexp.source})
     (#{@findDomainRegexp.source})
     (?:#{@findUrlPortRegexp.source})?
     (#{@findUrlPathRegexp.source})?
-    (?:\?(#{urlQueryRegexp}))?
+    (?:(\?)(#{@urlQueryParamsRegexp.source}))?
     ///i
 
   @findSourceReferenceUrlRegexp: ///
@@ -38,9 +44,10 @@ module.exports = class Regexp
     (#{@findDomainRegexp.source})?
     (?:#{@findUrlPortRegexp.source})?
     (#{@findUrlPathRegexp.source})?
-    (?:\?(#{urlQueryRegexp}))?
+    (?:(\?)(#{@urlQueryParamsRegexp.source}))?
     (?:\:(\d+))?
     (?:\:(\d+))?
     ///i
 
+  # OUT: see findUrlRegexp
   @urlRegexp: ///^#{@findUrlRegexp.source}$///i
