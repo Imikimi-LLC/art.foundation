@@ -66,6 +66,37 @@ module.exports = class ArrayExtensions
 
   basicCompareFunction = (a, b) -> a - b
 
+  # if index < 0, index += array.length
+  @leftOfIndex: leftOfIndex = (array, index)  ->
+    return array unless array
+    array.slice 0, index
+
+  # if index < 0, index += array.length
+  @rightOfIndex: rightOfIndex = (array, index) ->
+    return array unless array
+    if index < 0
+      index += array.length
+    array.slice index + 1
+
+  # if value is in array, return the index of the first match
+  # else, return the length of the array
+  indexOfOrLength = (array, value) ->
+    if 0 > i = array.indexOf value
+      array.length
+    else
+      i
+
+  # if value is not found, left returns whole array, right returns nothing
+  # if value is found, left returns all elements before the first match, right returns all elements after
+  @leftOf:   (array, value) -> leftOfIndex  array, indexOfOrLength array, value
+  @rightOf:  (array, value) -> rightOfIndex array, indexOfOrLength array, value
+  @splitArray: (array, value) ->
+    index = indexOfOrLength array, value
+    [
+      leftOfIndex array, index
+      rightOfIndex array, index
+    ]
+
   ###
   findSortedFirst
 

@@ -182,22 +182,6 @@ suite "Art.Foundation.Array", ->
     assert.eq stableSortedList, stableSort list, sortFunciton
 
 
-  suite "findSortedFirst", ->
-    test "empty or null/undefined array returns undefined", ->
-      assert.eq undefined, findSortedFirst []
-      assert.eq undefined, findSortedFirst null
-      assert.eq undefined, findSortedFirst undefined
-
-    test "numbers", ->
-      assert.eq 1, findSortedFirst [3, 1, 2]
-      assert.eq 1, findSortedFirst [1, 2, 3]
-      assert.eq 1, findSortedFirst [1, 3, 2]
-
-    test "custom compareFunction with numbers", ->
-      assert.eq 3, findSortedFirst [3, 1, 2], (a, b) -> b - a
-      assert.eq 3, findSortedFirst [1, 2, 3], (a, b) -> b - a
-      assert.eq 3, findSortedFirst [1, 3, 2], (a, b) -> b - a
-
   test "flatten, compact(flatten), compactFlatten", ->
     toArgs = -> arguments
 
@@ -215,4 +199,47 @@ suite "Art.Foundation.Array", ->
     assert.eq [undefined, "child2", null, "child3", false, "child4"], flatten structure
     assert.eq ["child2", "child3", false, "child4"], compact flatten structure
     assert.eq ["child2", "child3", false, "child4"], compactFlatten structure
+
+suite "Art.Foundation.Array.slice helpers", ->
+  {leftOf, rightOf, leftOfIndex, rightOfIndex, splitArray} = Foundation
+  test "leftOfIndex null array",       -> assert.eq null,   leftOfIndex  null, 0
+  test "rightOfIndex null array",      -> assert.eq null,   rightOfIndex null, 0
+  test "leftOfIndex 0",       -> assert.eq [],            leftOfIndex  [1,2,3,4,5,6], 0
+  test "rightOfIndex 0",      -> assert.eq [2,3,4,5,6],   rightOfIndex [1,2,3,4,5,6], 0
+  test "leftOfIndex -2",      -> assert.eq [1,2,3,4],     leftOfIndex  [1,2,3,4,5,6], -2
+  test "rightOfIndex -2",     -> assert.eq [6],           rightOfIndex [1,2,3,4,5,6], -2
+  test "leftOfIndex -1",      -> assert.eq [1,2,3,4,5],   leftOfIndex  [1,2,3,4,5,6], -1
+  test "rightOfIndex -1",     -> assert.eq [],            rightOfIndex [1,2,3,4,5,6], -1
+  test "leftOfIndex 3",       -> assert.eq [1,2,3],       leftOfIndex  [1,2,3,4,5,6], 3
+  test "rightOfIndex 3",      -> assert.eq [5,6],         rightOfIndex [1,2,3,4,5,6], 3
+  test "leftOfIndex 5",       -> assert.eq [1,2,3,4,5],   leftOfIndex  [1,2,3,4,5,6], 5
+  test "rightOfIndex 5",      -> assert.eq [],            rightOfIndex [1,2,3,4,5,6], 5
+  test "leftOfIndex 6",       -> assert.eq [1,2,3,4,5,6], leftOfIndex  [1,2,3,4,5,6], 6
+  test "rightOfIndex 6",      -> assert.eq [],            rightOfIndex [1,2,3,4,5,6], 6
+  test "leftOfIndex 7",       -> assert.eq [1,2,3,4,5,6], leftOfIndex  [1,2,3,4,5,6], 7
+  test "rightOfIndex 7",      -> assert.eq [],            rightOfIndex [1,2,3,4,5,6], 7
+  test "leftOf one match",    -> assert.eq [1, 2, 3],     leftOf  [1,2,3,4,5,6], 4
+  test "rightOf one match ",  -> assert.eq [5, 6],        rightOf [1,2,3,4,5,6], 4
+  test "leftOf no match",     -> assert.eq [1,2,3,4,5,6], leftOf  [1,2,3,4,5,6], 400
+  test "rightOf no match ",   -> assert.eq [],            rightOf [1,2,3,4,5,6], 400
+  test "leftOf two matches",  -> assert.eq [1],           leftOf  [1,4,3,4,5,6], 4
+  test "rightOf two matches", -> assert.eq [3,4,5,6],     rightOf [1,4,3,4,5,6], 4
+
+  test "splitArray", -> assert.eq [[1,2], [4,5,6]], splitArray [1,2,3,4,5,6], 3
+
+suite "Art.Foundation.Array.findSortedFirst", ->
+  test "empty or null/undefined array returns undefined", ->
+    assert.eq undefined, findSortedFirst []
+    assert.eq undefined, findSortedFirst null
+    assert.eq undefined, findSortedFirst undefined
+
+  test "numbers", ->
+    assert.eq 1, findSortedFirst [3, 1, 2]
+    assert.eq 1, findSortedFirst [1, 2, 3]
+    assert.eq 1, findSortedFirst [1, 3, 2]
+
+  test "custom compareFunction with numbers", ->
+    assert.eq 3, findSortedFirst [3, 1, 2], (a, b) -> b - a
+    assert.eq 3, findSortedFirst [1, 2, 3], (a, b) -> b - a
+    assert.eq 3, findSortedFirst [1, 3, 2], (a, b) -> b - a
 
