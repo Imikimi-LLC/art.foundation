@@ -280,8 +280,6 @@ define [
         domEl
 
       else if inspectedObject.inspected
-        # is Atomic.Color
-        console.log inspectedObject.inspected
         if inspectedObject.originalObject instanceof Color
           @colorToDom inspectedObject.originalObject
         else
