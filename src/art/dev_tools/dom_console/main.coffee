@@ -143,8 +143,12 @@ define [
 
     arrayKidsToDomArray: (arrayOfInspectedObjects, tagName, options, addCommasAndBrackets) ->
       options.maxDepth--
-      kids = for child in arrayOfInspectedObjects
-        $(tagName, class:"value").append @toDom child, options
+      kids = for child, i in arrayOfInspectedObjects
+        break if i > 50
+        if i == 50
+          $(tagName, class:"value").append "array length: #{arrayOfInspectedObjects.length} (showing the first #{i})"
+        else
+          $(tagName, class:"value").append @toDom child, options
       options.maxDepth++
       if addCommasAndBrackets
         kids = @addCommasAndBrackets kids, "[", "]"
