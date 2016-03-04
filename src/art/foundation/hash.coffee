@@ -93,12 +93,14 @@ module.exports = class Hash
     last
 
   @select: (obj, properties...) ->
+    return {} unless obj
     result = {}
     result[prop] = v for prop in compactFlatten properties when v = obj[prop] || obj.hasOwnProperty prop
     result
 
   # same as select, but ignore hasOwnProperty test
   @selectAll: (obj, properties...) ->
+    return {} unless obj
     result = {}
     result[prop] = obj[prop] for prop in compactFlatten properties
     result
