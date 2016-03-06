@@ -50,7 +50,7 @@ class GlobalCounts
     Foundation.globalCount "step"
 
 createAllClass Foundation,
-  select BaseObject, "createWithPostCreate", "mixInto", "createAllClass"
+  select BaseObject, "createWithPostCreate", "mixInto", "createAllClass", "createHotWithPostCreate"
   select Inspect, "inspect", "inspectLean", "miniInspect"
   Array
   Async

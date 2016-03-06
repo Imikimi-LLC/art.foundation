@@ -4,6 +4,7 @@ Types        = require './types'
 Unique       = require './unique'
 String       = require './string'
 ShallowClone = require './shallow_clone'
+WebpackHotLoader = require './webpack_hot_loader'
 
 {capitalize, decapitalize} = String
 {log} = Log
@@ -19,6 +20,21 @@ module.exports = class BaseObject
     @objectsCreated = 0
     @objectsCreatedByType = {}
 
+  @imprintObject: imprintObject = (toObject, fromObject) ->
+    for k, v of toObject when !fromObject.hasOwnProperty k
+      delete toObject[k]
+
+    for k, v of fromObject when fromObject.hasOwnProperty k
+      toObject[k] = fromObject[k]
+
+    fromObject
+
+  @imprintFromClass: (updatedKlass) ->
+    unless updatedKlass == @
+      imprintObject @, updatedKlass
+      imprintObject @::, updatedKlass::
+    @
+
   @inspect: -> @getClassPathName()
 
   # @name is not settable, so we have @_name as an override for use with dynamically generated classes
@@ -31,9 +47,46 @@ module.exports = class BaseObject
     The purpose was to resolve recurson on recursive structures.
     But it ended up being ungainly most the time.
   ###
-
   @createWithPostCreate: (klass) -> klass?.postCreate() || klass
-  @postCreate: -> @
+
+  ###
+  IN:
+    _module should be the CommonJS 'module'
+    klass: class object which extends BaseObject
+
+  OUT: originalKlass.postCreate hotReloaded, classModuleState, klass, _module
+
+  EFFECTS:
+    originalKlass.imprintFromClass newKlass
+    originalKlass.postCreate hotReloaded, classModuleState, klass, _module
+
+  ###
+  @createHotWithPostCreate: (_module, klass) ->
+    WebpackHotLoader.runHot _module, (moduleState) ->
+      originalKlass = (moduleState[klass.getName()] ||= originalKlass:klass).originalKlass
+      .imprintFromClass klass
+      .postCreate klass != originalKlass, moduleState[klass.getName()], klass, _module
+
+  ###
+  called every load
+  IN:
+    NOTE: hot-loading inputs are only set if this class created as follows:
+      createHotWithPostCreate module, class Foo extends BaseObject
+
+    hotReload: true if this class was hot-reloaded
+
+    classModuleState: a plain-object specific to this class in this module
+      If there is more than one hot-loaded class in the same module, each will have its own classModuleState.
+      classModuleState.originalClass == @
+      Except for .originalClass, you can motify this object as you please. It is persisted
+      across hot loads.
+
+    klass: the newly loaded class object
+
+    _module: the CommonJs module object.
+
+  ###
+  @postCreate: (hotReloaded, classModuleState, klass, _module) -> @
 
   excludedKeys = ["__super__", "namespace", "namespacePath"].concat Object.keys Neptune.Base
   @mixInto = mixInto = (intoClass, klass, keys...)->
