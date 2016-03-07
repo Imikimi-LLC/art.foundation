@@ -20,9 +20,10 @@ module.exports = class BaseObject
     @objectsCreated = 0
     @objectsCreatedByType = {}
 
-  @imprintObject: imprintObject = (toObject, fromObject) ->
-    for k, v of toObject when !fromObject.hasOwnProperty k
-      delete toObject[k]
+  @imprintObject: imprintObject = (toObject, fromObject, clearOldState = false) ->
+    if clearOldState
+      for k, v of toObject when !fromObject.hasOwnProperty k
+        delete toObject[k]
 
     for k, v of fromObject when fromObject.hasOwnProperty k
       toObject[k] = fromObject[k]
@@ -30,9 +31,14 @@ module.exports = class BaseObject
     fromObject
 
   @imprintFromClass: (updatedKlass) ->
+    # SBD: I -think- we shoud refrain from clobbering state on the class object.
+    #   For example, @_singleton needs to not be deleted.
+    #   I also have a usecase in the KimiEditor where a model has a unique-id counter. That shouldn't get reset.
+    # It should be OK to do on the prototype, though. No runtime state should be set there.
+    #   - The instances of that prototype store the runtime state.
     unless updatedKlass == @
-      imprintObject @, updatedKlass
-      imprintObject @::, updatedKlass::
+      imprintObject @, updatedKlass, false
+      imprintObject @::, updatedKlass::, true
     @
 
   @inspect: -> @getClassPathName()
@@ -282,8 +288,8 @@ module.exports = class BaseObject
   The singleton instance is created on demand the first time it is accessed.
   ###
   @singletonClass: (args...) ->
-    map =
-      singleton: => @_singleton ||= new @ args...
+    return if isFunction @getSingleton
+    map = singleton: => @_singleton ||= new @ args...
     map[decapitalize functionName @] = => @getSingleton()
     @classGetter map
     null

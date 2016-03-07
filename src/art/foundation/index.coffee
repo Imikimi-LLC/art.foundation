@@ -37,7 +37,8 @@ Foundation.Transaction             = require './transaction'
 Foundation.Types                   = require './types'
 Foundation.Unique                  = require './unique'
 Foundation.WebWorker               = require './web_worker'
+Foundation.WebpackHotLoader        = require './webpack_hot_loader'
 Foundation.WorkerRpc               = require './worker_rpc'
 Foundation.finishLoad(
-  ["All","Analytics","Array","BaseModule","BaseObject","BatchLoader","CallStack","Clone","Epoch","Eq","Function","Hash","JsonStore","Log","Map","Math","Promise","PromisedFileReader","Regexp","RestClient","Ruby","ShallowClone","SingleObjectTransaction","Stat","String","Time","Transaction","Types","Unique","WebWorker","WorkerRpc"]
+  ["All","Analytics","Array","BaseModule","BaseObject","BatchLoader","CallStack","Clone","Epoch","Eq","Function","Hash","JsonStore","Log","Map","Math","Promise","PromisedFileReader","Regexp","RestClient","Ruby","ShallowClone","SingleObjectTransaction","Stat","String","Time","Transaction","Types","Unique","WebWorker","WebpackHotLoader","WorkerRpc"]
 )
