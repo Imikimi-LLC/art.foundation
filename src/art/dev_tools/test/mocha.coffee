@@ -68,6 +68,11 @@ class NestedSuites
 module.exports = class MyMocha
   @assert: chai.assert
   @run: (defineAllTests)=>
+    self.skipKnownFailingTest = (name, f) ->
+      message = "SKIPPING KNOWN-FAILING TEST: #{name}"
+      test message, ->
+        console.error log message
+
     DomConsole.enable()
     (new NestedSuites).groupTestSuites defineAllTests
     mocha.run()
