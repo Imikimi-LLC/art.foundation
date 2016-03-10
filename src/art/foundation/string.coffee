@@ -1,5 +1,6 @@
 FoundationMath = require './math'
 Types          = require './types'
+{wordsRegex} = require './regexp'
 {intRand} = FoundationMath
 {isString, isNumber, isPlainObject, isArray} = Types
 
@@ -9,6 +10,8 @@ escapedNonQuoteRegex = /[\\][^"]/
 {floor} = Math
 
 module.exports = class String
+
+  @wordsArray: (str) -> str.match wordsRegex
 
   @randomString: (length = 32, chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ") ->
     result = ''
