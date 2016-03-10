@@ -58,6 +58,18 @@ module.exports = class ArrayExtensions
   @discardNullAndUndefined: discardNullAndUndefined = (a) -> a != undefined && a != null
   @keepIfRubyTrue: keepIfRubyTrue = (a) -> a != undefined && a != null && a != false
 
+  @arrayToTruthMap: (array) ->
+    res = {}
+    for a in array
+      res[a] = true
+    res
+
+  @arrayToFalseMap: (array) ->
+    res = {}
+    for a in array
+      res[a] = false
+    res
+
   @peek: (array, offset = -1) =>
     if array
       array[array.length + offset]
