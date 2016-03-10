@@ -3,10 +3,10 @@
 
 module.exports =
 Inspect            = require './namespace'
-Inspect.Inspected  = require './inspected'
 Inspect.Inspector  = require './inspector'
 Inspect.Inspector2 = require './inspector2'
 Inspect.Main       = require './main'
+Inspect.Inspected  = require './inspected'
 Inspect.finishLoad(
   ["Inspector","Inspector2","Main"]
 )

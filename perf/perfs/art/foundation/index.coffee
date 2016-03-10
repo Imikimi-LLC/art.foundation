@@ -3,12 +3,12 @@
 
 module.exports =
 Foundation               = require './namespace'
-Foundation.Binary        = require './binary'
 Foundation.Eq            = require './eq'
 Foundation.Hash          = require './hash'
 Foundation.StringParsing = require './string_parsing'
 Foundation.Types         = require './types'
 Foundation.Unique        = require './unique'
+Foundation.Binary        = require './binary'
 Foundation.finishLoad(
   ["Eq","Hash","StringParsing","Types","Unique"]
 )

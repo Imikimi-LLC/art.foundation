@@ -3,10 +3,6 @@
 
 module.exports =
 Foundation                         = require './namespace'
-Foundation.Async                   = require './async'
-Foundation.Binary                  = require './binary'
-Foundation.Browser                 = require './browser'
-Foundation.Inspect                 = require './inspect'
 Foundation.Array                   = require './array'
 Foundation.BaseObject              = require './base_object'
 Foundation.BatchLoader             = require './batch_loader'
@@ -32,6 +28,10 @@ Foundation.Unique                  = require './unique'
 Foundation.WebWorker               = require './web_worker'
 Foundation.WorkerForWorkerRpcTests = require './worker_for_worker_rpc_tests'
 Foundation.WorkerRpc               = require './worker_rpc'
+Foundation.Async                   = require './async'
+Foundation.Binary                  = require './binary'
+Foundation.Browser                 = require './browser'
+Foundation.Inspect                 = require './inspect'
 Foundation.finishLoad(
   ["Array","BaseObject","BatchLoader","CallStack","Clone","Epoch","Eq","Hash","JsonStore","Map","Math","PlainData","Promise","Regexp","RestClient","Ruby","Stat","String","Time","Transaction","Types","Unique","WebWorker","WorkerForWorkerRpcTests","WorkerRpc"]
 )
