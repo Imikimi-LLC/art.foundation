@@ -30,19 +30,23 @@ module.exports = class Epoch extends BaseObject
     Foundation.globalCount "#{@class.name}_queuedItems", @_queuedItems.length
     Foundation.globalCount "#{@class.name}_nextReadyQueue", @_nextReadyQueue.length
 
-  # This guarantess there will be a next "ready" event.
-  # If there were no setStates this epoch, then there won't be a next "ready" - unless you use this method.
-  onNextReady: (f, forceNextEpoch = true) ->
-    if forceNextEpoch
-      @queueNextEpoch() if !@_processingEpoch
-    # else
-    #   @log "#{@classPathName}#onNextReady: forceNextEpoch: #{forceNextEpoch}, _epochQueued: #{@_epochQueued}"
+  ###
+  This guarantess there will be a next "ready" event.
+  If there were no setStates this epoch, then there won't be a next "ready" - unless you use this method.
 
-    if f
-      throw new Error "not a function: #{inspect f}" unless typeof f is "function"
-      @_nextReadyQueue.push f
-    else
-      new Promise (resolve) => @_nextReadyQueue.push -> resolve()
+  IN:
+    f: an optional function to invoke on-next-ready
+      mostly this is provided as a shortcut:
+        @onNextReady =>
+      is directly equivelent to:
+        @onNextReady().then =>
+
+  OUT: promise.then (result of calling f() or null if no f) ->
+  ###
+  onNextReady: (f, forceNextEpoch = true) ->
+    @queueNextEpoch() if forceNextEpoch && !@_processingEpoch
+
+    new Promise (resolve) => @_nextReadyQueue.push -> resolve f?()
 
   _ready: ->
     return unless (nrq = @_nextReadyQueue).length > 0
