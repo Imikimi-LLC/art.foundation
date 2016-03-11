@@ -172,7 +172,8 @@ module.exports = class BaseObject
   #####################################
   # Properties, Getters and Setters
   #####################################
-  @_propInternalName: propInternalName = (prop) -> "_#{prop}"
+  @propInternalName: propInternalName = (prop) -> "_#{prop}"
+  @_propInternalName: propInternalName
   @_propGetterName: propGetterName = (prop) -> "get" + capitalize prop
   @_propSetterName: propSetterName = (prop) -> "set" + capitalize prop
 
