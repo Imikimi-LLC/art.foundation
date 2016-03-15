@@ -289,8 +289,12 @@ module.exports = class BaseObject
   The singleton instance is created on demand the first time it is accessed.
   ###
   @singletonClass: (args...) ->
-    return if isFunction @getSingleton
-    map = singleton: => @_singleton ||= new @ args...
+    # return if @hasOwnProperty("getSingleton") && isFunction @getSingleton
+    map = singleton: =>
+      if @_singleton?.class == @
+        @_singleton
+      else
+        @_singleton = new @ args...
     map[decapitalize functionName @] = => @getSingleton()
     @classGetter map
     null

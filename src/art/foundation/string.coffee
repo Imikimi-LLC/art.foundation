@@ -12,6 +12,7 @@ escapedNonQuoteRegex = /[\\][^"]/
 module.exports = class String
 
   @wordsArray: (str) -> str.match wordsRegex
+  @wordArray: @wordsArray
 
   @randomString: (length = 32, chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ") ->
     result = ''
