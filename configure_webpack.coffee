@@ -7,7 +7,7 @@ startNeptuneNamespaces = (dirname) ->
   .then -> NeptuneNamespacesGenerator.generate "#{dirname}/test/*", watch: true
   .then -> NeptuneNamespacesGenerator.generate "#{dirname}/perf/*", watch: true
 
-module.exports = ({entries, outputPath, dirname}) ->
+module.exports = ({entries, outputPath, dirname}, rest...) ->
   outputPath ||= "dist"
   console.log "art-foundation: configure-webpack"
   console.log "  entries:    #{entries}"
@@ -18,23 +18,29 @@ module.exports = ({entries, outputPath, dirname}) ->
   entry = ArtWebpackConfigurator._transformEntries entries
   console.log ""
 
-  entry: entry
+  result =
+    entry: entry
 
-  resolve:
-    extensions: ["", ".webpack.js", ".web.js", ".js", ".coffee"]
+    resolve:
+      extensions: ["", ".webpack.js", ".web.js", ".js", ".coffee"]
 
-  output:
-    path: path.join dirname, outputPath
-    filename: "[name].js"
+    output:
+      path: path.join dirname, outputPath
+      filename: "[name].js"
 
-  module:
-    loaders: [
-      { test: /\.coffee$/, loader: "coffee-loader" }
-      { test: /\.(coffee\.md|litcoffee)$/, loader: "coffee-loader?literate" }
-      { test: /\.css$/, loader: "style-loader!css-loader" }
-      { test: /\.png$/, loader: "url-loader?limit=100000" }
-      { test: /\.jpg$/, loader: "file-loader" }
-    ]
+    module:
+      loaders: [
+        { test: /\.coffee$/, loader: "coffee-loader" }
+        { test: /\.(coffee\.md|litcoffee)$/, loader: "coffee-loader?literate" }
+        { test: /\.css$/, loader: "style-loader!css-loader" }
+        { test: /\.png$/, loader: "url-loader?limit=100000" }
+        { test: /\.jpg$/, loader: "file-loader" }
+      ]
+  if rest.length > 0
+    [result].concat rest
+  else
+    result
+
 
 class ArtWebpackConfigurator
 
