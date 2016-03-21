@@ -19,8 +19,9 @@ module.exports = class Epoch extends BaseObject
     @_epochQueued = false
     @_processingEpoch = false
     @_epochCount = 0
+    @_frameSecond = 0
 
-  @getter "processingEpoch epochQueued epochCount emptyQueueAfterProcessing",
+  @getter "processingEpoch epochQueued epochCount emptyQueueAfterProcessing frameSecond",
     epochLength: ->
       @_queuedItems.length
       # NOTE: I removed adding in the _nextReadyQueue because it breaks the new onNextReady forceNextEpoch == false option
@@ -67,7 +68,8 @@ module.exports = class Epoch extends BaseObject
   queueNextEpoch: ->
     unless @_epochQueued
       @_epochQueued = true
-      requestAnimationFrame =>
+      requestAnimationFrame (frameTimeMs) =>
+        @_frameSecond = frameTimeMs / 1000
         @_epochQueued = false
         @processEpoch()
 
