@@ -13,3 +13,15 @@ module.exports = class Function
       when 9  then (a, b, c, d, e, f, g, h, i   ) -> fn.call _this, a, b, c, d, e, f, g, h, i
       when 10 then (a, b, c, d, e, f, g, h, i, j) -> fn.call _this, a, b, c, d, e, f, g, h, i, j
       else                                        -> fn.apply _this, arguments
+
+###
+TODO:
+
+The above options are not hot-reload compatible. However, this alternative would be:
+
+  name = fn.name
+  -> _this[name].apply _this, arguments
+
+I need to perf-test this. Or, I need to finally start using a global "debug" mode that could use this
+in debug mode and the faster(?), non hot-reload options in production mode.
+###
