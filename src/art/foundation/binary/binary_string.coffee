@@ -2,6 +2,7 @@
 Binary = require "./namespace"
 Utf8 = require   "./utf8"
 Types = require  '../types'
+{inspect} = require '../inspect'
 {isString, isFunction} = Types
 {readFileAsDataUrl} = require '../promised_file_reader'
 
@@ -22,12 +23,12 @@ module.exports = class BinaryString
     dstU8A
 
   constructor: (arg) ->
-    @bytes = if arg instanceof BinaryString  then BinaryString.cloneUint8Array(arg.bytes)
-    else if isFunction arg.uint8Array         then arg.uint8Array()
+    @bytes = if arg instanceof BinaryString   then BinaryString.cloneUint8Array(arg.bytes)
+    else if isFunction arg?.uint8Array        then arg.uint8Array()
     else if arg instanceof ArrayBuffer        then new Uint8Array arg
     else if arg instanceof Uint8Array         then arg
     else if isString arg                      then Utf8.toBuffer arg
-    else throw new Error "invalid argument: #{arg}"
+    else throw new Error "invalid Binary string constructor argument: #{inspect arg}"
     @length = @bytes.length
 
   @fromBase64: (base64encoding)->
