@@ -5,7 +5,7 @@ Binary.stream = (arg) ->
   if arg instanceof Binary.Stream
     arg
   else if arg instanceof ArrayBuffer
-    Binary.Stream.from_array_buffer arg
+    Binary.Stream.fromArrayBuffer arg
   else if arg instanceof Uint8Array
     new Binary.Stream arg
   else
@@ -13,46 +13,44 @@ Binary.stream = (arg) ->
 
 module.exports = class Stream
 
-  @from_array_buffer = (array_buffer) ->
-    new Binary.Stream(new Uint8Array(array_buffer, 0, array_buffer.byteLength))
+  @fromArrayBuffer = (arrayBuffer) ->
+    new Binary.Stream new Uint8Array arrayBuffer, 0, arrayBuffer.byteLength
 
-  constructor: (byte_view) ->
-    @byte_view = byte_view
+  constructor: (byteView) ->
+    @byteView = byteView
     @pos = 0
 
-  read_byte: ->
-    @byte_view[@pos++]
+  readByte: ->
+    @byteView[@pos++]
 
-  read_asi: ->
+  readAsi: ->
     debug = @inspect()
     ret = 0
     shift = 0
     val = 128
     while val >= 128
-      val = @read_byte()
+      val = @readByte()
       ret += (val % 128) << shift
       shift += 7
     ret
 
   uint8Array: ->
-    @byte_view
+    @byteView
 
   read: (length) ->
     begin = @pos
     @pos += length
     end = @pos
-    new Binary.Stream @byte_view.subarray begin, end
+    new Binary.Stream @byteView.subarray begin, end
 
   inspect: ->
-    "{Binary.Stream pos=#{@pos} byteOffset=#{@byte_view.byteOffset} length=#{@byte_view.length}}"
+    "{Binary.Stream pos=#{@pos} byteOffset=#{@byteView.byteOffset} length=#{@byteView.length}}"
 
-  read_asi_string: ->
-    @read @read_asi()
+  readAsiString: ->
+    @read @readAsi()
 
   done: ->
-    @pos >= @byte_view.length
+    @pos >= @byteView.length
 
   toString: ->
-    binary(@byte_view).toString()
-    #String.fromCharCode.apply(null, @byte_view)
-    #Array.prototype.slice.call(@byte_view).join("")
+    binary(@byteView).toString()
