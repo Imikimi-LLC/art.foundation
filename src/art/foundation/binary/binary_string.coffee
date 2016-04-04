@@ -2,8 +2,9 @@
 Binary = require "./namespace"
 Utf8 = require   "./utf8"
 Types = require  '../types'
+BaseObject = require '../base_object'
 {inspect} = require '../inspect'
-{isString, isFunction} = Types
+{isString, isFunction, isPlainArray} = Types
 {readFileAsDataUrl} = require '../promised_file_reader'
 
 encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
@@ -14,7 +15,7 @@ Binary.binary = (arg) ->
   else
     new BinaryString arg
 
-module.exports = class BinaryString
+module.exports = class BinaryString extends BaseObject
   @binary = Binary.binary
 
   @cloneUint8Array: (srcU8A) ->
@@ -25,6 +26,7 @@ module.exports = class BinaryString
   constructor: (arg) ->
     @bytes = if arg instanceof BinaryString   then BinaryString.cloneUint8Array(arg.bytes)
     else if isFunction arg?.uint8Array        then arg.uint8Array()
+    else if isPlainArray arg                  then new Uint8Array arg
     else if arg instanceof ArrayBuffer        then new Uint8Array arg
     else if arg instanceof Uint8Array         then arg
     else if isString arg                      then Utf8.toBuffer arg
@@ -35,12 +37,12 @@ module.exports = class BinaryString
     byteString = atob base64encoding
 
     len = byteString.length
-    uInt8Array = new Uint8Array new ArrayBuffer len
+    uint8Array = new Uint8Array new ArrayBuffer len
 
     for i in [0...len] by 1
-      uInt8Array[i] = byteString.charCodeAt i
+      uint8Array[i] = byteString.charCodeAt i
 
-    new BinaryString uInt8Array
+    new BinaryString uint8Array
 
   toDataUri: (callback) ->
     throw new Error "BinaryString.toImage: callback is no longer supported; use returned Promise" if callback
@@ -51,14 +53,15 @@ module.exports = class BinaryString
     base64encoding = splitDataURI[1]
     @fromBase64 base64encoding
 
-  toString: ->
-    Utf8.toString @bytes
+  toString: -> Utf8.toString @bytes
+  toArrayBuffer: -> @bytes.buffer
+  toBlob: -> new Blob [@bytes]
 
-  toArrayBuffer: ->
-    @bytes.buffer
-
-  toBlob: ->
-    new Blob [@bytes]
+  @getter
+    uint8Array: -> @bytes
+    arrayBuffer: -> @bytes.buffer
+    blob: -> new Blob [@bytes]
+    plainArray: -> b for b in @bytes
 
   ###
   toBase64 performance

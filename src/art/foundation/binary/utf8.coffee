@@ -1,6 +1,3 @@
-# https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays
-# should look into using: https://developer.mozilla.org/en-US/docs/Code_snippets/StringView?redirectlocale=en-US&redirectslug=Web%2FJavaScript%2FTyped_arrays%2FStringView
-
 module.exports = class Utf8
   # string -> Uint8Array representing bytes in Utf8 string
   @toBuffer = (string) ->
@@ -10,13 +7,15 @@ module.exports = class Utf8
   @toArray = (string) ->
     uriEncoded = encodeURIComponent string
     i = 0
-    while i < uriEncoded.length
+    out = while i < uriEncoded.length
       char = uriEncoded.charCodeAt i++
       if char == 0x25 #%
         i += 2
         parseInt(uriEncoded.substr(i - 2, 2), 16)
       else
         char
+
+    out
 
   # Input can be one of:
   #   array of intergers
@@ -30,7 +29,9 @@ module.exports = class Utf8
       decodeURIComponent (for x in a
         y = x.toString 16
         y = "0" + y if y.length < 2
-        "%" + y
+        y = "%" + y
+        y
       ).join ''
     catch error
+      console.error error.toString(), error
       return "<#{a.length} binary bytes>"

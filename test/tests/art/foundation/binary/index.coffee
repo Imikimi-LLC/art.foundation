@@ -6,6 +6,7 @@ Binary              = require './namespace'
 Binary.BinaryString = require './binary_string'
 Binary.EncodedImage = require './encoded_image'
 Binary.Utf8         = require './utf8'
+Binary.WriteStream  = require './write_stream'
 Binary.finishLoad(
-  ["BinaryString","EncodedImage","Utf8"]
+  ["BinaryString","EncodedImage","Utf8","WriteStream"]
 )

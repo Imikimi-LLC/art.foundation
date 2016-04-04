@@ -3,11 +3,13 @@
 
 module.exports =
 Binary              = require './namespace'
+Binary.All          = require './all'
 Binary.BinaryString = require './binary_string'
 Binary.EncodedImage = require './encoded_image'
 Binary.File         = require './file'
 Binary.Stream       = require './stream'
 Binary.Utf8         = require './utf8'
+Binary.WriteStream  = require './write_stream'
 Binary.finishLoad(
-  ["BinaryString","EncodedImage","File","Stream","Utf8"]
+  ["All","BinaryString","EncodedImage","File","Stream","Utf8","WriteStream"]
 )
