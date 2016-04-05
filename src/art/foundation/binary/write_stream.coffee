@@ -52,6 +52,9 @@ module.exports = class WriteStream extends BaseObject
     length: -> @_pos + @_writtenLength
 
   ###
+  Using new Blob is much faster, thus we use Promises since it is async
+    http://jsperf.com/appending-arraybuffers
+
   OUT: promise.then (compactedUint8Array) ->
   EFFECT:
     head was committed

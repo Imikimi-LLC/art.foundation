@@ -2,6 +2,8 @@
 Binary = require "./namespace"
 Utf8 = require   "./utf8"
 Types = require  '../types'
+{log} = require '../log'
+{min} = require '../math'
 BaseObject = require '../base_object'
 {inspect} = require '../inspect'
 {isString, isFunction, isPlainArray} = Types
@@ -57,11 +59,41 @@ module.exports = class BinaryString extends BaseObject
   toArrayBuffer: -> @bytes.buffer
   toBlob: -> new Blob [@bytes]
 
+  eq: (b) -> @compare(b) == 0
+
+  compare: (b) ->
+    bytesA = @bytes
+    bytesB = b.bytes
+    for i in [0...min @length, b.length] when 0 != diff = bytesA[i] - bytesB[i]
+      return diff
+
+    return @length - b.length
+
   @getter
     uint8Array: -> @bytes
     arrayBuffer: -> @bytes.buffer
     blob: -> new Blob [@bytes]
     plainArray: -> b for b in @bytes
+    inspectedString: (stride = 8)->
+      count = 0
+      characters = []
+      array = for b in @bytes
+        characters.push if b >= 31 && b <= 127
+          String.fromCharCode b
+        else
+          '•'
+
+        y = b.toString 16
+        y = "0" + y if y.length < 2
+        if count++ == stride - 1
+          count = 0
+          y += "   #{characters.join ''}\n"
+          characters = []
+        else
+          y += " "
+        y
+      array.join('') + "   #{characters.join ''}\n"
+
 
   ###
   toBase64 performance
