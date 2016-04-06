@@ -1,8 +1,7 @@
+StandardLib = require './standard_lib'
 BaseObject = require './base_object'
-Promise = require './promise'
-{log} = require "./log"
-{isPlainArray, isFunction, isString} = require './types'
-{mergeInto} = require './hash'
+
+{Promise, log, isPlainArray, isFunction, isString, mergeInto} = StandardLib
 {isWebWorker} = require './web_worker'
 
 ###

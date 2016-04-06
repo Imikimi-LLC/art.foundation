@@ -1,13 +1,11 @@
 # Uint8Array - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays/Uint8Array
 Binary = require "./namespace"
 Utf8 = require   "./utf8"
-Types = require  '../types'
-{log} = require '../log'
-{min} = require '../math'
+
+StandardLib = require '../standard_lib'
 BaseObject = require '../base_object'
-{inspect} = require '../inspect'
-{isString, isFunction, isPlainArray} = Types
-{readFileAsDataUrl} = require '../promised_file_reader'
+
+{isString, isFunction, isPlainArray, log, min, inspect, readFileAsDataUrl} = StandardLib
 
 encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 

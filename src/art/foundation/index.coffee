@@ -20,8 +20,6 @@ Foundation.JsonStore               = require './json_store'
 Foundation.Log                     = require './log'
 Foundation.Map                     = require './map'
 Foundation.Math                    = require './math'
-Foundation.Promise                 = require './promise'
-Foundation.PromisedFileReader      = require './promised_file_reader'
 Foundation.Regexp                  = require './regexp'
 Foundation.RestClient              = require './rest_client'
 Foundation.Ruby                    = require './ruby'
@@ -40,6 +38,7 @@ Foundation.Async                   = require './async'
 Foundation.Binary                  = require './binary'
 Foundation.Browser                 = require './browser'
 Foundation.Inspect                 = require './inspect'
+Foundation.StandardLib             = require './standard_lib'
 Foundation.finishLoad(
-  ["All","Analytics","Array","BaseModule","BaseObject","BatchLoader","CallStack","Clone","Epoch","Eq","Function","GlobalCounts","Hash","JsonStore","Log","Map","Math","Promise","PromisedFileReader","Regexp","RestClient","Ruby","ShallowClone","SingleObjectTransaction","Stat","String","Time","Transaction","Types","Unique","WebWorker","WebpackHotLoader","WorkerRpc"]
+  ["All","Analytics","Array","BaseModule","BaseObject","BatchLoader","CallStack","Clone","Epoch","Eq","Function","GlobalCounts","Hash","JsonStore","Log","Map","Math","Regexp","RestClient","Ruby","ShallowClone","SingleObjectTransaction","Stat","String","Time","Transaction","Types","Unique","WebWorker","WebpackHotLoader","WorkerRpc"]
 )

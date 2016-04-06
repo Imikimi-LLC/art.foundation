@@ -1,10 +1,10 @@
-Binary   = require "./namespace"
-{log} = require '../log'
+StandardLib = require '../standard_lib'
 BaseObject = require '../base_object'
-Promise = require '../promise'
 
+Binary   = require "./namespace"
 {binary} = require "./binary_string"
-{readFileAsDataUrl} = require '../promised_file_reader'
+
+{log, Promise, readFileAsDataUrl} = StandardLib
 
 bufferSize = 1024
 

@@ -1,5 +1,5 @@
-{log} = require "../log"
-Promise = require '../promise'
+StandardLib = require '../standard_lib'
+{log, Promise} = StandardLib
 
 module.exports = class Basic
   @timeout: timeout = (ms, f) =>

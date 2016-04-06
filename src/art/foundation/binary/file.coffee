@@ -1,4 +1,5 @@
-Promise = require '../promise'
+StandardLib = require '../standard_lib'
+{Promise} = StandardLib
 # Uint8Array - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays/Uint8Array
 
 module.exports = class File

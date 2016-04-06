@@ -1,10 +1,9 @@
-Inspect      = require "../inspect"
-Log          = require "../log"
+StandardLib = require '../standard_lib'
+
 {binary}     = require "./binary_string"
-Promise      = require '../promise'
 File         = require '../browser/file'
-{inspect} = Inspect
-{log} = Log
+
+{inspect, log, Promise} = StandardLib
 
 module.exports = class EncodedImage
 

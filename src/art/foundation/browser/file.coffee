@@ -1,5 +1,7 @@
+StandardLib = require '../standard_lib'
 {createElementFromHtml} = require './dom'
-Promise = require '../promise'
+
+{Promise} = StandardLib
 
 module.exports = class File
 
