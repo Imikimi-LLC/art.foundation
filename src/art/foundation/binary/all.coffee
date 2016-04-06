@@ -1,7 +1,4 @@
-{createAllClass} = require '../base_object'
-
-Binary = require './namespace'
-Stream = require "./stream"
-
-createAllClass Binary,
-  stream: Stream.stream
+require './namespace'
+.includeInNamespace null,
+  [(require "./stream"), "stream"]
+  [(require "./binary_string"), "binary"]

@@ -1,7 +1,7 @@
 require "./namespace"
 .includeInNamespace null,
-  [require("./base_object"), "createWithPostCreate", "mixInto", "createAllClass", "createHotWithPostCreate"]
-  [require("./inspect"),     "inspect", "inspectLean", "miniInspect"]
+  [require("./base_object"), "createWithPostCreate mixInto createAllClass createHotWithPostCreate"]
+  [require("./inspect"),     "inspect inspectLean miniInspect"]
 
   require "./array"
   require "./async"

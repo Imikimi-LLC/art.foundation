@@ -11,14 +11,12 @@ BaseObject = require '../base_object'
 
 encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 
-Binary.binary = (arg) ->
-  if arg instanceof BinaryString
-    arg
-  else
-    new BinaryString arg
-
 module.exports = class BinaryString extends BaseObject
-  @binary = Binary.binary
+  @binary: (arg) ->
+    if arg instanceof BinaryString
+      arg
+    else
+      new BinaryString arg
 
   @cloneUint8Array: (srcU8A) ->
     dstU8A = new Uint8Array new ArrayBuffer src.length
