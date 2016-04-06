@@ -1,4 +1,3 @@
-{inspect}            = require './inspect'
 {remove}             = require './array'
 {objectKeyCount}     = require './hash'
 {isString, isNumber} = require './types'

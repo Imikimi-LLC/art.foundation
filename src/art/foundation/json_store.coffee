@@ -1,4 +1,5 @@
-BaseObject = require "./base_object"
+ClassSystem = require './class_system'
+{BaseObject} = ClassSystem
 module.exports = class JsonStore extends BaseObject
   # store: localStorage or sessionStorage
   #   OR anything that the Storage interface:

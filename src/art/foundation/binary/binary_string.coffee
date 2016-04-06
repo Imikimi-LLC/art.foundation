@@ -3,9 +3,9 @@ Binary = require "./namespace"
 Utf8 = require   "./utf8"
 
 StandardLib = require '../standard_lib'
-BaseObject = require '../base_object'
-
+ClassSystem = require '../class_system'
 {isString, isFunction, isPlainArray, log, min, inspect, readFileAsDataUrl} = StandardLib
+{BaseObject} = ClassSystem
 
 encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 

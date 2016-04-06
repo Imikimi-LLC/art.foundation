@@ -17,8 +17,10 @@ suite "Art.Foundation.RestClient", ->
   test "getJson invalid.json", (done) ->
     RestClient.getJson "#{testAssetRoot}/array_buffer_rest_client_test/invalid.json"
     .then (json) ->
+      log "here"
       assert.fail "should not get here since json is invalid", json
     , (error) ->
+      log "there"
       log invalidJson:error
       self.invalidJson = error
       done()

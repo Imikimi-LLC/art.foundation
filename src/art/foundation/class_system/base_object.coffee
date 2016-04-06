@@ -1,17 +1,16 @@
-CallStack    = require './call_stack'
-Log          = require './log'
-Types        = require './types'
-Unique       = require './unique'
-String       = require './string'
-ShallowClone = require './shallow_clone'
+StandardLib = require '../standard_lib'
+CallStack    = require '../call_stack'
 WebpackHotLoader = require './webpack_hot_loader'
 
-{capitalize, decapitalize} = String
-{log} = Log
-{callStack} = CallStack
-{extendClone} = ShallowClone
-{isFunction, objectName, isPlainObject, functionName, isString} = Types
+{
+  capitalize, decapitalize, log, extendClone
+  isFunction, objectName, isPlainObject, functionName, isString
+  Unique
+} = StandardLib
+
 {nextUniqueObjectId} = Unique
+
+{callStack} = CallStack
 
 module.exports = class BaseObject
   @objectsCreated: 0

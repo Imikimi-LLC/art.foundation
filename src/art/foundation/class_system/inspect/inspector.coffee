@@ -1,11 +1,8 @@
-BaseObject       = require "../base_object"
-Types            = require "../types"
-StringExtensions = require "../string"
-Map              = require "../map"
-Inspect          = require "./namespace"
-
-{escapeJavascriptString} = StringExtensions
-{isString, isArray, isFunction, isObject, isClass, objectName, isBrowserObject} = Types
+StandardLib = require '../../standard_lib'
+BaseObject = require "../base_object"
+Map = require "../map"
+Inspect = require "./namespace"
+{escapeJavascriptString, isString, isArray, isFunction, isObject, isClass, objectName, isBrowserObject} = StandardLib
 
 module.exports = class Inspector extends BaseObject
   @unquotablePropertyRegex: /^([0-9]+|[_a-zA-Z][_0-9a-zA-Z]*)$/

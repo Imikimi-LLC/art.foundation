@@ -1,6 +1,5 @@
 {bound, max, intRand, modulo} = require "./math"
-{log}                 = require "./log"
-{isNumber}            = require './types'
+{isNumber} = require './types'
 
 arraySlice = Array.prototype.slice
 

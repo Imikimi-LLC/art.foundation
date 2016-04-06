@@ -1,5 +1,7 @@
-BaseObject = require  "./base_object"
-{inspectLean} = require "./inspect"
+StandardLib = require './standard_lib'
+ClassSystem = require './class_system'
+{BaseObject} = ClassSystem
+{inspectLean} = StandardLib
 
 class Analytics extends BaseObject
   @defaultCategory: "Foundation.Analytics"

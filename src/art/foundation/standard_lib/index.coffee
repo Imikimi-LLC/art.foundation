@@ -4,8 +4,20 @@
 module.exports =
 StandardLib                    = require './namespace'
 StandardLib.All                = require './all'
+StandardLib.Array              = require './array'
+StandardLib.Eq                 = require './eq'
+StandardLib.Function           = require './function'
+StandardLib.Hash               = require './hash'
+StandardLib.Math               = require './math'
 StandardLib.Promise            = require './promise'
 StandardLib.PromisedFileReader = require './promised_file_reader'
+StandardLib.Regexp             = require './regexp'
+StandardLib.Ruby               = require './ruby'
+StandardLib.ShallowClone       = require './shallow_clone'
+StandardLib.String             = require './string'
+StandardLib.Time               = require './time'
+StandardLib.Types              = require './types'
+StandardLib.Unique             = require './unique'
 StandardLib.finishLoad(
-  ["All","Promise","PromisedFileReader"]
+  ["All","Array","Eq","Function","Hash","Math","Promise","PromisedFileReader","Regexp","Ruby","ShallowClone","String","Time","Types","Unique"]
 )

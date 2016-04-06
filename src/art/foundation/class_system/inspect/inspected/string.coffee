@@ -1,8 +1,10 @@
+StandardLib = require "../../../standard_lib" #foundation
 BaseObject = require "../../base_object"
-Foundation = require "../../namespace" #foundation
+{escapeJavascriptString} = StandardLib
+
 module.exports = class String extends BaseObject
   constructor: (clonedString) ->
     super
     @string = clonedString
 
-  toString: -> Foundation.String.escapeJavascriptString @string
+  toString: -> escapeJavascriptString @string

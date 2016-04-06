@@ -1,7 +1,5 @@
-Types = require './types'
-Time = require './time'
-{isPlainObject} = Types
-{currentSecond} = Time
+StandardLib = require './standard_lib'
+{isPlainObject, currentSecond} = StandardLib
 
 # for debugging - a quick way to count things
 module.exports = class GlobalCounts

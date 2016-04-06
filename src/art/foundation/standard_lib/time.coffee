@@ -1,4 +1,3 @@
-{log} = require "./log"
 {commaize} = require "./math"
 
 # NOTE: performance.now may be slow on iOS 8.0. It's not supported on 8.1+, supposadly due to poor performacne:
@@ -103,5 +102,5 @@ module.exports = class Time
 
   @logTimeSinceLast: (a) =>
     time = @currentSecond()
-    log "#{a} (#{@durationString time - @lastTime if @lastTime})"
+    console.log "#{a} (#{@durationString time - @lastTime if @lastTime})"
     @lastTime = time

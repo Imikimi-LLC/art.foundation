@@ -1,6 +1,7 @@
-{min, max, round} = require "./math"
-BaseObject = require "./base_object"
-{inspect} = require "./inspect"
+StandardLib = require './standard_lib'
+ClassSystem = require './class_system'
+{BaseObject} = ClassSystem
+{min, max, round, inspect} = StandardLib
 
 module.exports = class Stat extends BaseObject
   constructor: ->

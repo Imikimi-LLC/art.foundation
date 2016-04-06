@@ -1,9 +1,10 @@
 # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input
 
-Browser = require    "./namespace"
-{log} = require      "../log"
-BaseObject = require '../base_object'
-{isString, isPlainArray, isPlainObject} = require '../types'
+StandardLib = require '../standard_lib'
+ClassSystem = require '../class_system'
+
+{log, isString, isPlainArray, isPlainObject} = StandardLib
+{BaseObject} = ClassSystem
 
 setCookie = (cookieName, cookieValue, {expires, path}) ->
 
@@ -35,7 +36,7 @@ getCookie = (cookieName) ->
       return value
   ""
 
-class Browser.Cookie extends BaseObject
+module.exports = class Cookie extends BaseObject
   @set: (name, value, options) -> setCookie name, value, options
   @get: (name)                 -> getCookie name
   @remove: (name, options)     -> setCookie name, path:options.path, expires: -1

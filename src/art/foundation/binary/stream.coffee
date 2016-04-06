@@ -1,5 +1,6 @@
+ClassSystem = require '../class_system'
 Binary   = require "./namespace"
-BaseObject = require '../base_object'
+{BaseObject} = ClassSystem
 {binary} = require "./binary_string"
 
 module.exports = class Stream extends BaseObject

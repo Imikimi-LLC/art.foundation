@@ -11,11 +11,12 @@ populateClone would need to take an additional argument - the clone function to 
 ###
 
 Foundation = require "./namespace"
-Map = require        "./map"
-Unique = require     "./unique"
-Inspect = require    "./inspect"
+Map = require "./map"
+
+StandardLib = require '../standard_lib'
+{Unique, inspect} = StandardLib
+
 uniquePropertyName = Unique.PropertyName
-inspect = Inspect.inspect
 
 clonedMap = null
 byStructure = false

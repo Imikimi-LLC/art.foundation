@@ -1,8 +1,10 @@
 StandardLib = require './standard_lib'
-BaseObject = require './base_object'
+ClassSystem = require './class_system'
+WebWorker = require './web_worker'
 
-{Promise, log, isPlainArray, isFunction, isString, mergeInto} = StandardLib
-{isWebWorker} = require './web_worker'
+{Promise, isPlainArray, isFunction, isString, mergeInto} = StandardLib
+{BaseObject, log} = ClassSystem
+{isWebWorker} = WebWorker
 
 ###
 WorkerRPC has two modes: singleton and instanced.

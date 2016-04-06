@@ -1,4 +1,4 @@
-Foundation = require "./namespace"
+Foundation = require "../namespace"
 module.exports = class Log
   # autodetect context from
   #   stack (grabed with Foundation.callStack()). Ignores stack[0]

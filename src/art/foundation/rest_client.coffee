@@ -2,7 +2,8 @@
 #  http://www.w3.org/TR/XMLHttpRequest2/
 #  http://www.html5rocks.com/en/tutorials/file/xhr2/
 StandardLib = require './standard_lib'
-BaseObject = require './base_object'
+ClassSystem = require './class_system'
+{BaseObject} = ClassSystem
 {present, Promise, log, merge} = StandardLib
 
 module.exports = class RestClient extends BaseObject

@@ -14,9 +14,10 @@ Arrays and Objects are assigned a unique id using the Foundation.Unique library.
 "0", "", null, undefined and 0 are all different unique keys and can each have unique values.
 
 ###
-Foundation  = require "./namespace"
-Unique      = require "./unique"
-BaseObject  = require "./base_object"
+StandardLib = require '../standard_lib'
+ClassSystem = require "./namespace"
+BaseObject = require "./base_object"
+{Unique} = StandardLib
 
 class Node
   constructor: (key, value, prev, next) ->
@@ -143,7 +144,7 @@ module.exports = class Map extends BaseObject
 
   # verify nodes are correct
   verifyNodes: ->
-    inspect = Foundation.Inspect.inspect
+    inspect = ClassSystem.Inspect.inspect
     return if !@_first? && !@_last? && @_length == 0 # empty - is OK
     throw new Error "length == #{@length} but @_first is not null" if @_length == 0 && @_first
     throw new Error "length == #{@length} but @_last is not null" if @_length == 0 && @_last

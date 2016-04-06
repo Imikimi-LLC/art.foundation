@@ -1,10 +1,10 @@
 StandardLib = require '../standard_lib'
-BaseObject = require '../base_object'
+ClassSystem = require '../class_system'
 
-Binary   = require "./namespace"
 {binary} = require "./binary_string"
 
 {log, Promise, readFileAsDataUrl} = StandardLib
+{BaseObject} = ClassSystem
 
 bufferSize = 1024
 

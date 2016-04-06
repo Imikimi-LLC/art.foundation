@@ -149,8 +149,8 @@ suite "Art.Foundation.Types", ->
   test "objectName undefined == 'undefined'", ->
     assert.eq 'undefined', objectName undefined
 
-  test "objectName new Map == 'Art.Foundation.Map'", ->
-    assert.eq 'Neptune.Art.Foundation.Map', objectName new Map
+  test "objectName new Map == 'Art.Foundation.ClassSystem.Map'", ->
+    assert.eq 'Neptune.Art.Foundation.ClassSystem.Map', objectName new Map
 
-  test "objectName Map == 'Art.Foundation.Map'", ->
-    assert.eq 'Neptune.Art.Foundation.Map', objectName Map
+  test "objectName Map == 'Art.Foundation.ClassSystem.Map'", ->
+    assert.eq 'Neptune.Art.Foundation.ClassSystem.Map', objectName Map

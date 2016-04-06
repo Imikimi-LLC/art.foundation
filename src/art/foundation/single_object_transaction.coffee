@@ -1,10 +1,8 @@
-BaseObject = require          './base_object'
-Map = require                 './map'
-{removeFirstMatch}  = require './array'
-{rubyTrue} = require          './ruby'
-{eq} = require                './eq'
-{inspect} = require           './inspect'
-{cloneByStructure} = require  './clone'
+StandardLib = require './standard_lib'
+ClassSystem = require './class_system'
+
+{removeFirstMatch, eq, inspect, rubyTrue}  = StandardLib
+{BaseObject, Map, cloneByStructure} = ClassSystem
 
 module.exports = class SingleObjectTransaction extends BaseObject
 

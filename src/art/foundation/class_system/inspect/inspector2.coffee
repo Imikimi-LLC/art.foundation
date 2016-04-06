@@ -1,11 +1,13 @@
+StandardLib = require '../../standard_lib'
 BaseObject =       require "../base_object"
-Types =            require "../types"
-StringExtensions = require "../string"
 Map =              require "../map"
 Inspected =        require "./inspected"
 
-{escapeJavascriptString} = StringExtensions
-{isString, isArray, isFunction, isObject, isPlainObject, isClass, isDate, isRegExp, objectName, isBrowserObject} = Types
+{
+  escapeJavascriptString,
+  isString, isArray, isFunction, isObject, isPlainObject, isClass, isDate, isRegExp, objectName, isBrowserObject
+} = StandardLib
+
 isHTMLImageElement = if self.HTMLImageElement
   (obj) -> obj instanceof HTMLImageElement
 else

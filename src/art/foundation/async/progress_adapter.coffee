@@ -1,7 +1,7 @@
-{isNumber, isFunction, isArray} = require '../types'
-BaseObject = require '../base_object'
-{log} = require '../log'
-{max, min} = Math
+StandardLib = require '../standard_lib'
+ClassSystem = require '../class_system'
+{BaseObject} = ClassSystem
+{isNumber, isFunction, isArray, log, max, min} = StandardLib
 
 module.exports = class ProgressAdapter extends BaseObject
 

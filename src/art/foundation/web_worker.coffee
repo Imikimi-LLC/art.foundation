@@ -1,4 +1,5 @@
-{log} = require "./log"
+StandardLib = require './standard_lib'
+{log} = StandardLib
 
 ###
 SRC:

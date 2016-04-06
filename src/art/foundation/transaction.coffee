@@ -57,13 +57,12 @@ Example initializers:
     to:   noo:4, mar:5
 ###
 
+StandardLib = require './standard_lib'
+ClassSystem = require './class_system'
 SingleObjectTransaction = require './single_object_transaction'
-Map = require                     './map'
-BaseObject = require              './base_object'
-{rubyTrue} = require              './ruby'
-{eq} = require                    './eq'
-{inspect} = require               './inspect'
-{cloneByStructure} = require      './clone'
+
+{rubyTrue, eq, inspect} = StandardLib
+{BaseObject, Map, cloneByStructure} = ClassSystem
 
 module.exports = class Transaction extends BaseObject
   @SingleObjectTransaction: SingleObjectTransaction

@@ -1,5 +1,5 @@
-{log} = require './log'
-{mergeInto} = require './hash'
+StandardLib = require '../standard_lib'
+{log, mergeInto} = StandardLib
 
 ###
 TODO:

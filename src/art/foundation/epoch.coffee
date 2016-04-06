@@ -1,8 +1,9 @@
 Foundation = require './namespace'
 StandardLib = require './standard_lib'
-BaseObject = require './base_object'
+ClassSystem = require './class_system'
 Async = require      "./async"
 
+{BaseObject} = ClassSystem
 {requestAnimationFrame, evalAndThrowErrorsOutOfStack} = Async
 {inspect, Promise} = StandardLib
 

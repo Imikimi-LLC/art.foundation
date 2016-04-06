@@ -1,9 +1,8 @@
-Foundation = require "../namespace"
+StandardLib = require '../../standard_lib'
 Inspect = require    "./namespace"
-Types = require      "../types"
 Inspector = require  "./inspector"
 
-{isString, isArray, isFunction, isObject} = Types
+{isString, isArray, isFunction, isObject, escapeJavascriptString} = StandardLib
 
 customInspectable = (obj) => obj && obj.getInspectedString && !(typeof obj == "function")
 
@@ -11,7 +10,7 @@ customInspectable = (obj) => obj && obj.getInspectedString && !(typeof obj == "f
 Inspect.miniInspect = (obj) =>
   if !obj?                                then ""+obj
   else if customInspectable obj           then inspect obj
-  else if isString obj                    then Foundation.String.escapeJavascriptString obj
+  else if isString obj                    then escapeJavascriptString obj
   else if isArray obj                     then "<<Array length: #{obj.length}>>"
   else if isFunction(obj) && obj.name=="" then "<<function args: #{obj.length}>>"
   else                                         "<<#{typeof obj}: " + (if obj.name then obj.name else obj) + ">>"

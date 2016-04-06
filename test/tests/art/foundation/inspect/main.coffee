@@ -126,7 +126,7 @@ suite "Art.Foundation.Inspect", ->
         @c = 3
 
     o = new Foo.Bar
-    assert.equal "{Neptune.Art.Foundation.Bar a: 1, b: 2, c: 3}", inspect o
+    assert.equal "{Neptune.Art.Foundation.ClassSystem.Bar a: 1, b: 2, c: 3}", inspect o
 
   test "custom inspectors", ->
 
