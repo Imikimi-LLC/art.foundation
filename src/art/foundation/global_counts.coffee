@@ -13,13 +13,13 @@ module.exports = class GlobalCounts
 
   @globalCount: (name, amount = 1) =>
     if isPlainObject amount
-      if last = globalCounts[name]
+      if last = @globalCounts[name]
         for k, v of amount
           last[k] += v
       else
-        globalCounts[name] = amount
+        @globalCounts[name] = amount
     else
-      globalCounts[name] = (globalCounts[name]||0) + amount
+      @globalCounts[name] = (@globalCounts[name]||0) + amount
 
   @countStep: =>
     nextTime = currentSecond()
