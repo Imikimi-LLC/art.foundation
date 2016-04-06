@@ -1,6 +1,7 @@
 StandardLib = require '../standard_lib'
 CallStack    = require '../call_stack'
 WebpackHotLoader = require './webpack_hot_loader'
+Log = require './log'
 
 {
   capitalize, decapitalize, log, extendClone
