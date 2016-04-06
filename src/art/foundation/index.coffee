@@ -14,6 +14,7 @@ Foundation.Clone                   = require './clone'
 Foundation.Epoch                   = require './epoch'
 Foundation.Eq                      = require './eq'
 Foundation.Function                = require './function'
+Foundation.GlobalCounts            = require './global_counts'
 Foundation.Hash                    = require './hash'
 Foundation.JsonStore               = require './json_store'
 Foundation.Log                     = require './log'
@@ -40,5 +41,5 @@ Foundation.Binary                  = require './binary'
 Foundation.Browser                 = require './browser'
 Foundation.Inspect                 = require './inspect'
 Foundation.finishLoad(
-  ["All","Analytics","Array","BaseModule","BaseObject","BatchLoader","CallStack","Clone","Epoch","Eq","Function","Hash","JsonStore","Log","Map","Math","Promise","PromisedFileReader","Regexp","RestClient","Ruby","ShallowClone","SingleObjectTransaction","Stat","String","Time","Transaction","Types","Unique","WebWorker","WebpackHotLoader","WorkerRpc"]
+  ["All","Analytics","Array","BaseModule","BaseObject","BatchLoader","CallStack","Clone","Epoch","Eq","Function","GlobalCounts","Hash","JsonStore","Log","Map","Math","Promise","PromisedFileReader","Regexp","RestClient","Ruby","ShallowClone","SingleObjectTransaction","Stat","String","Time","Transaction","Types","Unique","WebWorker","WebpackHotLoader","WorkerRpc"]
 )
