@@ -3,8 +3,8 @@ ClassSystem = require '../class_system'
 
 {binary} = require "./binary_string"
 
-{log, Promise, readFileAsDataUrl} = StandardLib
-{BaseObject} = ClassSystem
+{Promise, readFileAsArrayBuffer} = StandardLib
+{BaseObject, log} = ClassSystem
 
 bufferSize = 1024
 
@@ -67,7 +67,7 @@ module.exports = class WriteStream extends BaseObject
       when 0 then new Promise (resolve) -> resolve new Uint8Array 0
       when 1 then new Promise (resolve) => resolve @_written[0]
       else
-        readFileAsDataUrl new Blob @_written
+        readFileAsArrayBuffer new Blob @_written
         .then (ab) =>
           @_written = [new Uint8Array ab]
           @_written[0]

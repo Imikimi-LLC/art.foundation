@@ -5,7 +5,7 @@ Utf8 = require   "./utf8"
 StandardLib = require '../standard_lib'
 ClassSystem = require '../class_system'
 {isString, isFunction, isPlainArray, log, min, inspect, readFileAsDataUrl} = StandardLib
-{BaseObject} = ClassSystem
+{BaseObject, inspect} = ClassSystem
 
 encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 
@@ -28,6 +28,7 @@ module.exports = class BinaryString extends BaseObject
     else if arg instanceof ArrayBuffer        then new Uint8Array arg
     else if arg instanceof Uint8Array         then arg
     else if isString arg                      then Utf8.toBuffer arg
+    else if isFunction arg.toString           then Utf8.toBuffer arg.toString()
     else throw new Error "invalid Binary string constructor argument: #{inspect arg}"
     @length = @bytes.length
 
