@@ -91,7 +91,7 @@ module.exports = class BinaryString extends BaseObject
         else
           y += " "
         y
-      array.join('') + "   #{characters.join ''}\n"
+      "BinaryString length: #{@length} bytes\n#{array.join ''}   #{characters.join ''}\n"
 
 
   ###
