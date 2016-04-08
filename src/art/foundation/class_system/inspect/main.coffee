@@ -4,7 +4,12 @@ Inspector = require  "./inspector"
 
 {isString, isArray, isFunction, isObject, escapeJavascriptString} = StandardLib
 
-customInspectable = (obj) => obj && obj.getInspectedString && !(typeof obj == "function")
+customInspect = (obj) =>
+  return unless obj && !isFunction obj
+  if obj.getInspectedString
+    obj.getInspectedString()
+  else if isFunction(obj.inspect) && obj.inspect.length == 0
+    obj.inspect()
 
   # a non-recursive inspect
 Inspect.miniInspect = (obj) =>
@@ -20,8 +25,8 @@ Inspect.inspectLean = inspectLean = (obj, options) =>
   # if isArray obj
   #   (inspect i, options for i in obj).join ', '
   # else
-  if customInspectable obj
-    obj.getInspectedString()
+  if inspected = customInspect obj
+    inspected
   else if isObject obj
     keys = Object.keys obj
     last = keys.length - 1

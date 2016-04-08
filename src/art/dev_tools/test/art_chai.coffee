@@ -10,7 +10,7 @@ eqFailure = (a, b, optionalInfo, method) ->
     if aInspected == bInspected
       aInspected = inspectLean a, noCustomInspectors: true
       bInspected = inspectLean b, noCustomInspectors: true
-    message = "expected\n  #{aInspected}\nto equal (#{method})\n  #{bInspected}\n"
+    message = "expected\n  #{aInspected.replace /\n/g, "\n  "}\nto equal (#{method})\n  #{bInspected.replace /\n/g, "\n  "}\n"
     message += "info: #{optionalInfo}\n" if optionalInfo
     assert.fail a, b, message
 
@@ -22,7 +22,7 @@ withinFailure = (a, b, c, optionalInfo, method) ->
       aInspected = inspectLean a, noCustomInspectors: true
       bInspected = inspectLean b, noCustomInspectors: true
       cInspected = inspectLean c, noCustomInspectors: true
-    message = "expected\n  #{aInspected}\nto be >=\n  #{bInspected}\nand <=\n  #{cInspected}"
+    message = "expected\n  #{aInspected.replace /\n/g, "\n  "}\nto be >=\n  #{bInspected.replace /\n/g, "\n  "}\nand <=\n  #{cInspected.replace /\n/g, "\n  "}"
     message += "\ninfo: #{optionalInfo}\n" if optionalInfo
     assert.fail [a, c], b, message
 
@@ -48,7 +48,7 @@ assert.within = (a, b, c, optionalInfo) ->
 
 assert.neq = (a, b, optionalInfo) ->
   if eq a, b, true
-    message = "expected\n  #{inspect a}\nto NOT equal (eq)\n  #{inspect b}\n"
+    message = "expected\n  #{(inspect a).replace /\n/g, "\n  "}\nto NOT equal (eq)\n  #{(inspect b).replace /\n/g, "\n  "}\n"
     message += "info: #{optionalInfo}\n" if optionalInfo
     assert.fail "1", "2", message
 

@@ -127,6 +127,7 @@ module.exports = class Map extends BaseObject
   map: (f) -> f node.key, node.value for node in @nodes
 
   inspect: (inspector) ->
+    return ClassSystem.Inspect.inspect @ unless inspector
     _inspect = (o) ->
       if typeof o is "string" && o.match /^[a-zA-Z_][a-zA-Z_0-9]*$/
         inspector.put o

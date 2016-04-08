@@ -37,6 +37,7 @@ module.exports = class SingleObjectTransaction extends BaseObject
     "#{inspect @object, 0} from:#{inspect @from,1} to:#{inspect @to,1}"
 
   inspect: (inspector)->
+    return ClassSystem.Inspect.inspect @ unless inspector
     inspector.put "#{@object.classPathName}:"
     for k in @props
       inspector.put "\n    #{k}: "

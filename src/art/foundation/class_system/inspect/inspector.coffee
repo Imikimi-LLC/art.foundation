@@ -101,7 +101,11 @@ module.exports = class Inspector extends BaseObject
     else if isString obj                                    then @put escapeJavascriptString obj
     else if isArray obj                                     then @inspectArray obj
     else if isClass(obj)                                    then @put objectName(obj)
-    else if @allowCustomInspectors && Inspector.customInspectable obj then obj.inspect @
+    else if @allowCustomInspectors && Inspector.customInspectable obj
+      if obj.inspect.length > 0
+        obj.inspect @
+      else
+        @put obj.inspect()
     else if isObject(obj) || isFunction(obj)                then @inspectObject obj
     else                                                         @put "#{obj}"
 

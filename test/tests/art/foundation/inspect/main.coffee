@@ -3,13 +3,7 @@ Foundation = require "art-foundation"
 clone = Foundation.Clone.clone
 inspect = Foundation.Inspect.inspect
 
-class Point
-  constructor: (x,y) ->
-    @x = x
-    @y = y
-  inspect: (inspector)-> inspector.put "(#{@x}, #{@y})"
-
-suite "Art.Foundation.Inspect", ->
+suite "Art.Foundation.Inspect.basic", ->
   test "inspect []", -> assert.equal "[]", inspect []
   test "inspect 1", -> assert.equal "1", inspect 1
   test "inspect 'hi'", -> assert.equal '"hi"', inspect 'hi'
@@ -128,13 +122,35 @@ suite "Art.Foundation.Inspect", ->
     o = new Foo.Bar
     assert.equal "{Neptune.Art.Foundation.ClassSystem.Bar a: 1, b: 2, c: 3}", inspect o
 
-  test "custom inspectors", ->
+suite "Art.Foundation.Inspect.custom inspect", ->
+  test "custom signature: inspect: (inspector) -> ", ->
+    class Point
+      constructor: (x,y) ->
+        @x = x
+        @y = y
+      inspect: (inspector) -> inspector.put "(#{@x}, #{@y})"
+
+    assert.equal "(4, 5)", inspect (new Point(4,5))
+    assert.equal "{area: (4, 5)}", inspect {area: new Point(4,5)}
+    assert.equal "{area: [(4, 5)]}", inspect {area: [new Point(4,5)]}
+
+  test "custom signature: inspect: -> ", ->
+    class Point
+      constructor: (x,y) ->
+        @x = x
+        @y = y
+      inspect: -> "(#{@x}, #{@y})"
 
     assert.equal "(4, 5)", inspect (new Point(4,5))
     assert.equal "{area: (4, 5)}", inspect {area: new Point(4,5)}
     assert.equal "{area: [(4, 5)]}", inspect {area: [new Point(4,5)]}
 
   test "no custom inspectors", ->
+    class Point
+      constructor: (x,y) ->
+        @x = x
+        @y = y
+      inspect: (inspector) -> inspector.put "(#{@x}, #{@y})"
 
     assert.equal "{Point x: 4, y: 5}", inspect (new Point(4,5)), noCustomInspectors: true
     assert.equal "{area: {Point x: 4, y: 5}}", inspect {area: new Point(4,5)}, noCustomInspectors: true

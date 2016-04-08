@@ -1,5 +1,5 @@
 StandardLib = require '../standard_lib'
-{upperCamelCase, compactFlatten} = StandardLib
+{upperCamelCase, compactFlatten, isString} = StandardLib
 
 module.exports = class ObjectTreeFactory
   deepArgsProcessing = (array, children) ->
@@ -57,7 +57,7 @@ module.exports = class ObjectTreeFactory
   IN:
     list: a string or abitrary structure of arrays, nulls and strings
       each string is split into tokens and each token is used as the nodeName to create a Tree-factory
-    nodeFactory: ->
+    nodeFactory: (nodeName, props, children) -> node
       IN:
         nodeName: node-type name
         props:    plain object mapping props to prop-values
@@ -67,11 +67,12 @@ module.exports = class ObjectTreeFactory
   OUT:
     map from nodeNames (upperCamelCased) to the factories returned from createObjectTreeFactory
   ###
-  @createObjectTreeFactories: (list, nodeFactory) =>
+  @createObjectTreeFactories: (list, nodeFactory, suffix = '') =>
     out = {}
+    list = [list] if isString list
     for str in compactFlatten list
       for nodeName in str.match /[a-z0-9_]+/ig
         do (nodeName) =>
-          out[upperCamelCase nodeName] = @createObjectTreeFactory (props, children) ->
+          out[upperCamelCase(nodeName) + suffix] = @createObjectTreeFactory (props, children) ->
             nodeFactory nodeName, props, children
     out

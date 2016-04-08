@@ -43,6 +43,30 @@ module.exports = class BaseObject
 
   @inspect: -> @getClassPathName()
 
+  ###
+  IN: ()
+  OUT: string
+
+  Can override with same or alternate, recursion-block-supported signature:
+    IN: (inspector) ->
+    OUT: if inspector then null else string
+
+    To handle the case where the inspector is not set, we
+    recommneded declaring your 'inspect' as follows:
+      inspect: (inspector) ->
+        return Foundation.inspect @ unless inspector
+        # ...
+        # custom code which writes all output to inspector.put
+        # and uses inspector.inspect for inspecting sub-objects
+        # ...
+        null
+
+    EFFECT:
+      call inspector.put one or multiple times with strings to add to the inspected output
+      call inspector.inspect foo to sub-inspect other objects WITH RECURSION BLOCK
+  ###
+  # inspect: -> @getClassPathName()
+
   # @name is not settable, so we have @_name as an override for use with dynamically generated classes
   @getName: ->
     @_name || @name

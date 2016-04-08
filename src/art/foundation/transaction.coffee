@@ -89,6 +89,7 @@ module.exports = class Transaction extends BaseObject
     @saveFromValues()
 
   inspect: (inspector)->
+    return ClassSystem.Inspect.inspect @ unless inspector
     inspector.put "#{@classPathName}:"
     @inspectParts inspector
 

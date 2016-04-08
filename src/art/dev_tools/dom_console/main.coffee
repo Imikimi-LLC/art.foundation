@@ -243,11 +243,21 @@ define [
       else
         @objectToDomBasic inspectedObject, options
 
+    # if there are new-lines in the literal, show with PRE instead of SPAN
+    literalToDomHelper = (classes, literalString) ->
+      type = if literalString.match /\n|<|>/
+        literalString = literalString.replace /[<]/g, "&lt;"
+        literalString = literalString.replace /[>]/g, "&gt;"
+        "pre"
+      else
+        "span"
+      $("<#{type}/>", class:classes).append literalString
+
     literalToDom: (inspectedObject) ->
-      $("<span/>", class:"literal").text inspectedObject.toString()
+      literalToDomHelper "literal", inspectedObject.toString()
 
     literalWithInspectedToDom: (inspectedObject) ->
-      $("<span/>", class:"inspected literal").append inspectedObject.inspected
+      literalToDomHelper "inspected literal", inspectedObject.inspected
 
     colorToDom: (clr) ->
       displayString = if isString(clrString = clr)
