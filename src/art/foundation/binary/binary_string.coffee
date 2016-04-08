@@ -65,6 +65,8 @@ module.exports = class BinaryString extends BaseObject
 
     return @length - b.length
 
+  inspect: -> @getInspectedString()
+
   @getter
     uint8Array: -> @bytes
     arrayBuffer: -> @bytes.buffer

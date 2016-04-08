@@ -73,10 +73,7 @@ module.exports = class Inspector2 extends BaseObject
         result[k] = @inspectInternal obj[k] for k in keys
       res = new Inspected.Object result, name, obj
 
-      if isFunction obj.getInspectedString
-        res.inspected = obj.getInspectedString()
-      else if isFunction obj.inspect
-        res.inspected = obj.inspect()
+      res.inspected = obj.inspect() if isFunction obj.inspect
       res
 
   addPendingTask: ->

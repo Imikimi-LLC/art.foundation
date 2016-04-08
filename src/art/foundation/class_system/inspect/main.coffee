@@ -6,10 +6,7 @@ Inspector = require  "./inspector"
 
 customInspect = (obj) =>
   return unless obj && !isFunction obj
-  if obj.getInspectedString
-    obj.getInspectedString()
-  else if isFunction(obj.inspect) && obj.inspect.length == 0
-    obj.inspect()
+  obj.inspect() if isFunction obj.inspect
 
   # a non-recursive inspect
 Inspect.miniInspect = (obj) =>
