@@ -44,6 +44,7 @@ module.exports = class BaseObject
   @inspect: -> @getClassPathName()
 
   ###
+  inspect: ->
   IN: ()
   OUT: string
 
@@ -64,8 +65,30 @@ module.exports = class BaseObject
     EFFECT:
       call inspector.put one or multiple times with strings to add to the inspected output
       call inspector.inspect foo to sub-inspect other objects WITH RECURSION BLOCK
+
+  # Example 1:
+  inspect: (inspector) ->
+    return Foundation.inspect @ unless inspector
+    inspector.put @getClassPathName()
+
+  # Example 2:
+  inspect: ->
+    @getClassPathName()
   ###
-  # inspect: -> @getClassPathName()
+
+  ###
+  getInspectObjects: -> plainObjects
+
+  usually implemented this way:
+  @getter inspectObjects: -> plainObjects or objects which implement "inspect"
+
+  You can provide this function for fine-grained control of what Inspector2 outputs and hence
+  what DomConsole displays.
+
+  If you would like for a string to appear without quotes, use:
+    {inspect: -> 'your string without quotes here'}
+  ###
+
 
   # @name is not settable, so we have @_name as an override for use with dynamically generated classes
   @getName: ->

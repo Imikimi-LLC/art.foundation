@@ -2,7 +2,7 @@ StandardLib = require '../../standard_lib'
 Inspect = require    "./namespace"
 Inspector = require  "./inspector"
 
-{isString, isArray, isFunction, isObject, escapeJavascriptString} = StandardLib
+{isString, isArray, isFunction, isObject, escapeJavascriptString, isPlainObject, isPlainArray} = StandardLib
 
 customInspect = (obj) =>
   return unless obj && !isFunction obj
@@ -17,32 +17,15 @@ Inspect.miniInspect = (obj) =>
   else if isFunction(obj) && obj.name=="" then "<<function args: #{obj.length}>>"
   else                                         "<<#{typeof obj}: " + (if obj.name then obj.name else obj) + ">>"
 
-  # strips enclosing '{}' if they exist
-Inspect.inspectLean = inspectLean = (obj, options) =>
-  # if isArray obj
-  #   (inspect i, options for i in obj).join ', '
-  # else
-  if inspected = customInspect obj
-    inspected
-  else if isObject obj
-    keys = Object.keys obj
-    last = keys.length - 1
-    inspected = for k, i in keys
-      v = obj[k]
-      v = if i == last
-        inspectLean v, options
-      else
-        inspect v, options
-      k = inspect k unless Inspector.unquotablePropertyRegex.test k
-      "#{k}: #{v}"
-    inspected.join ', '
+# strips enclosing '{}' or '[]' from plainObjects and plainArrays
+Inspect.inspectLean = inspectLean = (object, options) =>
+  if !isFunction(object.inspect) && (isPlainObject(object) || isPlainArray(object))
+    fullInspect = inspect object, options
+    match = fullInspect.match /^\((.*)\)$|^\[(.*)\]$|^\{(.*)\}$/
+    match[1] || match[2] || match[3]
   else
-    inspect obj, options
+    inspect object
 
-  # main inspect
-  # options
-  #   maxDepth: 10 # don't recurse more than 10 levels deep
-  #   noCustomInspectors: false # if true, then objects implemented "inspect" methods won't be used.
 Inspect.inspect = inspect = (obj, options = {}) =>
     inspector = new Inspector options
     inspector.inspect obj

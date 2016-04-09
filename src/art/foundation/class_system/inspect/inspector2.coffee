@@ -84,7 +84,7 @@ module.exports = class Inspector2 extends BaseObject
     @completionCallBack() if @pendingTasks == 0
 
   inspectByType: (obj) ->
-    obj = obj.inspectStructure() if isFunction obj?.inspectStructure
+    obj = obj.getInspectObjects() if isFunction obj?.getInspectObjects
     if obj == null ||
         obj == undefined ||
         obj == true ||
