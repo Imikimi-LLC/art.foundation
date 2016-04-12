@@ -15,7 +15,57 @@ Foundation = require 'art-foundation'
   stableSort
   log
   findSortedFirst
+  arrayWithElementValueMoved
+  arrayWithElementMoved
+  moveArrayElement
 } = Foundation
+
+suite "Art.Foundation.Array.move", ->
+  moveArrayElementTest = (inArray, from, to, outArray) ->
+    test "moveArrayElement #{inspect inArray}, #{from}, #{to} >>> #{inspect outArray}", ->
+      assert.eq outArray, moveArrayElement inArray, from, to
+
+  moveArrayElementTest [1,2,3], 0, 0, [1,2,3]
+  moveArrayElementTest [1,2,3], 0, 1, [2,1,3]
+  moveArrayElementTest [1,2,3], 0, 2, [2,3,1]
+
+  moveArrayElementTest [1,2,3], 1, 0, [2,1,3]
+  moveArrayElementTest [1,2,3], 1, 1, [1,2,3]
+  moveArrayElementTest [1,2,3], 1, 2, [1,3,2]
+
+  moveArrayElementTest [1,2,3], 2, 0, [3,1,2]
+  moveArrayElementTest [1,2,3], 2, 1, [1,3,2]
+  moveArrayElementTest [1,2,3], 2, 2, [1,2,3]
+
+  largeMoveArrayElementTest = (from, to, tests) ->
+    test "large moveArrayElement from:#{from}, to:#{to}", ->
+      a = (i for i in [0...1000])
+      assert.eq a.length, 1000
+      assert.eq a[0], 0
+      assert.eq a[999], 999
+      largeArray = moveArrayElement a, from, to
+      assert.eq largeArray.length, 1000
+      for k, v of tests
+        index = k | 0
+        assert.eq largeArray[index], v, "largeArray[#{index}] should == #{v}"
+
+  largeMoveArrayElementTest 999, 0,
+    0: 999
+    1: 0
+    998: 997
+    999: 998
+
+  largeMoveArrayElementTest 0, 999,
+    0: 1
+    1: 2
+    998: 999
+    999: 0
+
+  test 'arrayWithElementMoved [1,2,3], 2, 0', ->
+    assert.eq [3,1,2], arrayWithElementMoved [1,2,3], 2, 0
+
+  test 'arrayWithElementValueMoved [1,2,3], 3, 0', ->
+    assert.eq [3,1,2], arrayWithElementValueMoved [1,2,3],3, 0
 
 suite "Art.Foundation.Array", ->
 

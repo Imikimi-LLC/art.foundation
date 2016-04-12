@@ -37,17 +37,6 @@ flattenIfNeeded = (array, keepTester = keepAll, output)->
   else
     array
 
-moveArrayElement1 = (array, from, to) ->
-  array.splice to, 0, array[from]
-  array
-
-moveArrayElement2 = (array, from, to) ->
-  tmp = array[from]
-  if from < to then array[i] = array[i + 1] for i in [from..to-1] by 1
-  else              array[i] = array[i - 1] for i in [from..to+1] by 1
-  array[to] = tmp
-  array
-
 module.exports = class ArrayExtensions
 
   ###
@@ -261,8 +250,18 @@ module.exports = class ArrayExtensions
     a
 
   # included here only for testing; use @moveArrayElement as a client
-  @moveArrayElement1: moveArrayElement1
-  @moveArrayElement2: moveArrayElement2
+  @_moveArrayElementLargeArray: _moveArrayElementLargeArray = (array, from, to) ->
+    array.splice to, 0, array.splice(from, 1)[0]
+    array
+
+  @_moveArrayElementSmallArray: _moveArrayElementSmallArray = (array, from, to) ->
+    from = from | 0
+    to = to | 0
+    tmp = array[from]
+    if from < to then array[i] = array[i + 1] for i in [from..to-1] by 1
+    else              array[i] = array[i - 1] for i in [from..to+1] by -1
+    array[to] = tmp
+    array
 
   # move one element of the array FROM one location TO another.
   # IN: from/to are moduloed into valid indexes
@@ -272,12 +271,12 @@ module.exports = class ArrayExtensions
     to   = modulo to   | 0, array.length
 
     # 300 is a somewhat arbitrary value. It's approximately where
-    # moveArrayElement1 becomes faster on Chrome 36.0.1985.143 (2014/9/21)
+    # _moveArrayElementLargeArray becomes faster on Chrome 36.0.1985.143 (2014/9/21)
     # http://jsperf.com/array-prototype-move/19
     if Math.abs(from - to) > 300
-      moveArrayElement1 array, from, to
+      _moveArrayElementLargeArray array, from, to
     else
-      moveArrayElement2 array, from, to
+      _moveArrayElementSmallArray array, from, to
     array
 
   @arrayWithElementMoved: arrayWithElementMoved = (array, from, to) ->
