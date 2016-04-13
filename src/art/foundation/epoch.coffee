@@ -45,10 +45,14 @@ module.exports = class Epoch extends BaseObject
 
   OUT: promise.then (result of calling f() or null if no f) ->
   ###
-  onNextReady: (f, forceNextEpoch = true) ->
+  onNextReady: (f, forceNextEpoch = true, passThroughArgument) ->
     @queueNextEpoch() if forceNextEpoch && !@_processingEpoch
 
-    new Promise (resolve) => @_nextReadyQueue.push -> resolve f?()
+    new Promise (resolve) => @_nextReadyQueue.push ->
+      resolve if f
+        f passThroughArgument
+      else
+        passThroughArgument
 
   _ready: ->
     return unless (nrq = @_nextReadyQueue).length > 0
