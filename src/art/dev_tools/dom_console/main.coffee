@@ -13,11 +13,13 @@ Atomic = require 'art-atomic'
 DomConsole = require './namespace'
 
 {color, Color, point, Point, matrix, Matrix, rect, Rectangle} = Atomic
-{BaseObject, inspect, clone, merge, Map, nextTick, timeout, flatten,
-isArray, isString, isFunction
-isNumber
-createWithPostCreate
-colorRegex
+{
+  BaseObject, inspect, clone, merge, Map, nextTick, timeout, flatten,
+  isArray, isString, isFunction
+  isNumber
+  createWithPostCreate
+  colorRegex
+  Promise
 } = Foundation
 
 isImage = (o) -> o && ((typeof o.toImage == "function") || o.constructor == HTMLImageElement)
@@ -306,22 +308,20 @@ module.exports = createWithPostCreate class DomConsole.Console extends BaseObjec
     else
       @literalToDom inspectedObject
 
-  lastLogPromise = Promise.resolve()
+  logSerializer = new Promise.Serializer
   logCore: (m, callStack, name, options = {}) ->
-    lastLogPromise = lastLogPromise.then =>
-      new Promise (resolve) =>
-        console.log m
-        options.treeView = true
-        {maxDepth} = options
-        unless isNumber maxDepth
-          maxDepth = 10
+    logSerializer.then => new Promise (resolve) =>
+      console.log m
+      options.treeView = true
+      {maxDepth} = options
+      maxDepth = 10 unless isNumber maxDepth
 
-        inspector = new Foundation.Inspect.Inspector2 withImages:true, maxDepth:maxDepth
-        domEl = @newLogLine()
+      inspector = new Foundation.Inspect.Inspector2 withImages: true, maxDepth: maxDepth
+      domEl = @newLogLine()
 
-        if typeof m is "string"
-          resolve @appendLog @format domEl.append($("<pre/>").text(m)), options
-        else
-          inspector.inspect m, (inspected) =>
-            domEl.append @toDom inspected, options
-            resolve @appendLog @format domEl, options
+      if typeof m is "string"
+        resolve @appendLog @format domEl.append($("<pre/>").text(m)), options
+      else
+        inspector.inspect m, (inspected) =>
+          domEl.append @toDom inspected, options
+          resolve @appendLog @format domEl, options
