@@ -17,6 +17,7 @@ module.exports = class ArtPromise #extends Promise
   @race: Promise.race
   @reject: Promise.reject
   @resolve: Promise.resolve
+  @then: (f) -> Promise.resolve().then f
 
   ###
   Serializer makes it easy to ensure promise-returning functions are invoked in order, after each
