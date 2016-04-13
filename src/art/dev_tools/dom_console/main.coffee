@@ -308,8 +308,8 @@ module.exports = createWithPostCreate class DomConsole.Console extends BaseObjec
 
   lastLogPromise = Promise.resolve()
   logCore: (m, callStack, name, options = {}) ->
-    lastLogPromise.then =>
-      lastLogPromise = new Promise (resolve) =>
+    lastLogPromise = lastLogPromise.then =>
+      new Promise (resolve) =>
         console.log m
         options.treeView = true
         {maxDepth} = options

@@ -20,15 +20,15 @@ Inspect.miniInspect = (obj) =>
 # strips enclosing '{}' or '[]' from plainObjects and plainArrays
 Inspect.inspectLean = inspectLean = (object, options) =>
   fullInspect = inspect object, options
-  if !isFunction(object.inspect) && (isPlainObject(object) || isPlainArray(object))
-    match = fullInspect.match /^\((.*)\)$|^\[(.*)\]$|^\{(.*)\}$/
+  if !isFunction(object?.inspect) && (isPlainObject(object) || (isPlainArray(object) && object.length > 1))
+    match = fullInspect.match /^\[(.+)\]$|^\{(.+)\}$/
     if match then match[1] || match[2] || match[3] else fullInspect
   else
     fullInspect
 
 Inspect.inspect = inspect = (obj, options = {}) =>
-    inspector = new Inspector options
-    inspector.inspect obj
-    inspector.result
+  inspector = new Inspector options
+  inspector.inspect obj
+  inspector.result
 
-    # inspect obj, options
+  # inspect obj, options

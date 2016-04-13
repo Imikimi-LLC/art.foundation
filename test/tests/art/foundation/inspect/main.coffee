@@ -1,7 +1,28 @@
 {assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
 Foundation = require "art-foundation"
 clone = Foundation.Clone.clone
-inspect = Foundation.Inspect.inspect
+{inspect, inspectLean} = Foundation.Inspect
+
+suite "Art.Foundation.Inspect.inspectLean.basics work like inspect", ->
+  test "inspectLean 1", -> assert.equal "1", inspectLean 1
+  test "inspectLean ->", -> assert.equal "function()", inspectLean ->
+  test "inspectLean 'hi'", -> assert.equal '"hi"', inspectLean "hi"
+  test "inspectLean null", -> assert.equal "null", inspectLean null
+  test "inspectLean undefined", -> assert.equal "undefined", inspectLean undefined
+
+suite "Art.Foundation.Inspect.inspectLean.plain arrays - brackets are stripped for length >= 2", ->
+  test "inspectLean []", -> assert.equal "[]", inspectLean []
+  test "inspectLean [123]", -> assert.equal "[123]", inspectLean [123]
+  test "inspectLean [123, 456]", -> assert.equal "123, 456", inspectLean [123, 456]
+
+suite "Art.Foundation.Inspect.inspectLean.plain objects - curlies are stripped for length >= 1", ->
+  test "inspectLean {}", -> assert.equal "{}", inspectLean {}
+  test "inspectLean {a:123}", -> assert.equal "a: 123", inspectLean {a:123}
+  test "inspectLean {inspect:->'hi'}", -> assert.equal "hi", inspectLean inspect: -> "hi"
+  test "inspectLean {inspect:->'{}'}", -> assert.equal "{}", inspectLean inspect: -> "{}"
+
+suite "Art.Foundation.Inspect.inspectLean.custom inspector overrides inspectLean", ->
+  test "inspectLean {inspect:->'{a:b}'}", -> assert.equal "{a:b}", inspectLean inspect: -> "{a:b}"
 
 suite "Art.Foundation.Inspect.basic", ->
   test "inspect []", -> assert.equal "[]", inspect []

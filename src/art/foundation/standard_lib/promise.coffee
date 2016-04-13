@@ -18,6 +18,85 @@ module.exports = class ArtPromise #extends Promise
   @reject: Promise.reject
   @resolve: Promise.resolve
 
+  ###
+  Serializer makes it easy to ensure promise-returning functions are invoked in order, after each
+  promise is resolved.
+
+  USAGE:
+    serializer = new ArtPromise.Serializer
+    serializer.then -> doA()
+    # then execute sometime later, possbly asynchronously:
+    serializer.then -> doB()
+    # then execute sometime later, possbly asynchronously:
+    serializer.then (doBResult) ->
+      # doA and doB have completed and any returning promises resolved
+      # the result of the last 'then' is passed in
+
+  OR
+    serializer = new ArtPromise.Serializer
+    list.forEach serializer.serialize f = (element) -> # do something with element, possibly returning a promise
+    serializer.then (lastFResult) ->
+      # do something after the last invocation of f completes
+      # the result of the last invocation of 'f' is passed in
+
+  OR
+    serializer = new ArtPromise.Serializer
+    serializedA = serializer.serialize aFunction
+    serializedB = serializer.serialize bFunction
+
+    serializedB()
+    serializedB()
+    serializedA()
+    serializedB()
+
+    serializer.then (lastBFunctionResult) ->
+      # this is invoked AFTER:
+      # evaluated in order, waiting for any promises:
+      #   bFunction, bFunciton, aFunction, bFunction
+  ###
+  class ArtPromise.Serializer
+    constructor: -> @_lastPromise = ArtPromise.resolve()
+
+    # a new function, that acts just like 'f' (except if f doesn't return a promise, a promise wrapping f's result is returned)
+    # EXCEPT for a guarantee: each f call, and any resulting promises, is resolved before the next f is invoked.
+    # IN: any function with any signature
+    # OUT: (f's signature) -> promise.then (fResult) ->
+    serialize: (f) ->
+      =>
+        args = arguments
+        @then -> f args...
+
+    # invoke f after the last serialized invocation's promises are resolved
+    # OUT: promise.then (fResult) ->
+    then: (f) -> @_lastPromise = @_lastPromise.then f
+
+  ###
+  OUT: serializedF = -> Promise.resolve f arguments...
+    IN: any arguments
+    EFFECT: f is invoked with arguments passed in AFTER the last invocation of serializedF completes.
+    OUT: promise.then -> results from f
+
+  NOTE: 'f' can return a promise, but it doesn't have to. If it does return a promise, the next
+    'f' invocation will not start until and if the previous one's promise completes.
+
+  USAGE:
+    serializedF = Promise.serialize f = -> # do something, possibly returning a promise
+    serializedF()
+    serializedF()
+    serializedF()
+    .then (resultOfLastF)->
+      # executed after f was executed and any returned promises resolved, 3 times, sequentially
+
+  OR
+    serializedF = Promise.serialize f = (element) -> # do something with element, possibly returning a promise
+    Promise.all (serializedF item for item in list)
+    .then (results) ->
+      # f was excuted list.length times sequentially
+      # results contains the result values from each execution, in order
+
+  ###
+  @serialize: (f) -> new ArtPromise.Serializer().serialize f
+
   constructor: (_function)->
     @resolve = @reject = null
     @_nativePromise = null

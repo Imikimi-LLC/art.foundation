@@ -1,6 +1,6 @@
 {assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
 Foundation = require "art-foundation"
-{WorkerRpc, BaseObject, timeout, Promise} = Foundation
+{WorkerRpc, BaseObject, timeout, Promise, intRand, log} = Foundation
 
 suite "Art.Foundation.Promise", ->
 
@@ -69,3 +69,37 @@ suite "Art.Foundation.Promise", ->
     .then ->
       assert.ok count >= 1
       assert.ok count <= 3
+
+suite "Art.Foundation.Promise.Serializer", ->
+  test "Promise.serialize", ->
+    count = 0
+    delays = [100, 0, 10]
+    delaysUsed = []
+    order = []
+    f = Promise.serialize ->
+      timeout delays[count], ->
+        delaysUsed.push delays[count]
+        order.push count++
+
+    f()
+    f()
+    f()
+    .then ->
+      assert.eq order, [0, 1, 2]
+      assert.eq delaysUsed, delays
+
+  test "serializer with forEach", ->
+    count = 0
+    delays = [100, 0, 10]
+    delaysUsed = []
+    order = []
+
+    serializer = new Promise.Serializer
+    delays.forEach serializer.serialize (delay) ->
+      timeout delay, ->
+        delaysUsed.push delay
+        order.push count++
+
+    serializer.then ->
+      assert.eq order, [0, 1, 2]
+      assert.eq delaysUsed, delays
