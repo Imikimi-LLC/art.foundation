@@ -20,25 +20,66 @@ module.exports = class BaseObject
     @objectsCreated = 0
     @objectsCreatedByType = {}
 
-  @imprintObject: imprintObject = (toObject, fromObject, clearOldState = false) ->
-    if clearOldState
+  ###
+  NOTE: only hasOwnProperties are considered! Inherited properties are not touched.
+  IN:
+    toObject:   object will be altered to be an "imprint" of fromObject
+    fromObject: object pattern used to imprint toObject
+    preserveState:
+      false:
+        toObject has every property updated to exactly match fromObject
+
+        This includes:
+          1. delete properties in toObject that are not in fromObject
+          2. add every property in fromObject but not in toObject
+          3. overwriting every property in toObject also in fromObject
+
+      true:
+        Attempts to preserve the state of toObject while updating its functionality.
+        This means properties which are functions in either object are updated.
+
+        WARNING: This is a grey area for JavaScript. It is not entirely clear what is
+          state and what is 'functionality'. I, SBD, have made the following heuristic decisions:
+
+        Imprint actions taken when preserving State:
+
+        1. DO NOTHING to properties in toObject that are not in fromObject
+        2. add every property in fromObject but not in toObject
+        3. properties in toObject that are also in fromObject are updated
+          if one of the following are true:
+          - isFunction fromObject[propName]
+          - isFunction toObject[propName]
+          - !toObject.hasOwnProperty propName
+  ###
+  @imprintObject: imprintObject = (toObject, fromObject, preserveState = false) ->
+
+    unless preserveState
       for k, v of toObject when !fromObject.hasOwnProperty k
         delete toObject[k]
 
-    for k, v of fromObject when fromObject.hasOwnProperty k
-      toObject[k] = fromObject[k]
+    for k, fromValue of fromObject when fromObject.hasOwnProperty k
+      if !preserveState || isFunction(fromValue) || isFunction(toObject[k]) || !toObject.hasOwnProperty k
+        toObject[k] = fromValue
 
     fromObject
 
+  ###
+  imprints both the class and its prototype.
+
+  preserved in spite of imprintObject's rules:
+    @namespace
+    @::constructor
+  ###
   @imprintFromClass: (updatedKlass) ->
-    # SBD: I -think- we shoud refrain from clobbering state on the class object.
-    #   For example, @_singleton needs to not be deleted.
-    #   I also have a usecase in the KimiEditor where a model has a unique-id counter. That shouldn't get reset.
-    # It should be OK to do on the prototype, though. No runtime state should be set there.
-    #   - The instances of that prototype store the runtime state.
     unless updatedKlass == @
-      imprintObject @, updatedKlass, false
-      imprintObject @::, updatedKlass::, true
+      oldNamespace = @namespace
+      oldConstructor = @::constructor
+
+      imprintObject @, updatedKlass, true
+      imprintObject @::, updatedKlass::, false
+
+      @::constructor = oldConstructor
+      @namespace = oldNamespace
     @
 
   @inspect: -> @getClassPathName()
@@ -107,18 +148,38 @@ module.exports = class BaseObject
     _module should be the CommonJS 'module'
     klass: class object which extends BaseObject
 
-  OUT: originalKlass.postCreate hotReloaded, classModuleState, klass, _module
+  OUT: liveClass.postCreate(
+    hotReloaded
+    classModuleState: {liveClass, hotUpdatedFromClass}
+    _module
+  )
 
   EFFECTS:
-    originalKlass.imprintFromClass newKlass
-    originalKlass.postCreate hotReloaded, classModuleState, klass, _module
+    liveClass.imprintFromClass newKlass
+    liveClass.postCreate hotReloaded, classModuleState, hotUpdatedFromClass, _module
 
   ###
-  @createHotWithPostCreate: (_module, klass) ->
+  @createHotWithPostCreate: (_module, hotUpdatedFromClass) ->
     WebpackHotLoader.runHot _module, (moduleState) ->
-      originalKlass = (moduleState[klass.getName()] ||= originalKlass:klass).originalKlass
-      .imprintFromClass klass
-      .postCreate klass != originalKlass, moduleState[klass.getName()], klass, _module
+      classModuleState = moduleState[hotUpdatedFromClass.getName()] ||=
+        liveClass: null
+        hotUpdatedFromClass: null
+        hotReloadVersion: 0
+      classModuleState.hotReloadVersion++
+      liveClass = classModuleState.liveClass ||= hotUpdatedFromClass
+      classModuleState.hotUpdatedFromClass = hotUpdatedFromClass
+
+      hotReloaded = liveClass != hotUpdatedFromClass
+      hotReloaded && Log.log "Foundation.BaseObject: subClass hot-reload":
+        subClass: liveClass.getClassPathName()
+        version: classModuleState.hotReloadVersion
+
+      liveClass.imprintFromClass hotUpdatedFromClass
+      liveClass.postCreate(
+        hotReloaded
+        classModuleState
+        _module
+      )
 
   ###
   called every load
@@ -126,20 +187,30 @@ module.exports = class BaseObject
     NOTE: hot-loading inputs are only set if this class created as follows:
       createHotWithPostCreate module, class Foo extends BaseObject
 
-    hotReload: true if this class was hot-reloaded
+    hotReload: true/false
+      true if this class was hot-reloaded
 
-    classModuleState: a plain-object specific to this class in this module
-      If there is more than one hot-loaded class in the same module, each will have its own classModuleState.
-      classModuleState.originalClass == @
-      Except for .originalClass, you can motify this object as you please. It is persisted
-      across hot loads.
+    classModuleState:
+      liveClass:            the first-loaded version of the class.
+                            This is the official version of the class at all times.
+                            The hot-reloaded version of the class is "imprinted" onto the liveClass
+                            but otherwise is not used (but can be accessed via classModuleState.hotUpdatedFromClass)
+      hotUpdatedFromClass:  The most recently loaded version of the class.
+      hotReloadVersion:     number, starting at 1, and counting up each load
 
-    klass: the newly loaded class object
+      classModuleState is a plain-object specific to the class and its CommonJS module. If there is
+      more than one hot-loaded class in the same module, each will have its own classModuleState.
+
+      SBD NOTE: Though we could allow clients to add fields to classModuleState, I think it works
+      just as well, and is cleaner, if any state is stored in the actual class objects and
+      persisted via postCreate.
+
+    hotUpdatedFromClass: the newly loaded class object
 
     _module: the CommonJs module object.
 
   ###
-  @postCreate: (hotReloaded, classModuleState, klass, _module) -> @
+  @postCreate: (hotReloaded, classModuleState, _module) -> @
 
   excludedKeys = ["__super__", "namespace", "namespacePath"].concat Object.keys Neptune.Base
   @mixInto = mixInto = (intoClass, klass, keys...)->
@@ -337,12 +408,12 @@ module.exports = class BaseObject
   ###
   @singletonClass: (args...) ->
     # return if @hasOwnProperty("getSingleton") && isFunction @getSingleton
-    map = singleton: =>
+    map = singleton: ->
       if @_singleton?.class == @
         @_singleton
       else
         @_singleton = new @ args...
-    map[decapitalize functionName @] = => @getSingleton()
+    map[decapitalize functionName @] = -> @getSingleton()
     @classGetter map
     null
 
