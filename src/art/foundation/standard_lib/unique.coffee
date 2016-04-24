@@ -15,7 +15,7 @@ module.exports = class Unique
 
   # all possible values for key resolve to a unique Id
   @id: (key) ->
-    if typeof key == "object"
+    if typeof key == "object" || typeof key == "function"
       if key
         if typeof key.getUniqueId == "function" then key.getUniqueId() else objectId key
       else
