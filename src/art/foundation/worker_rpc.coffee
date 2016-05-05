@@ -248,12 +248,10 @@ module.exports = class WorkerRpc extends BaseObject
       @_invokeLocalFunction namespaceName, functionName, promiseId, args
 
   _invokeLocalFunction: (namespaceName, functionName, promiseId, args) ->
-    if (namespace = @_registry[namespaceName]) && localFunction = namespace[functionName]
-      localFunction
-    else
+    unless (namespace = @_registry[namespaceName]) && localFunction = namespace[functionName]
       {singleton} = WorkerRpc
-      if @ != singleton && (namespace = singleton._registry[namespaceName]) && localFunction = namespace[functionName]
-        localFunction
+      if @ != singleton && (namespace = singleton._registry[namespaceName])
+        localFunction = namespace[functionName]
 
     unless localFunction
       console.warn """
