@@ -2,11 +2,43 @@
 
 {$$} = require "art-foundation/src/extlib/node_list" if self.window
 
+{isString} = require "../standard_lib"
+{createObjectTreeFactories} = require "../class_system/object_tree_factory"
+
 module.exports = class Dom
   @createElementFromHtml: (html) ->
     div = document.createElement 'div'
     div.innerHTML = html
     div.firstChild
+
+  @createDomElementFactories: (list...) ->
+    createObjectTreeFactories list, (nodeName, props, children) ->
+      element = document.createElement nodeName
+      for k, v of props
+        switch k
+          when "class" then element.className = v
+          when "id" then element.id = v
+          when "innerHTML" then element.innerHTML = v
+          when "on"
+            for eventType, eventListener of v
+              element.addEventListener eventType, eventListener
+          when "style"
+            if isString v
+              element.setAttribute k, v
+            else
+              {style} = element
+              for styleKey, styleValue of v
+                style[styleKey] = styleValue
+
+          else element.setAttribute k, v
+      for child in children
+        child = document.createTextNode child if isString child
+        unless child instanceof Node
+          console.error "child of #{nodeName} is not an instance of Node. child: ", child
+          self.__child = child
+          throw new Error "child of #{nodeName} is not an instance of Node. child: #{child}"
+        element.appendChild child
+      element
 
   @getDevicePixelRatio: -> (self.devicePixelRatio? && self.devicePixelRatio) || 1
   @zIndex: ( target, setZIndex ) ->
