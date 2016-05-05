@@ -2,11 +2,12 @@
 # file: art/foundation/browser/index.coffee
 
 module.exports =
-Browser        = require './namespace'
-Browser.Cookie = require './cookie'
-Browser.Dom    = require './dom'
-Browser.File   = require './file'
-Browser.Parse  = require './parse'
+Browser                     = require './namespace'
+Browser.Cookie              = require './cookie'
+Browser.Dom                 = require './dom'
+Browser.DomElementFactories = require './dom_element_factories'
+Browser.File                = require './file'
+Browser.Parse               = require './parse'
 Browser.finishLoad(
-  ["Cookie","Dom","File","Parse"]
+  ["Cookie","Dom","DomElementFactories","File","Parse"]
 )

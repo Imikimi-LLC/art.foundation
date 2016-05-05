@@ -1,4 +1,4 @@
-{compactFlatten} = require './array'
+{compactFlatten} = require './array_compact_flatten'
 
 module.exports = class Hash
   # http://jsperf.com/counting-object-properties/3

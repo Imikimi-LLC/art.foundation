@@ -1,5 +1,5 @@
-StandardLib = require '../standard_lib'
-{upperCamelCase, compactFlatten, isString} = StandardLib
+{compactFlatten} = require '../standard_lib/array_compact_flatten'
+{upperCamelCase} = require '../standard_lib/string_case'
 
 mergeIntoBasic = (into, source) ->
   into[k] = v for k, v of source
@@ -73,7 +73,7 @@ module.exports = class ObjectTreeFactory
   ###
   @createObjectTreeFactories: (list, nodeFactory, suffix = '', mergePropsInto = mergeIntoBasic) =>
     out = {}
-    list = [list] if isString list
+    list = [list] if typeof list == "string"
     for str in compactFlatten list
       for nodeName in str.match /[a-z0-9_]+/ig
         do (nodeName) =>

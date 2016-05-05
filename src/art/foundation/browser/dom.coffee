@@ -1,4 +1,5 @@
 # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input
+DomElementFactories = require "./dom_element_factories"
 
 {$$} = require "art-foundation/src/extlib/node_list" if self.window
 
@@ -11,46 +12,7 @@ module.exports = class Dom
     div.innerHTML = html
     div.firstChild
 
-  @allElementNames: "
-    A Abbr Acronym Address Applet Area Article Aside Audio B Base BaseFont Bdi Bdo
-    Big BlockQuote Body Br Button Canvas Caption Center Cite Code Col ColGroup
-    DataList Dd Del Details Dfn Dialog Dir Div Dl Dt Em Embed FieldSet FigCaption
-    Figure Font Footer Form Frame FrameSet H1 Head Header Hr Html I IFrame Img Input
-    Ins Kbd KeyGen Label Legend Li Link Main Map Mark Menu MenuItem Meta Meter Nav
-    NoFrames NoScript Object Ol OptGroup Option Output P Param Pre Progress Q Rp Rt
-    Ruby S Samp Script Section Select Small Source Span Strike Strong Style Sub
-    Summary Sup Table TBody Td TextArea TFoot Th THead Time Title Tr Track Tt U Ul
-    Var Video Wbr
-    "
-
-  @createDomElementFactories: (list...) ->
-    createObjectTreeFactories list, (nodeName, props, children) ->
-      element = document.createElement nodeName
-      for k, v of props
-        switch k
-          when "class" then element.className = v
-          when "id" then element.id = v
-          when "innerHTML" then element.innerHTML = v
-          when "on"
-            for eventType, eventListener of v
-              element.addEventListener eventType, eventListener
-          when "style"
-            if isString v
-              element.setAttribute k, v
-            else
-              {style} = element
-              for styleKey, styleValue of v
-                style[styleKey] = styleValue
-
-          else element.setAttribute k, v
-      for child in children
-        child = document.createTextNode child if isString child
-        unless child instanceof Node
-          message = "DomElementFactory:#{nodeName}: Child is not a string or instance of Node. Child: #{child}"
-          console.error message, child
-          throw new Error message
-        element.appendChild child
-      element
+  @createDomElementFactories: DomElementFactories.createDomElementFactories
 
   @getDevicePixelRatio: -> (self.devicePixelRatio? && self.devicePixelRatio) || 1
   @zIndex: ( target, setZIndex ) ->

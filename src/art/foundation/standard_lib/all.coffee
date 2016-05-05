@@ -1,7 +1,8 @@
 require './namespace'
 .includeInNamespace null,
 
-  require "./array"
+  require "./array_extensions"
+  require "./array_compact_flatten"
   require "./eq"
   require "./function"
   require "./hash"
@@ -11,5 +12,6 @@ require './namespace'
   require "./ruby"
   require "./shallow_clone"
   require "./string"
+  require "./string_case"
   require "./time"
   require "./types"

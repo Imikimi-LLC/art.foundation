@@ -1,3 +1,3 @@
 module.exports = (require "art-foundation/configure_webpack")
-  entries: "index, test, perf, worker_for_worker_rpc_tests"
+  entries: "index, test, perf, worker_for_worker_rpc_tests, dom_element_factories"
   dirname: __dirname

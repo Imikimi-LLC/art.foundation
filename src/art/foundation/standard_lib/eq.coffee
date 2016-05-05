@@ -1,4 +1,4 @@
-{remove}             = require './array'
+{remove}             = require './array_extensions'
 {objectKeyCount}     = require './hash'
 {isString, isNumber} = require './types'
 {min} = Math

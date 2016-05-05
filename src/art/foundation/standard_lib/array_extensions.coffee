@@ -1,49 +1,12 @@
 {bound, max, intRand, modulo} = require "./math"
 {isNumber} = require './types'
 
-arraySlice = Array.prototype.slice
-
-isArguments = (o) ->
-  o.constructor == Object &&
-  (typeof o.callee is "function") &&
-  (typeof o.length is "number")
-
-isArrayOrArguments = (o) ->
-  o && (o.constructor == Array || isArguments o)
-
-doFlattenInternal = (array, keepTester, output) ->
-  output ||= []
-  for a in array
-    if isArrayOrArguments a
-      flattenIfNeeded a, keepTester, output
-    else if keepTester a
-      output.push a
-  output
-
-needsFlatteningOrCompacting = (array, keepTester) ->
-  for a in array when isArrayOrArguments(a) || !keepTester a
-    return true
-  false
-
-keepAll = -> true
-flattenIfNeeded = (array, keepTester = keepAll, output)->
-  if needsFlatteningOrCompacting array, keepTester
-    doFlattenInternal array, keepTester, output
-  else if output
-    output.push v for v in array
-    output
-  else if array.constructor != Array
-    arraySlice.call array
-  else
-    array
-
 module.exports = class ArrayExtensions
 
   ###
   Useful compact and compactFlatten keepTester functions
   ###
   @keepAll: keepAll = -> true
-  @keepUnlessNullOrUndefined: keepUnlessNullOrUndefined = (a) -> a != null && a != undefined
   @keepIfRubyTrue: keepIfRubyTrue = (a) -> a != undefined && a != null && a != false
 
   @arrayToTruthMap: (array) ->
@@ -135,15 +98,6 @@ module.exports = class ArrayExtensions
   @fifth: (array) => array[4]
   @last: (array) => if array then array[array.length - 1] else undefined
 
-  @compact: compact = (array, keepTester = keepUnlessNullOrUndefined) =>
-    for a in array
-      unless keepTester a
-        # needs compacting
-        return (a for a in array when keepTester a)
-
-    # already compact
-    array
-
   # push item into array unless it is already present in the array
   # returns true if the item was pushed
   @pushIfNotPresent: (array, item) =>
@@ -165,19 +119,6 @@ module.exports = class ArrayExtensions
       array[i] = array[j]
       array[j] = a
     array
-
-
-  @flatten: flatten = (firstArg)->
-    flattenIfNeeded if arguments.length == 1
-      if isArrayOrArguments firstArg
-        firstArg
-      else
-        [firstArg]
-    else
-      arguments
-
-  @compactFlatten: (array, keepTester = keepUnlessNullOrUndefined)->
-    flattenIfNeeded array, keepTester
 
   # insert -1 => add to end of array
   # insert -2 => insert one before the last element of the array

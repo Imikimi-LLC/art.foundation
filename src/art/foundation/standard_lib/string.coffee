@@ -43,25 +43,6 @@ module.exports = class String
     str = jString(str)
     Array(Math.max(length - str.length + 1, 0)).join(padding) + str
 
-  @capitalize: (str) ->
-    str.charAt(0).toUpperCase() + str.slice 1
-
-  @decapitalize: (str) ->
-    str.charAt(0).toLowerCase() + str.slice 1
-
-  # lowerCamelCase or snake_case to UpperCamelCase
-  @upperCamelCase: (str) =>
-    (@capitalize word for word in str.split '_').join ""
-
-  # UpperCamelCase or snake_case to lowerCamelCase
-  @lowerCamelCase: (str) =>
-    words = str.split '_'
-    "#{@decapitalize words[0]}#{(@capitalize words[i] for i in [1...words.length]).join ""}"
-
-  # UpperCamelCase or lowerCamelCase to snake_case
-  @snakeCase: (str) =>
-    (word.toLowerCase() for word in str.split /(?=[A-Z])/).join "_"
-
   # take a string of anything and produce a javascript legal string
   @escapeDoubleQuoteJavascriptString: escapeDoubleQuoteJavascriptString = (str) =>
     s = jString(str).replace(/[\\"]/g, "\\$&").replace /[\0\b\f\n\r\t\v\u2028\u2029]/g, (x) ->
