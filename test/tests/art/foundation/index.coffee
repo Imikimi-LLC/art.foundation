@@ -14,6 +14,7 @@ Foundation.Hash                    = require './hash'
 Foundation.JsonStore               = require './json_store'
 Foundation.Map                     = require './map'
 Foundation.Math                    = require './math'
+Foundation.ObjectTreeFactory       = require './object_tree_factory'
 Foundation.PlainData               = require './plain_data'
 Foundation.Promise                 = require './promise'
 Foundation.Regexp                  = require './regexp'
@@ -33,5 +34,5 @@ Foundation.Binary                  = require './binary'
 Foundation.Browser                 = require './browser'
 Foundation.Inspect                 = require './inspect'
 Foundation.finishLoad(
-  ["Array","BaseObject","BatchLoader","CallStack","Clone","Epoch","Eq","Hash","JsonStore","Map","Math","PlainData","Promise","Regexp","RestClient","Ruby","Stat","String","Time","Transaction","Types","Unique","WebWorker","WorkerForWorkerRpcTests","WorkerRpc"]
+  ["Array","BaseObject","BatchLoader","CallStack","Clone","Epoch","Eq","Hash","JsonStore","Map","Math","ObjectTreeFactory","PlainData","Promise","Regexp","RestClient","Ruby","Stat","String","Time","Transaction","Types","Unique","WebWorker","WorkerForWorkerRpcTests","WorkerRpc"]
 )
