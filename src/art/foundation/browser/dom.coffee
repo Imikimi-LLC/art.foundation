@@ -11,6 +11,18 @@ module.exports = class Dom
     div.innerHTML = html
     div.firstChild
 
+  @allElementNames: "
+    A Abbr Acronym Address Applet Area Article Aside Audio B Base BaseFont Bdi Bdo
+    Big BlockQuote Body Br Button Canvas Caption Center Cite Code Col ColGroup
+    DataList Dd Del Details Dfn Dialog Dir Div Dl Dt Em Embed FieldSet FigCaption
+    Figure Font Footer Form Frame FrameSet H1 Head Header Hr Html I IFrame Img Input
+    Ins Kbd KeyGen Label Legend Li Link Main Map Mark Menu MenuItem Meta Meter Nav
+    NoFrames NoScript Object Ol OptGroup Option Output P Param Pre Progress Q Rp Rt
+    Ruby S Samp Script Section Select Small Source Span Strike Strong Style Sub
+    Summary Sup Table TBody Td TextArea TFoot Th THead Time Title Tr Track Tt U Ul
+    Var Video Wbr
+    "
+
   @createDomElementFactories: (list...) ->
     createObjectTreeFactories list, (nodeName, props, children) ->
       element = document.createElement nodeName
@@ -34,9 +46,9 @@ module.exports = class Dom
       for child in children
         child = document.createTextNode child if isString child
         unless child instanceof Node
-          console.error "child of #{nodeName} is not an instance of Node. child: ", child
-          self.__child = child
-          throw new Error "child of #{nodeName} is not an instance of Node. child: #{child}"
+          message = "DomElementFactory:#{nodeName}: Child is not a string or instance of Node. Child: #{child}"
+          console.error message, child
+          throw new Error message
         element.appendChild child
       element
 
