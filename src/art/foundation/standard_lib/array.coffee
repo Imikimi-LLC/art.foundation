@@ -43,7 +43,7 @@ module.exports = class ArrayExtensions
   Useful compact and compactFlatten keepTester functions
   ###
   @keepAll: keepAll = -> true
-  @discardNullAndUndefined: discardNullAndUndefined = (a) -> a != undefined && a != null
+  @keepUnlessNullOrUndefined: keepUnlessNullOrUndefined = (a) -> a != null && a != undefined
   @keepIfRubyTrue: keepIfRubyTrue = (a) -> a != undefined && a != null && a != false
 
   @arrayToTruthMap: (array) ->
@@ -135,7 +135,7 @@ module.exports = class ArrayExtensions
   @fifth: (array) => array[4]
   @last: (array) => if array then array[array.length - 1] else undefined
 
-  @compact: compact = (array, keepTester = discardNullAndUndefined) =>
+  @compact: compact = (array, keepTester = keepUnlessNullOrUndefined) =>
     for a in array
       unless keepTester a
         # needs compacting
@@ -176,7 +176,7 @@ module.exports = class ArrayExtensions
     else
       arguments
 
-  @compactFlatten: (array, keepTester = discardNullAndUndefined)->
+  @compactFlatten: (array, keepTester = keepUnlessNullOrUndefined)->
     flattenIfNeeded array, keepTester
 
   # insert -1 => add to end of array
