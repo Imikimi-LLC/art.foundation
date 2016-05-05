@@ -183,7 +183,7 @@ module.exports = class ArrayExtensions
   # insert -2 => insert one before the last element of the array
   @insert: (array, index, item) ->
     index = array.length + index + 1 if index<0
-    array.splice index, 0, item;array
+    array.splice index, 0, item
     array
 
   # same as insert, except doesn't modify input array; returns new array
