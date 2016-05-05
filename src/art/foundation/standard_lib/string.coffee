@@ -49,21 +49,18 @@ module.exports = class String
   @decapitalize: (str) ->
     str.charAt(0).toLowerCase() + str.slice 1
 
-  #snake_case to UpperCamelCase
+  # lowerCamelCase or snake_case to UpperCamelCase
   @upperCamelCase: (str) =>
-    words = str.split('_')
-    capWords = (@capitalize word for word in words)
-    capWords.join("")
+    (@capitalize word for word in str.split '_').join ""
 
-  #snake_case to lowerCamelCase
+  # UpperCamelCase or snake_case to lowerCamelCase
   @lowerCamelCase: (str) =>
-    words = str.split('_')
-    capWords = [@decapitalize words[0]].concat (@capitalize word for word in words.slice(1,words.length))
-    capWords.join ""
+    words = str.split '_'
+    "#{@decapitalize words[0]}#{(@capitalize words[i] for i in [1...words.length]).join ""}"
 
-  # camelCase to snake_case
+  # UpperCamelCase or lowerCamelCase to snake_case
   @snakeCase: (str) =>
-    (word.toLowerCase() for word in str.split(/(?=[A-Z])/)).join "_"
+    (word.toLowerCase() for word in str.split /(?=[A-Z])/).join "_"
 
   # take a string of anything and produce a javascript legal string
   @escapeDoubleQuoteJavascriptString: escapeDoubleQuoteJavascriptString = (str) =>
