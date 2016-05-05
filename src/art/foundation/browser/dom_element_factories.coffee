@@ -11,40 +11,40 @@ It allows for Art.React-style creation of DOM elements.
 
 Usage:
 
-{Div, Span, B, Em, merge} = DomElementFactories
+{Div, Span, B, Em} = DomElementFactories
 
 mySharedTextStyle =
-  fontSize: "16pt"
-  color: "#444"
-  fontFamily: "Times"
+  style:
+    fontSize: "16pt"
+    color: "#444"
+    fontFamily: "Times"
 
 Div
   class: "foo"
   id:    "123"
 
-  Span
-    class: "dude"
-    "This is some really"
-    B "bold"
-    "text."
-    "Also, here is some"
-    Em "emphasized"
-    "text."
+Span
+  class: "dude"
+  "This is some really"
+  B "bold"
+  "text."
+  "Also, here is some"
+  Em "emphasized"
+  "text."
 
-  Span
-    style: mySharedTextStyle
-    internalHTML: "Or you can do <b>this</b> and <em>this</em>."
+Span mySharedTextStyle,
+  internalHTML: "Or you can do <b>this</b> and <em>this</em>."
 
-  Div
-    style: merge mySharedTextStyle,
-      bottom:          0
-      height:          "50px"
-      left:            "100px"
-      right:           "100px"
-      position:        "fixed"
-      backgroundColor: "white"
-      textAlign:       "center"
-    "Styles are easy, too."
+Div mySharedTextStyle,
+  style:
+    bottom:          0
+    height:          "50px"
+    left:            "100px"
+    right:           "100px"
+    position:        "fixed"
+    backgroundColor: "white"
+    textAlign:       "center"
+  "Styles are easy, too."
 
 ###
 
@@ -56,11 +56,14 @@ Div
 #####################
 # DomElementFactories
 #####################
-class DomElementFactories
+module.exports = class DomElementFactories
   for supportLib in supportLibs
-    @[k] = v for k, v of supportLib
+    for k, v of supportLib
+      @[k] = v
 
-  @mergeInto: (into, source) ->
+  @isString: isString = (obj) => typeof obj == "string"
+
+  @mergeInto: mergeInto = (into, source) ->
     into ||= {}
     into[k] = v for k, v of source
     into
@@ -74,7 +77,7 @@ class DomElementFactories
 
   ###
   @createDomElementFactories: (list...) =>
-    @createObjectTreeFactories list, (nodeName, props, children) ->
+    @createObjectTreeFactories list, (nodeName, props, children) =>
       element = document.createElement nodeName
       for k, v of props
         switch k
@@ -85,7 +88,7 @@ class DomElementFactories
             for eventType, eventListener of v
               element.addEventListener eventType, eventListener
           when "style"
-            if @isString v
+            if isString v
               element.setAttribute k, v
             else
               {style} = element
@@ -95,7 +98,7 @@ class DomElementFactories
           else element.setAttribute k, v
 
       for child in children
-        child = document.createTextNode child if @isString child
+        child = document.createTextNode child if isString child
         unless child instanceof Node
           message = "DomElementFactory:#{nodeName}: Child is not a string or instance of Node. Child: #{child}"
           console.error message, child
@@ -123,8 +126,3 @@ class DomElementFactories
     "
 
   @[k] = v for k, v of @createDomElementFactories @allElementNames
-
-if module
-  module.exports = DomElementFactories
-else
-  window.DomElementFactories = DomElementFactories

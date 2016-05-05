@@ -2,8 +2,9 @@
 # file: tests/art/foundation/browser/index.coffee
 
 module.exports =
-Browser         = require './namespace'
-Browser.Browser = require './browser'
+Browser                     = require './namespace'
+Browser.Browser             = require './browser'
+Browser.DomElementFactories = require './dom_element_factories'
 Browser.finishLoad(
-  ["Browser"]
+  ["Browser","DomElementFactories"]
 )

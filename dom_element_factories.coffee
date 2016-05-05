@@ -19,4 +19,4 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ###
-module.exports = require "./src/art/foundation/browser/dom_element_factories"
+module.exports = window.DomElementFactories = require "./src/art/foundation/browser/dom_element_factories"

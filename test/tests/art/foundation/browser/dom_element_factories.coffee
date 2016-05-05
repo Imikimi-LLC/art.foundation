@@ -1,0 +1,41 @@
+Foundation = require "art-foundation"
+
+{Div, Span, B, Em} = Foundation.Browser.DomElementFactories
+
+suite "Art.Foundation.Browser.DomElementFactories", ->
+  test "Div()", ->
+    el = Div()
+    assert.eq el.constructor, HTMLDivElement
+
+  test "Div class: 'foo', id: '123'", ->
+    el = Div
+      class: "foo"
+      id:    "123"
+    assert.eq el.className, "foo"
+    assert.eq el.id, "123"
+
+  test "text children", ->
+    el = Span
+      class: "dude"
+      "This is some really"
+      B "bold"
+      "text."
+      "Also, here is some"
+      Em "emphasized"
+      "text."
+
+    assert.eq el.innerHTML, "This is some really<b>bold</b>text.Also, here is some<em>emphasized</em>text."
+
+  test "Span innerHTML: ...", ->
+    el = Span innerHTML: myInnerHTML = "This is some really<b>bold</b>text.Also, here is some<em>emphasized</em>text."
+    assert.eq el.innerHTML, myInnerHTML
+
+  test "multiple styles merge correctly", ->
+    mySharedTextStyle =
+      style:
+        fontSize: "123pt"
+
+    el = Div mySharedTextStyle, style: fontFamily: "MyPenguin"
+    assert.eq el.style.fontSize, "123pt"
+    assert.eq el.style.fontFamily, "MyPenguin"
+
