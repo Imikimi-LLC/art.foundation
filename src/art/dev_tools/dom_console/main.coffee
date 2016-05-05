@@ -7,7 +7,8 @@
 
 require "!style!css!./style.css"
 
-$ = require 'jquery'
+{$$} = require "art-foundation/src/extlib/node_list" if self.window
+
 Foundation = require 'art-foundation'
 Atomic = require 'art-atomic'
 DomConsole = require './namespace'
@@ -22,9 +23,12 @@ DomConsole = require './namespace'
   Promise
 } = Foundation
 
+{createDomElementFactories} = Foundation.Browser.Dom
+
+{Div, Pre, Span, Img, Li, Ul} = createDomElementFactories "Div Pre Span Img Li Ul"
+
 isImage = (o) -> o && ((typeof o.toImage == "function") || o.constructor == HTMLImageElement)
 htmlEscape = (str) -> str
-  # $('<div/>').text(str).html()
 
 insertBetweenEveryElement = (array, el) ->
   res = []
@@ -85,20 +89,28 @@ module.exports = createWithPostCreate class DomConsole.Console extends BaseObjec
     @initDom()
 
   reset: -> @domContainer.html ""
-  hide: -> @domContainer.hide()
-  show: -> @domContainer.show()
+  hide: -> @domContainer.style.display = "none"
+  show: -> @domContainer.style.display = "block"
+
+  toggleCollapsable = (el) ->
+    child.style.display = "block" for child in el.parentElement.children
+    el.style.display = "none"
 
   initDom: ->
-    domEl = $ "<div></div>",
+    domEl = Div
       id: domConsoleId
       class: "domConsole"
-    domEl.on "click", ".collapsable", (e)=>
-      $target = $(e.target).closest ".collapsable"
-      $target.siblings().show()
-      $target.hide()
+      on: click: ({target})=>
+        while target
+          if target.className.match "collapsable"
+            toggleCollapsable target
+            break;
+          target = target.parentElement
+
+    console.log "initDom_domEl",domEl
 
     # leave space for mocha-stats bar
-    if (mocha=$("#mocha")).length > 0
+    if (mocha = $$("#mocha")).length > 0
       maxAttempts = 8
       delay = 125/2
       fixMochaStats = ->
@@ -106,25 +118,22 @@ module.exports = createWithPostCreate class DomConsole.Console extends BaseObjec
           console.log "fixMochaStats... giving up; sorry for the ugly screen"
           return
         delay *= 2
-        ms = $("#mocha-stats")
+        ms = $$("#mocha-stats")
         if ms.length == 0
           console.log "fixMochaStats... (waiting #{delay}ms for #mocha-stats div to appear: #{maxAttempts})"
           timeout delay, fixMochaStats
         else
-          ms.css "right":"530px"
+          ms.style[0].right = "530px"
       timeout delay, -> fixMochaStats()
-      mocha.css "margin-right":"530px"
+      mocha.style[0].marginRight = "530px"
 
-    domEl.appendTo $("body")
-    @domContainer = $ "#" + domConsoleId
+    document.body.appendChild domEl
+    @domContainer = $$ "#" + domConsoleId
 
   appendLog: (domElement)->
-    @domContainer.append domElement
+    @domContainer.appendChild Div class:"logLine", domElement
     nextTick =>
-      @domContainer.scrollTop @domContainer[0].scrollHeight
-
-  newLogLine: ->
-    $ "<div/>", class:"logLine"
+      @domContainer.scrollTop = @domContainer[0].scrollHeight
 
   # always returned the last argument passed in. That way you can:
   #     bar = foo # log foo's value in the middle of an expression, along with other values, without altering the rest of the expression
@@ -141,14 +150,14 @@ module.exports = createWithPostCreate class DomConsole.Console extends BaseObjec
     domEl = wrapDomElement domEl, "<#{options.tag}/>" if options && options.tag
     domEl
 
-  arrayKidsToDomArray: (arrayOfInspectedObjects, tagName, options, addCommasAndBrackets) ->
+  arrayKidsToDomArray: (arrayOfInspectedObjects, Factory, options, addCommasAndBrackets) ->
     options.maxDepth--
     kids = for child, i in arrayOfInspectedObjects
       break if i > 50
       if i == 50
-        $(tagName, class:"value").append "array length: #{arrayOfInspectedObjects.length} (showing the first #{i})"
+        Factory class:"value", "array length: #{arrayOfInspectedObjects.length} (showing the first #{i})"
       else
-        $(tagName, class:"value").append @toDom child, options
+        Factory class:"value", @toDom child, options
     options.maxDepth++
     if addCommasAndBrackets
       kids = @addCommasAndBrackets kids, "[", "]"
@@ -156,13 +165,14 @@ module.exports = createWithPostCreate class DomConsole.Console extends BaseObjec
 
   arrayToDomBasic: (arrayOfInspectedObjects, options) ->
     if options.maxDepth == 0
-      return $("<span/>", class:"array maxdepth").text if arrayOfInspectedObjects.length == 0
+      return Span class:"array maxdepth #{options.class}", if arrayOfInspectedObjects.length == 0
         "[]"
       else
         "[... #{arrayOfInspectedObjects.length}]"
 
-    $("<span/>", class:"array")
-      .append @arrayKidsToDomArray arrayOfInspectedObjects, "<span/>", options, true
+    Span
+      class: "array #{options.class}"
+      @arrayKidsToDomArray arrayOfInspectedObjects, Span, options, true
 
 
   arrayToDom: (arrayOfInspectedObjects, options) ->
@@ -176,13 +186,13 @@ module.exports = createWithPostCreate class DomConsole.Console extends BaseObjec
       kid.append ", "
     flatten leftBracket, typeName, kids, rightBracket
 
-  mapKidsToDomArray: (inspectedObject, tagName, options, addCommasAndBrackets) ->
+  mapKidsToDomArray: (inspectedObject, Factory, options, addCommasAndBrackets) ->
     options.maxDepth--
     kids = for k, v of inspectedObject.children
-      $(tagName).append [
-        $("<span/>", class:"key").append k+": "
-        $("<span/>", class:"value").append @toDom v, options
-      ]
+      Factory null,
+        Span class:"key", k + ": "
+        Span class:"value", @toDom v, options
+
     options.maxDepth++
     if addCommasAndBrackets
       if inspectedObject.instanceOf
@@ -201,27 +211,28 @@ module.exports = createWithPostCreate class DomConsole.Console extends BaseObjec
       return if inspectedObject.instanceOf
         @instanceOfDomElement inspectedObject, inside
       else
-        $("<span/>", class:"object maxdepth").text "{#{inside}}"
+        Span class:"object maxdepth #{options.class}", "{#{inside}}"
 
-    $ "<span/>", class:"object"
-      .append @mapKidsToDomArray inspectedObject, "<span/>", options, true
+    Span
+      class:"object"
+      @mapKidsToDomArray inspectedObject, Span, options, true
 
   treeViewCollapsable: (collapsablePair, options) ->
-    collapsablePair[if options.collapsed then 0 else 1].hide()
+    collapsablePair[if options.collapsed then 0 else 1].style.display = "none"
     collapsablePair
 
   instanceOfDomElement: (inspectedObject, inside) ->
-    $("<span/>", class:"object maxdepth").text "<#{inspectedObject.instanceOf}#{inside || ""}>"
+    Span class:"object maxdepth", "<#{inspectedObject.instanceOf}#{inside || ""}>"
 
   arrayToDomTreeView: (arrayOfInspectedObjects, options) ->
 
     if arrayOfInspectedObjects.length == 0
-      el = $ "<span/>", class:"array"
-      return el.append "[]"
+      console.log "empty damn array!"
+      return Span class:"array", "[]"
 
     @treeViewCollapsable [
-      $("<ul/>", class:"collapsable open array").append @arrayKidsToDomArray arrayOfInspectedObjects, "<li/>", options
-      $(@arrayToDomBasic arrayOfInspectedObjects, merge options, maxDepth:0, treeView:false).addClass "collapsable closed"
+      Ul class:"collapsable open array", @arrayKidsToDomArray arrayOfInspectedObjects, Li, options
+      @arrayToDomBasic arrayOfInspectedObjects, merge options, maxDepth:0, treeView:false, class: "collapsable closed"
     ], options
 
   objectToDomTreeView: (inspectedObject, options) ->
@@ -229,12 +240,11 @@ module.exports = createWithPostCreate class DomConsole.Console extends BaseObjec
       return if inspectedObject.instanceOf
         @instanceOfDomElement inspectedObject
       else
-        el = $ "<span/>", class:"object"
-        el.append "{}"
+        Span class: "object", "{}"
 
     @treeViewCollapsable [
-      $("<ul/>", class:"object open collapsable").append @mapKidsToDomArray inspectedObject, "<li/>", options
-      $(@objectToDomBasic inspectedObject, merge options, maxDepth:0, treeView:false).addClass "collapsable closed"
+      Ul class:"object open collapsable", @mapKidsToDomArray inspectedObject, Li, options
+      @objectToDomBasic inspectedObject, merge options, maxDepth:0, treeView:false, class: "collapsable closed"
     ], options
 
   objectToDom: (inspectedObject, options) ->
@@ -245,13 +255,13 @@ module.exports = createWithPostCreate class DomConsole.Console extends BaseObjec
 
   # if there are new-lines in the literal, show with PRE instead of SPAN
   literalToDomHelper = (classes, literalString) ->
-    type = if literalString.match /\n|<|>/
+    Factory = if literalString.match /\n|<|>/
       literalString = literalString.replace /[<]/g, "&lt;"
       literalString = literalString.replace /[>]/g, "&gt;"
-      "pre"
+      Pre
     else
-      "span"
-    $("<#{type}/>", class:classes).append literalString
+      Span
+    Factory class:classes, literalString
 
   literalToDom: (inspectedObject) ->
     literalToDomHelper "literal", inspectedObject.toString()
@@ -260,38 +270,42 @@ module.exports = createWithPostCreate class DomConsole.Console extends BaseObjec
     literalToDomHelper "inspected literal", inspectedObject.inspected
 
   colorToDom: (clr) ->
-    displayString = if isString(clrString = clr)
+    displayString = if isString clrString = clr
       clr = color clr
       "'#{clrString}'"
     else
       clr.toString()
 
-    style = "
-      background-color: #{clr};
-      padding:0 5px;
-      color: #{if clr.perceptualLightness < .8 && clr.a > .25 then 'white' else 'black'};
-      "
-      # border: 1px solid #{if clr.a <= .25 then '#333' else clr.withLightness clr.l * .75};
-    $("<span/>", class:"inspected", style: style).append "#{displayString}"
+    Span
+      class: "inspected"
+      style:
+        backgroundColor:  clr
+        padding:          "0 5px"
+        color:            if clr.perceptualLightness < .8 && clr.a > .25 then 'white' else 'black'
+      "#{displayString}"
+
+  imgToDom: (image) ->
+    minImageDisplaySize = point 0 # 32
+    maxImageDisplaySize = point(1024, 512).mul @_devicePixelRatio
+
+    size = point image.width, image.height
+
+    scale = 1 / @_devicePixelRatio
+
+    if !size.gte minImageDisplaySize
+      scale *= Math.ceil minImageDisplaySize.div(size).min()
+    else if !size.lt maxImageDisplaySize
+      scale *= maxImageDisplaySize.div(size).min()
+
+    Img
+      src: inspectedObject.image.src
+      style:
+        width:  "#{image.naturalWidth  * scale | 0}px"
+        height: "#{image.naturalHeight * scale | 0}px"
 
   toDom: (inspectedObject, options={}) ->
     if image = inspectedObject.image
-      minImageDisplaySize = point 0 # 32
-      maxImageDisplaySize = point(1024, 512).mul @_devicePixelRatio
-      domEl = $(inspectedObject.image).clone()
-
-      size = point image.width, image.height
-
-      scale = 1 / @_devicePixelRatio
-
-      if !size.gte minImageDisplaySize
-        scale *= Math.ceil minImageDisplaySize.div(size).min()
-      else if !size.lt maxImageDisplaySize
-        scale *= maxImageDisplaySize.div(size).min()
-
-      domEl.css("width", "#{image.naturalWidth  * scale | 0}px")
-      domEl.css("height", "#{image.naturalHeight  * scale | 0}px")
-      domEl
+      @imgToDom image
 
     else if inspectedObject.inspected
       if inspectedObject.originalObject instanceof Color
@@ -299,10 +313,8 @@ module.exports = createWithPostCreate class DomConsole.Console extends BaseObjec
       else
         @literalWithInspectedToDom inspectedObject
     else if children = inspectedObject.children
-      # options.maxDepth = -1 unless typeof options.maxDepth is "number"
       if isArray children then @arrayToDom children, options
       else                     @objectToDom inspectedObject, options
-    # string matching colorRegex
     else if isString(inspectedString = inspectedObject.string) && inspectedString.match colorRegex
       @colorToDom inspectedString
     else
@@ -317,11 +329,10 @@ module.exports = createWithPostCreate class DomConsole.Console extends BaseObjec
       maxDepth = 10 unless isNumber maxDepth
 
       inspector = new Foundation.Inspect.Inspector2 withImages: true, maxDepth: maxDepth
-      domEl = @newLogLine()
 
-      if typeof m is "string"
-        resolve @appendLog @format domEl.append($("<pre/>").text(m)), options
+      if typeof m is "string" && !m.match colorRegex
+        resolve @appendLog @format Pre(m), options
       else
         inspector.inspect m, (inspected) =>
-          domEl.append @toDom inspected, options
+          domEl = @toDom inspected, options
           resolve @appendLog @format domEl, options

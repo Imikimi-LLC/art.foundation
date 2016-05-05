@@ -5,8 +5,6 @@
   "main": "main.js",
   "dependencies": {
     "es6-promise": "^3.0.2",
-
-    "jquery": "^2.2.0",
     "sourcemapped-stacktrace": "^1.0.0",
     "chai": "^3.4.1",
     "coffee-loader": "^0.7.2",
