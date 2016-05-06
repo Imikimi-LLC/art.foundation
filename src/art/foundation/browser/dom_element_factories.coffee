@@ -3,11 +3,19 @@ supportLibs = [
   require "../class_system/object_tree_factory"
 ]
 ###
-dom_element_factories.coffee
+DomElementFactories allows for Art.React-style creation of DOM elements.
 
-This is a stand-alone version of Art.Foundation.Browser.Dom.createDomElementFactories.
+# HOW TO LOAD:
+# -- IF: you are already using Art.Foundation
+Foundation = require 'art-foundation'
+{DomElementFactories} = Foundation.Browser
 
-It allows for Art.React-style creation of DOM elements.
+# -- IF: You have the Art.Foundation NPM but only want DomElementFactories:
+DomElementFactories = require 'art-foundation/dom_element_factories'
+
+# -- IF: You just have dom_element_factories.js
+# first, load it prior via a <script> tag, then:
+# window.DomElementFactories will be set.
 
 Usage:
 
@@ -57,6 +65,8 @@ Div mySharedTextStyle,
 # DomElementFactories
 #####################
 module.exports = class DomElementFactories
+  @version: "1.0.0"
+  @src: "https://github.com/Imikimi-LLC/art-foundation"
   for supportLib in supportLibs
     for k, v of supportLib
       @[k] = v

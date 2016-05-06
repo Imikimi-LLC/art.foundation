@@ -19,4 +19,15 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ###
+
+###
+@info
+This file is the stand-alone version of: Art.Foundation.Browser.DomElementFactories
+
+For more information:
+  https://github.com/Imikimi-LLC/art-foundation
+    src/art/foundation/browser/dom_element_factories.coffee
+    test/tests/art/foundation/browser/dom_element_factories.coffee
+
+###
 module.exports = window.DomElementFactories = require "./src/art/foundation/browser/dom_element_factories"
