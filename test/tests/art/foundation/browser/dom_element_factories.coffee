@@ -26,6 +26,12 @@ suite "Art.Foundation.Browser.DomElementFactories", ->
 
     assert.eq el.innerHTML, "This is some really<b>bold</b>text.Also, here is some<em>emphasized</em>text."
 
+  test "text child with newline", ->
+    el = Span
+      class: "dude"
+      "one\ntwo"
+    assert.eq el.innerHTML, "one<br>two"
+
   test "Span innerHTML: ...", ->
     el = Span innerHTML: myInnerHTML = "This is some really<b>bold</b>text.Also, here is some<em>emphasized</em>text."
     assert.eq el.innerHTML, myInnerHTML

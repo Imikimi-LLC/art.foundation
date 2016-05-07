@@ -108,12 +108,16 @@ module.exports = class DomElementFactories
           else element.setAttribute k, v
 
       for child in children
-        child = document.createTextNode child if isString child
-        unless child instanceof Node
-          message = "DomElementFactory:#{nodeName}: Child is not a string or instance of Node. Child: #{child}"
-          console.error message, child
-          throw new Error message
-        element.appendChild child
+        if isString child
+          for text, i in child.split "\n"
+            element.appendChild document.createElement "br" if i > 0
+            element.appendChild document.createTextNode text
+        else
+          unless child instanceof Node
+            message = "DomElementFactory:#{nodeName}: Child is not a string or instance of Node. Child: #{child}"
+            console.error message, child
+            throw new Error message
+          element.appendChild child
       element
     , ''
     , (into, source) ->
