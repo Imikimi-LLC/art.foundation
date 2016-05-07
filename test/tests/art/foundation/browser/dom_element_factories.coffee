@@ -30,6 +30,10 @@ suite "Art.Foundation.Browser.DomElementFactories", ->
     el = Span innerHTML: myInnerHTML = "This is some really<b>bold</b>text.Also, here is some<em>emphasized</em>text."
     assert.eq el.innerHTML, myInnerHTML
 
+  test "style property", ->
+    el = Div style: padding: "20px"
+    assert.eq el.style.padding, "20px"
+
   test "multiple styles merge correctly", ->
     mySharedTextStyle =
       style:
