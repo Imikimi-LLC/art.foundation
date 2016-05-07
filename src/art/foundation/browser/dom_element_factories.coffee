@@ -54,6 +54,9 @@ Div mySharedTextStyle,
     textAlign:       "center"
   "Styles are easy, too."
 
+VERSION HISTORY:
+  1.1.0 - new-lines in text-children become <BR> tags
+  1.0.0 - initial
 ###
 
 #####################
@@ -65,7 +68,7 @@ Div mySharedTextStyle,
 # DomElementFactories
 #####################
 module.exports = class DomElementFactories
-  @version: "1.0.0"
+  @version: "1.1.0"
   @src: "https://github.com/Imikimi-LLC/art-foundation"
   for supportLib in supportLibs
     for k, v of supportLib
