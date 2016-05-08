@@ -10,6 +10,7 @@ StandardLib.Eq                  = require './eq'
 StandardLib.Function            = require './function'
 StandardLib.Hash                = require './hash'
 StandardLib.Math                = require './math'
+StandardLib.ObjectDiff          = require './object_diff'
 StandardLib.Promise             = require './promise'
 StandardLib.PromisedFileReader  = require './promised_file_reader'
 StandardLib.Regexp              = require './regexp'
@@ -21,5 +22,5 @@ StandardLib.Time                = require './time'
 StandardLib.Types               = require './types'
 StandardLib.Unique              = require './unique'
 StandardLib.finishLoad(
-  ["All","ArrayCompactFlatten","ArrayExtensions","Eq","Function","Hash","Math","Promise","PromisedFileReader","Regexp","Ruby","ShallowClone","String","StringCase","Time","Types","Unique"]
+  ["All","ArrayCompactFlatten","ArrayExtensions","Eq","Function","Hash","Math","ObjectDiff","Promise","PromisedFileReader","Regexp","Ruby","ShallowClone","String","StringCase","Time","Types","Unique"]
 )

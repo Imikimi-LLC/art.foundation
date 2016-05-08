@@ -5,6 +5,7 @@ require './namespace'
   require "./array_compact_flatten"
   require "./eq"
   require "./function"
+  require "./object_diff"
   require "./hash"
   require "./math"
   require "./promised_file_reader"
