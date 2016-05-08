@@ -5,28 +5,6 @@ module.exports = class Hash
   @countKeys: (o) ->
     Object.keys(o).length
 
-  # SBD this has been thouroughly benchmarked on Safari and Chrome as of 2015-11-06
-  # This is as fast as I could make it.
-  defaultEq = (a, b) -> a == b
-  @objectDiff: (o1, o2, added, removed, changed, nochange, eq = defaultEq, o2KeyCount) ->
-    o2KeyCountIsAtLeast = 0
-    o1KeyCount = 0
-    for k, v1 of o1
-      o1KeyCount++
-      if typeof (v2 = o2[k]) != "undefined" || o2.hasOwnProperty k
-        o2KeyCountIsAtLeast++
-        if !eq v1, v2
-          changed k, v1, v2
-        else
-          nochange? k, v1
-      else
-        added k, v1
-
-    if !(o2KeyCount?) || o2KeyCountIsAtLeast != o2KeyCount
-      for k of o2
-        removed k, o2[k] unless typeof o1[k] != "undefined" || o1.hasOwnProperty k
-    o1KeyCount
-
   @objectWithout: (o, fields...) ->
     result = {}
     for k, v of o when k not in compactFlatten fields

@@ -8,7 +8,6 @@ Foundation = require "art-foundation"
   mergeInto
   pureMerge
   objectWithout
-  objectDiff
   objectKeyCount
   compact
   plainObjectsDeepEq
@@ -109,31 +108,3 @@ suite "Art.Foundation.Hash", ->
     test "objectKeyCount {}"        , -> assert.eq 0, objectKeyCount {}
     test "objectKeyCount a:1"       , -> assert.eq 1, objectKeyCount a:1
     test "objectKeyCount a:1, b:2"  , -> assert.eq 2, objectKeyCount a:1, b:2
-
-  suite "objectDiff", ->
-    added = removed = changed = unchanged = 0
-    add = -> added++
-    remove = -> removed++
-    change = -> changed++
-    noChange = -> unchanged++
-    diffTest = (name, o1, o2, expectedAdded, expectedRemoved, expectedChanged, expectedUnchanged, options = {}) ->
-      {useO2LenthHint, eqF} = options
-      test name, ->
-        o2LengthHint = if useO2LenthHint then objectKeyCount o2 else null
-        added = removed = changed = unchanged = 0
-        objectDiff o1, o2, add, remove, change, noChange, eqF, o2LengthHint
-        assert.eq expectedAdded,      added,      "added"
-        assert.eq expectedRemoved,    removed,    "removed"
-        assert.eq expectedChanged,    changed,    "changed"
-        assert.eq expectedUnchanged,  unchanged,  "unchanged"
-    diffTestSuite = (name, o1, o2, expectedAdded, expectedRemoved, expectedChanged, expectedUnchanged) ->
-      suite "#{name}: o1: #{inspect o1}, o2: #{inspect o2}", ->
-        diffTest "basic",               o1, o2, expectedAdded, expectedRemoved, expectedChanged, expectedUnchanged
-        diffTest "o2-length-hint",      o1, o2, expectedAdded, expectedRemoved, expectedChanged, expectedUnchanged, useO2LenthHint:true
-        diffTest "compare values with plainObjectsDeepEq",  o1, o2, expectedAdded, expectedRemoved, expectedChanged, expectedUnchanged, eqF:plainObjectsDeepEq
-
-    diffTestSuite "same",                         {a:1, b:2},       {a:1, b:2},         0, 0, 0, 2
-    diffTestSuite "added",                        {a:1, b:2, c:3},  {a:1, b:2},         1, 0, 0, 2
-    diffTestSuite "removed",                      {a:1, b:2},       {a:1, b:2, c:3},    0, 1, 0, 2
-    diffTestSuite "changed",                      {a:1, b:2},       {a:1, b:3},         0, 0, 1, 1
-    diffTestSuite "added, removed and changed",   {a:1, b:2, c:3},  {a:1, b:3, d:4},    1, 1, 1, 1
