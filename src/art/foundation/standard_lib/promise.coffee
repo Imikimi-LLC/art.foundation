@@ -1,4 +1,4 @@
-Promise = self.Promise || require 'es6-promise'
+require 'promise-polyfill'
 
 ###
 ArtPromise extends ES6 Promises in the following ways:

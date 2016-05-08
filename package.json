@@ -4,7 +4,7 @@
   "description": "Foundation classes for the Art framework. Javascript extensions",
   "main": "main.js",
   "dependencies": {
-    "es6-promise": "^3.0.2",
+    "promise-polyfill": "^3.0.2",
     "sourcemapped-stacktrace": "^1.0.0",
     "chai": "^3.4.1",
     "coffee-loader": "^0.7.2",
