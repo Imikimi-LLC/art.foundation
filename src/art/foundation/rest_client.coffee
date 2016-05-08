@@ -75,7 +75,7 @@ module.exports = class RestClient extends BaseObject
 
   # OUT: Promise -> responseData is plainObject (repsonseData string parsed as JSON)
   @getJson: (url, options) ->
-    @get url, merge options, responseType: "json"
+    @get url, merge options, responseType: "json", headers: 'Accept': 'application/json'
 
   @put:  (url, data, options) ->
     RestClient._sendRequest merge options,
