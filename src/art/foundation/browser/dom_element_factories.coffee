@@ -1,4 +1,5 @@
 supportLibs = [
+  require "../standard_lib/object_diff"
   require "../standard_lib/string_case"
   require "../class_system/object_tree_factory"
 ]
@@ -75,11 +76,48 @@ module.exports = class DomElementFactories
       @[k] = v
 
   @isString: isString = (obj) => typeof obj == "string"
+  @isPlainObject: isPlainObject = (obj) => obj.constructor == Object
 
   @mergeInto: mergeInto = (into, source) ->
     into ||= {}
     into[k] = v for k, v of source
     into
+
+  @setDomElementProp: (element, prop, value, oldValue) =>
+    switch prop
+      when "class"      then element.className = value || ""
+      when "id"         then element.id        = value || ""
+      when "innerHTML"  then element.innerHTML = value || ""
+      when "on"
+        throw new Error "object expected for 'on' property" unless isPlainObject value
+        setStyle    = (eventType, newEventListener) -> element.addEventListener eventType, newEventListener
+        clearStyle  = (eventType, oldEventListener) -> element.removeEventListner eventType, oldEventListener
+        @objectDiff value, oldValue, setStyle, clearStyle, setStyle
+      when "style"
+        throw new Error "object expected for 'style' property" unless isPlainObject value
+        {style} = element
+        setStyle    = (k, v) -> style[k] = v
+        clearStyle  = (k)    -> style[k] = ""
+        @objectDiff value, oldValue, setStyle, clearStyle, setStyle
+
+      else element.setAttribute prop, value
+
+  @setDomElementProps: (element, props) ->
+    for k, v of props
+      @setDomElementProp element, k, v
+
+  @setDomElementChildren: (element, children) ->
+    for child in children
+      if isString child
+        for text, i in child.split "\n"
+          element.appendChild document.createElement "br" if i > 0
+          element.appendChild document.createTextNode text
+      else
+        unless child instanceof Node
+          message = "DomElementFactory:#{nodeName}: Child is not a string or instance of Node. Child: #{child}"
+          console.error message, child
+          throw new Error message
+        element.appendChild child
 
   ###
   IN: any combination of arrays and strings
@@ -92,35 +130,9 @@ module.exports = class DomElementFactories
   @createDomElementFactories: (list...) =>
     @createObjectTreeFactories list, (nodeName, props, children) =>
       element = document.createElement nodeName
-      for k, v of props
-        switch k
-          when "class" then element.className = v
-          when "id" then element.id = v
-          when "innerHTML" then element.innerHTML = v
-          when "on"
-            for eventType, eventListener of v
-              element.addEventListener eventType, eventListener
-          when "style"
-            if isString v
-              element.setAttribute k, v
-            else
-              {style} = element
-              for styleKey, styleValue of v
-                style[styleKey] = "" + styleValue
+      @setDomElementProps element, props
+      @setDomElementChildren element, children
 
-          else element.setAttribute k, v
-
-      for child in children
-        if isString child
-          for text, i in child.split "\n"
-            element.appendChild document.createElement "br" if i > 0
-            element.appendChild document.createTextNode text
-        else
-          unless child instanceof Node
-            message = "DomElementFactory:#{nodeName}: Child is not a string or instance of Node. Child: #{child}"
-            console.error message, child
-            throw new Error message
-          element.appendChild child
       element
     , ''
     , (into, source) ->
@@ -130,7 +142,7 @@ module.exports = class DomElementFactories
         else
           v
 
-  @allElementNames: "
+  @allDomElementNames: "
     A Abbr Acronym Address Applet Area Article Aside Audio B Base BaseFont Bdi Bdo
     Big BlockQuote Body Br Button Canvas Caption Center Cite Code Col ColGroup
     DataList Dd Del Details Dfn Dialog Dir Div Dl Dt Em Embed FieldSet FigCaption
@@ -142,4 +154,4 @@ module.exports = class DomElementFactories
     Var Video Wbr
     "
 
-  @[k] = v for k, v of @createDomElementFactories @allElementNames
+  @[k] = v for k, v of @createDomElementFactories @allDomElementNames
