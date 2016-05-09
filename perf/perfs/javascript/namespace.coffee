@@ -3,8 +3,5 @@
 
 Perfs = require '../namespace'
 module.exports = Perfs.Javascript ||
-class Perfs.Javascript extends Neptune.Base
-  @namespace: Perfs
-  @namespacePath: "Neptune.Perfs.Javascript"
-
-Perfs.addNamespace Perfs.Javascript
+Perfs.addNamespace class Javascript extends Neptune.Base
+  ;

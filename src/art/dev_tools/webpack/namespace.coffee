@@ -3,8 +3,5 @@
 
 DevTools = require '../namespace'
 module.exports = DevTools.Webpack ||
-class DevTools.Webpack extends Neptune.Base
-  @namespace: DevTools
-  @namespacePath: "Neptune.Art.DevTools.Webpack"
-
-DevTools.addNamespace DevTools.Webpack
+DevTools.addNamespace class Webpack extends Neptune.Base
+  ;

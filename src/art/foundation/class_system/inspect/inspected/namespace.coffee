@@ -3,8 +3,5 @@
 
 Inspect = require '../namespace'
 module.exports = Inspect.Inspected ||
-class Inspect.Inspected extends Neptune.Base
-  @namespace: Inspect
-  @namespacePath: "Neptune.Art.Foundation.ClassSystem.Inspect.Inspected"
-
-Inspect.addNamespace Inspect.Inspected
+Inspect.addNamespace class Inspected extends Neptune.Base
+  ;

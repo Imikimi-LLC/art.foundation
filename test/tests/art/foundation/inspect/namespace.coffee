@@ -3,8 +3,5 @@
 
 Foundation = require '../namespace'
 module.exports = Foundation.Inspect ||
-class Foundation.Inspect extends Neptune.Base
-  @namespace: Foundation
-  @namespacePath: "Neptune.Tests.Art.Foundation.Inspect"
-
-Foundation.addNamespace Foundation.Inspect
+Foundation.addNamespace class Inspect extends Neptune.Base
+  ;
