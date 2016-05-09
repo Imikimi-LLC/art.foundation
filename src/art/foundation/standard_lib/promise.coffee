@@ -24,44 +24,56 @@ module.exports = class ArtPromise #extends Promise
   promise is resolved.
 
   USAGE:
+
+    # EXAMPLE 1: Basic - not too different from normal Promise sequences
     serializer = new ArtPromise.Serializer
     serializer.then -> doA()
+
     # then execute sometime later, possbly asynchronously:
     serializer.then -> doB()
+
     # then execute sometime later, possbly asynchronously:
     serializer.then (doBResult) ->
       # doA and doB have completed and any returning promises resolved
       # the result of the last 'then' is passed in
 
-  OR
+    # EXAMPLE 2: apply the same async function serially to each element in list
+    # - list's order is preserved
+    # - each invocation waits for the previous one to complete
     serializer = new ArtPromise.Serializer
     list.forEach serializer.serialize f = (element) -> # do something with element, possibly returning a promise
     serializer.then (lastFResult) ->
       # do something after the last invocation of f completes
       # the result of the last invocation of 'f' is passed in
 
-  OR
+    # EXAMPLE 3: mix multiple serialized functions and manual @then invocations
+    # - invocation order is perserved
     serializer = new ArtPromise.Serializer
     serializedA = serializer.serialize aFunction
     serializedB = serializer.serialize bFunction
 
     serializedB()
+    serializer.then -> @cFunction()
     serializedB()
     serializedA()
     serializedB()
 
     serializer.then (lastBFunctionResult) ->
       # this is invoked AFTER:
-      # evaluated in order, waiting for any promises:
-      #   bFunction, bFunciton, aFunction, bFunction
+      # evaluating, in order, waiting for any promises:
+      #   bFunction, cFunction, bFunction, aFunction, bFunction
   ###
   class ArtPromise.Serializer
     constructor: -> @_lastPromise = ArtPromise.resolve()
 
-    # a new function, that acts just like 'f' (except if f doesn't return a promise, a promise wrapping f's result is returned)
-    # EXCEPT for a guarantee: each f call, and any resulting promises, is resolved before the next f is invoked.
-    # IN: any function with any signature
-    # OUT: (f's signature) -> promise.then (fResult) ->
+    ###
+    Returns a new function, serializedF, that acts just like 'f'
+      - f is forced to be async:
+        - if f doesn't return a promise, a promise wrapping f's result is returned
+      - invoking serializedF queues f in this serializer instance's sequence via @then
+    IN: any function with any signature
+    OUT: (f's signature) -> promise.then (fResult) ->
+    ###
     serialize: (f) ->
       =>
         args = arguments
