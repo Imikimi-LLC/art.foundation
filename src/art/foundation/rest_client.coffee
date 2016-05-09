@@ -2,11 +2,9 @@
 #  http://www.w3.org/TR/XMLHttpRequest2/
 #  http://www.html5rocks.com/en/tutorials/file/xhr2/
 StandardLib = require './standard_lib'
-ClassSystem = require './class_system'
-{BaseObject} = ClassSystem
 {present, Promise, log, merge} = StandardLib
 
-module.exports = class RestClient extends BaseObject
+module.exports = class RestClient
 
   # http://stackoverflow.com/questions/15668339/can-onprogress-functionality-be-added-to-jquery-ajax-by-using-xhrfields
   # OLD - do we need this anymore??? (2016-Feb SBD)
@@ -73,10 +71,6 @@ module.exports = class RestClient extends BaseObject
   @getArrayBuffer: (url, options) ->
     @get url, merge options, responseType: "arraybuffer"
 
-  # OUT: Promise -> responseData is plainObject (repsonseData string parsed as JSON)
-  @getJson: (url, options) ->
-    @get url, merge options, responseType: "json", headers: 'Accept': 'application/json'
-
   @put:  (url, data, options) ->
     RestClient._sendRequest merge options,
       verb: "PUT"
@@ -88,6 +82,11 @@ module.exports = class RestClient extends BaseObject
       verb: "POST"
       url: url
       data: data
+
+  # OUT: Promise -> responseData is plainObject (responseData string parsed as JSON)
+  @getJson:   (url, options)       -> @get  url,       merge options, responseType: "json", headers: 'Accept': 'application/json'
+  @putJson:   (url, data, options) -> @put  url, data, merge options, responseType: "json", headers: 'Accept': 'application/json'
+  @postJson:  (url, data, options) -> @post url, data, merge options, responseType: "json", headers: 'Accept': 'application/json'
 
   ####################
   # PRIVATE
