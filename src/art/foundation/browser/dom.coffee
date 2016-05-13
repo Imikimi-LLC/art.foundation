@@ -18,7 +18,7 @@ module.exports = class Dom
     return target.style.zIndex = setZIndex if setZIndex != undefined
 
     element = target
-    while element != document
+    while element && element != document
       # Ignore z-index if position is set to a value where z-index is ignored by the browser
       # This makes behavior of this function consistent across browsers
       # WebKit always returns auto if the element is positioned
