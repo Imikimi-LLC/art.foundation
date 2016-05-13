@@ -56,6 +56,7 @@ Div mySharedTextStyle,
   "Styles are easy, too."
 
 VERSION HISTORY:
+  1.1.1 - added H2-H6
   1.1.0 - new-lines in text-children become <BR> tags
   1.0.0 - initial
 ###
@@ -69,7 +70,7 @@ VERSION HISTORY:
 # DomElementFactories
 #####################
 module.exports = class DomElementFactories
-  @version: "1.1.0"
+  @version: "1.1.1"
   @src: "https://github.com/Imikimi-LLC/art-foundation"
   for supportLib in supportLibs
     for k, v of supportLib
@@ -146,7 +147,7 @@ module.exports = class DomElementFactories
     A Abbr Acronym Address Applet Area Article Aside Audio B Base BaseFont Bdi Bdo
     Big BlockQuote Body Br Button Canvas Caption Center Cite Code Col ColGroup
     DataList Dd Del Details Dfn Dialog Dir Div Dl Dt Em Embed FieldSet FigCaption
-    Figure Font Footer Form Frame FrameSet H1 Head Header Hr Html I IFrame Img Input
+    Figure Font Footer Form Frame FrameSet H1 H2 H3 H4 H5 H6 Head Header Hr Html I IFrame Img Input
     Ins Kbd KeyGen Label Legend Li Link Main Map Mark Menu MenuItem Meta Meter Nav
     NoFrames NoScript Object Ol OptGroup Option Output P Param Pre Progress Q Rp Rt
     Ruby S Samp Script Section Select Small Source Span Strike Strong Style Sub
