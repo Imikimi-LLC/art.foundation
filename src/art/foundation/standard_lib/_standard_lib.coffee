@@ -1,6 +1,4 @@
-require './namespace'
-.includeInNamespace null,
-
+module.exports = [
   require "./array_extensions"
   require "./array_compact_flatten"
   require "./eq"
@@ -16,3 +14,4 @@ require './namespace'
   require "./string_case"
   require "./time"
   require "./types"
+]

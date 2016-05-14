@@ -1,5 +1,4 @@
-require "./namespace"
-.includeInNamespace null,
+module.exports = [
   require "./class_system"
   require "./standard_lib"
 
@@ -7,3 +6,4 @@ require "./namespace"
   require "./async"
   require "./call_stack"
   require "./global_counts"
+]
