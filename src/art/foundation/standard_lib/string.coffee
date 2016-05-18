@@ -4,12 +4,11 @@ Types          = require './types'
 {intRand} = FoundationMath
 {isString, isNumber, isPlainObject, isArray} = Types
 
-jString = self.String
 escapedQuoteRegex    = /[\\]["]/
 escapedNonQuoteRegex = /[\\][^"]/
 {floor} = Math
 
-module.exports = class String
+module.exports = class StringExtensions
 
   @wordsArray: (str) -> str.match wordsRegex
   @wordArray: @wordsArray
@@ -39,13 +38,16 @@ module.exports = class String
     else
       str.toString()
 
+  @getPadding: getPadding = (length, padding=" ")->
+    Array(length).join padding
+
   @pad: (str, length, padding="0")->
-    str = jString(str)
-    Array(Math.max(length - str.length + 1, 0)).join(padding) + str
+    str = String(str)
+    getPadding(Math.max(length - str.length + 1, 0), padding) + str
 
   # take a string of anything and produce a javascript legal string
   @escapeDoubleQuoteJavascriptString: escapeDoubleQuoteJavascriptString = (str) =>
-    s = jString(str).replace(/[\\"]/g, "\\$&").replace /[\0\b\f\n\r\t\v\u2028\u2029]/g, (x) ->
+    s = String(str).replace(/[\\"]/g, "\\$&").replace /[\0\b\f\n\r\t\v\u2028\u2029]/g, (x) ->
       switch x
         when '\0'     then "\\0"
         when '\b'     then "\\b"
