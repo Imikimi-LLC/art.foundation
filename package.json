@@ -1,6 +1,6 @@
 {
   "name": "art-foundation",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Foundation classes for the Art framework. Javascript extensions",
   "main": "main.js",
   "dependencies": {
@@ -17,8 +17,7 @@
     "webpack": "^1.12.0",
     "webpack-dev-server": "^1.12.0"
   },
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "scripts": {
     "test": "webpack-dev-server -d --progress"
   },
