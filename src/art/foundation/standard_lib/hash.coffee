@@ -11,10 +11,12 @@ module.exports = class Hash
       result[k] = v
     result
 
-  @objectKeyCount: (o) ->
+  @objectKeyCount: objectKeyCount = (o) ->
     count = 0
     count++ for k, v of o
     count
+
+  @objectLength: objectKeyCount
 
   ###
 
