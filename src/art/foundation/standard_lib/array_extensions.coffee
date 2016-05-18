@@ -21,6 +21,33 @@ module.exports = class ArrayExtensions
       res[a] = false
     res
 
+  ###
+  IN:
+    array: an array or falsy value
+    element: anything
+  OUT:
+    array containing element as the last element
+
+  EFFECT:
+    if array was falsy, a new length-1 array is returned
+    else, array was mutated by pushing the current element
+
+  WHY?
+    Why write this when arrays alread have push?
+
+    1) if array is null, this works as desired
+    2) this returns array, not array.length
+      Returning the array is what Ruby's push does.
+      It makes chaining pushes easy.
+
+  ###
+  @push: (array, element) ->
+    if array
+      array.push element
+      array
+    else
+      [element]
+
   @peek: (array, offset = -1) =>
     if array
       array[array.length + offset]
