@@ -1,14 +1,14 @@
-if !document.getElementById "mocha"
-  document.write "<div id=\"mocha\"></div>"
-
+{log} = require 'art-foundation'
 chai = require 'art-foundation/src/art/dev_tools/test/art_chai'
 self.assert = chai.assert
-require "!style!css!mocha/mocha.css"
-require "!script!mocha/mocha.js"
-DomConsole = require '../dom_console'
-{log} = require 'art-foundation'
 
-mocha.setup reporter: require './mocha_browser_reporter'
+if self.document
+  document.write "<div id=\"mocha\"></div>" unless document.getElementById "mocha"
+  require "!style!css!mocha/mocha.css"
+  require "!script!mocha/mocha.js"
+
+  DomConsole = require '../dom_console'
+  mocha.setup reporter: require './mocha_browser_reporter'
 
 ###
 Use mocha as normal, but if you added dots (.) in your suite names, this will
@@ -56,12 +56,14 @@ class NestedSuites
               f.call @
 
   groupTestSuites: (defineAllTests) ->
+    oldSuite = self.suite
     self.suite = (name, f) =>
       @addSuite name, f
 
     defineAllTests chai
 
-    mocha.setup 'tdd'
+    self.suite = oldSuite
+    mocha?.setup 'tdd'
 
     @_createMochaSuites()
 
@@ -73,6 +75,6 @@ module.exports = class MyMocha
       test message, ->
         console.error log message
 
-    DomConsole.enable()
+    DomConsole?.enable()
     (new NestedSuites).groupTestSuites defineAllTests
-    mocha.run()
+    mocha?.run()

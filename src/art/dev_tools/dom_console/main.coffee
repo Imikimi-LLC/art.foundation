@@ -5,7 +5,7 @@
 
 ###
 
-require "!style!css!./style.css"
+require "!style!css!./style.css" if self.document
 
 {$$} = require "art-foundation/src/extlib/node_list" if self.window
 
