@@ -298,7 +298,7 @@ module.exports = createWithPostCreate class DomConsole.Console extends BaseObjec
       scale *= maxImageDisplaySize.div(size).min()
 
     Img
-      src: inspectedObject.image.src
+      src: image.src
       style:
         width:  "#{image.naturalWidth  * scale | 0}px"
         height: "#{image.naturalHeight * scale | 0}px"
