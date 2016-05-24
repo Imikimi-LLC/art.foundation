@@ -7,20 +7,32 @@ testNamesLowerCamelCased = (lowerCamelCase name for name in testNames)
 
 suite "Art.Foundation.ObjectTreeFactory.createObjectTreeFactories", ->
   test "createObjectTreeFactories testNamesString", ->
-    keys = Object.keys createObjectTreeFactories testNamesString
+    keys = Object.keys createObjectTreeFactories testNamesString, ->
     assert.eq keys, testNames
 
   test "createObjectTreeFactories testNames", ->
-    keys = Object.keys createObjectTreeFactories testNames
+    keys = Object.keys createObjectTreeFactories testNames, ->
     assert.eq keys, testNames
 
   test "createObjectTreeFactories testNamesLowerCamelCased", ->
-    keys = Object.keys createObjectTreeFactories testNamesLowerCamelCased
+    keys = Object.keys createObjectTreeFactories testNamesLowerCamelCased, ->
     assert.eq keys, testNames
 
   test 'createObjectTreeFactories ["Alice", "Bill John", ["SallyMae"]]', ->
-    keys = Object.keys createObjectTreeFactories ["Alice", "Bill John", ["SallyMae"]]
+    keys = Object.keys createObjectTreeFactories ["Alice", "Bill John", ["SallyMae"]], ->
     assert.eq keys, testNames
+
+  test 'full test createObjectTreeFactories "Alice"', ->
+    {Alice} = createObjectTreeFactories "Alice",
+      (nodeName, props, children) -> [nodeName, props, children]
+
+    assert.eq ["Alice", {myProp: "myPropValue"}, ["Alice", {}]], Alice myProp:"myPropValue", Alice()
+
+  test 'full test createObjectTreeFactoriesFromFactoryFactories "Bill"', ->
+    {Bill} = createObjectTreeFactories "Bill",
+      (nodeName) -> (props, children) -> [nodeName, props, children]
+
+    assert.eq ["Bill", {myProp: "myPropValue"}, ["Bill", {}]], Bill myProp:"myPropValue", Bill()
 
 class MyObject extends BaseObject
   constructor: (@name, @props, @children) ->
