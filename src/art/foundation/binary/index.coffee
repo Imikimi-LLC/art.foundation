@@ -5,6 +5,7 @@
 .includeInNamespace(require './_binary')
 .addModules
   BinaryString: require './binary_string'
+  DataUri:      require './data_uri'
   EncodedImage: require './encoded_image'
   File:         require './file'
   Stream:       require './stream'

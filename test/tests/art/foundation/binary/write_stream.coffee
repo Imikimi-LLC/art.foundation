@@ -1,6 +1,5 @@
 Foundation = require 'art-foundation'
-{Binary, log, inspect, isString} = Foundation
-{WriteStream, Stream, binary} = Binary
+{WriteStream, Stream, binary, log, inspect, isString} = Foundation
 
 testWriting = (name, actions) ->
   test name, ->

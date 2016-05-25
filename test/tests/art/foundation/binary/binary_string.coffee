@@ -1,8 +1,7 @@
 {assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
 Foundation = require 'art-foundation'
 
-{inspect, log, Binary} = Foundation
-{RestClient, binary, BinaryString} = Binary
+{inspect, log, binary, BinaryString} = Foundation
 
 allPossibleValuesString = new BinaryString new ArrayBuffer 256
 for i in [0..255]

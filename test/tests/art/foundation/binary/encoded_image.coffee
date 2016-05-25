@@ -1,7 +1,5 @@
 {assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
-{Binary, RestClient} = require 'art-foundation'
-EncodedImage = Binary.EncodedImage
-binary = Binary.binary
+{EncodedImage, binary, RestClient} = require 'art-foundation'
 
 suite "Art.Foundation.Binary.EncodedImage", ->
   test "base64", ->
@@ -17,12 +15,6 @@ suite "Art.Foundation.Binary.EncodedImage", ->
       binary(arrayBuffer).toBase64()
     .then (base64) ->
       assert.equal base64[0..9], "iVBORw0KGg"
-
-  test 'loadImage', ->
-    EncodedImage.loadImage "#{testAssetRoot}/array_buffer_image_test/sample.jpg"
-    .then (image)->
-      assert.equal image.width, 256
-      assert.equal image.height, 256
 
   test "jpg toImage", ->
     RestClient.getArrayBuffer "#{testAssetRoot}/array_buffer_image_test/sample.jpg"

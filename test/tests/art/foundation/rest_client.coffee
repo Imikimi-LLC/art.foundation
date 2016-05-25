@@ -1,6 +1,5 @@
 {assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
-{Binary, log, RestClient} = require 'art-foundation'
-{binary} = Binary
+{binary, log, RestClient} = require 'art-foundation'
 
 suite "Art.Foundation.RestClient", ->
 

@@ -1,5 +1,5 @@
 {assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
-{Binary, log} = require 'art-foundation'
+{Utf8, log} = require 'art-foundation'
 
 pairs = [
   {s:"✓",  a:[0xE2, 0x9C, 0x93]},
@@ -11,25 +11,25 @@ pairs = [
 suite "Art.Foundation.Binary.Utf8", ->
   test "array to str", ->
     for p in pairs
-      assert.equal p.s, Binary.Utf8.toString(p.a)
+      assert.equal p.s, Utf8.toString(p.a)
 
   test "Uint8Array to str", ->
     for p in pairs
-      assert.equal p.s, Binary.Utf8.toString(new Uint8Array p.a)
+      assert.equal p.s, Utf8.toString(new Uint8Array p.a)
 
   test "Uint8Array to str", ->
     for p in pairs
       uint8Array = new Uint8Array p.a
       buffer = uint8Array.buffer
       assert.ok(buffer instanceof ArrayBuffer)
-      assert.equal p.s, Binary.Utf8.toString buffer
+      assert.equal p.s, Utf8.toString buffer
 
   test "str to array", ->
     for p in pairs
-      assert.deepEqual p.a, Binary.Utf8.toArray(p.s)
+      assert.deepEqual p.a, Utf8.toArray(p.s)
 
   test "round trip", ->
     for p in pairs
-      assert.equal p.s, Binary.Utf8.toString(Binary.Utf8.toBuffer(p.s))
+      assert.equal p.s, Utf8.toString(Utf8.toBuffer(p.s))
 
 "success"
