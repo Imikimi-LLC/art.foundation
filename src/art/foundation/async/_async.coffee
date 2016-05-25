@@ -2,6 +2,10 @@ StandardLib = require '../standard_lib'
 {log, Promise} = StandardLib
 
 module.exports = class Basic
+
+  # IN: delay in ms
+  # IN: f (optional) - function to invoke after delay
+  # OUT: promise.then -> # delay has elapsed
   @timeout: timeout = (ms, f) =>
     new Promise (resolve) ->
       setTimeout ->
@@ -15,30 +19,16 @@ module.exports = class Basic
     self.mozRequestAnimationFrame    ||
     self.oRequestAnimationFrame      ||
     self.msRequestAnimationFrame     ||
-    # console.error "requestAnimationFrame not supported!"
     (f) -> setTimeout f, 1000 / 60
 
   #-------------------------------------
   # nextTick
   #-------------------------------------
-  # @setupNextTickProcessor: =>
-  #   return if @nextTickProcessor
-  #   lastOnMessage = self.onmessage
-  #   @nextTickProcessor = self.onmessage = =>
-  #     @evalAndThrowErrorsOutOfStack lastOnMessage if lastOnMessage
-  #     if @nextTickList.length > 0
-  #       next = @nextTickList[0]
-  #       @evalAndThrowErrorsOutOfStack next
-  #       @nextTickList = @nextTickList.slice 1
-  #       if @nextTickList.length > 0
-  #         self.postMessage null, '*'
-
-  # @nextTickList: []
-  @nextTick: (f) =>
-    timeout 0, f
-    # @nextTickList.push f
-    # @setupNextTickProcessor()
-    # self.postMessage null, '*'
+  # For browsers without native Promise support, nextTick
+  # effectively uses setTimeout(0), which isn't very fast.
+  # See promise.coffee for info about how we can speed
+  # things up by including a setImmediate polyfill.
+  @nextTick: (f) => Promise.resolve().then f
 
   #-------------------------------------
   # throwErrorOutOfStack

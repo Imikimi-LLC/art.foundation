@@ -1,3 +1,5 @@
+# promise-polyfill takes advantage of setImmediate for performance gains
+# This polyfil promises good setImmediate performance: https://github.com/YuzuJS/setImmediate
 require 'promise-polyfill'
 
 ###
@@ -10,6 +12,10 @@ ArtPromise extends ES6 Promises in the following ways:
 If native promises are supported, they are used,
 otherwise a polyfill is used.
 
+TODO: ES6 says Promises are designed to be extensible:
+  http://www.ecma-international.org/ecma-262/6.0/#sec-promise-objects
+
+  But I had problems doing that. Maybe it's how CoffeeScript extends things?
 ###
 module.exports = class ArtPromise #extends Promise
   @ES6Promise: Promise

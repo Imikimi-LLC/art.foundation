@@ -142,6 +142,7 @@ Usage - add to global registery:
 debugPrefix = if isWebWorker then "WorkerRpc(worker)" else "WorkerRpc(browser)"
 module.exports = class WorkerRpc extends BaseObject
   @singletonClass()
+  @workerRpcChannelIdString: workerRpcChannelIdString = "Art.Foundation.WorkerRpcChannel"
 
   @register: (toRegister) -> WorkerRpc.singleton.register toRegister
   @bind:             (toBind) -> WorkerRpc.singleton._bind toBind, false
@@ -229,7 +230,7 @@ module.exports = class WorkerRpc extends BaseObject
     @
 
   _send: (namespaceName, functionName, promiseId, args)->
-    @_thread.postMessage [namespaceName, functionName, promiseId, args]
+    @_thread.postMessage [workerRpcChannelIdString, namespaceName, functionName, promiseId, args]
 
   _newRemoteRequestFunctionWithPromise: (namespaceName, functionName) ->
     (args...)=>
@@ -241,11 +242,20 @@ module.exports = class WorkerRpc extends BaseObject
       @_send namespaceName, functionName, null, args
 
   _bindOnmessage: (thread) ->
-    thread?.onmessage = ({data}) =>
-      return console.warn "#{debugPrefix}: data was not an array", data unless isPlainArray data
-      [namespaceName, functionName, promiseId, args] = data
+    return unless thread
+    handler = ({data}) =>
+      return unless isPlainArray data
+      [testWorkerRpcChannelIdString, namespaceName, functionName, promiseId, args] = data
+      return unless testWorkerRpcChannelIdString == workerRpcChannelIdString
 
       @_invokeLocalFunction namespaceName, functionName, promiseId, args
+
+    if thread.addEventListener
+      # using addEventListner allows WorkerRpc to work side-by-side with other message handlers.
+      thread.addEventListener 'message', handler
+    else
+      # webworker handlers must be set this way
+      thread.onmessage = handler
 
   _invokeLocalFunction: (namespaceName, functionName, promiseId, args) ->
     unless (namespace = @_registry[namespaceName]) && localFunction = namespace[functionName]

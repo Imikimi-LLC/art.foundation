@@ -9,6 +9,13 @@ suite "Art.Foundation.Async.Basic", ->
   test "nextTick with Promise", ->
     nextTick()
 
+  test "nextTick is not immediate", ->
+    nextTickHappened = false
+    p = nextTick -> nextTickHappened = true
+    assert.eq nextTickHappened, false
+    p.then ->
+      assert.eq nextTickHappened, true
+
   test "two nextTicks", (done)->
     count = 0
     nextTick ->

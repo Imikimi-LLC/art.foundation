@@ -1,4 +1,5 @@
 module.exports = [
+  require "./binary"
   require "./class_system"
   require "./standard_lib"
 
