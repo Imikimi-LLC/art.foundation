@@ -24,6 +24,13 @@ module.exports = class ArtPromise #extends Promise
   @reject: Promise.reject
   @resolve: Promise.resolve
   @then: (f) -> Promise.resolve().then f
+  @mapAll: (map) ->
+    keys = Object.keys map
+    Promise.all(map[key] for key in keys)
+    .then (values) ->
+      out = {}
+      out[key] = values[i] for key, i in keys
+      out
 
   ###
   Serializer makes it easy to ensure promise-returning functions are invoked in order, after each
