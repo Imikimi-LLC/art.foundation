@@ -1,8 +1,7 @@
 
 ###
-# SASS
-# compile it with: http://sassmeister.com/
-
+To customize how an object shows up in the DOM console, add
+getInspectObjects member method. For more info, see base_object.coffee
 ###
 
 require "!style!css!./style.css" if self.document
@@ -255,9 +254,7 @@ module.exports = createWithPostCreate class DomConsole.Console extends BaseObjec
 
   # if there are new-lines in the literal, show with PRE instead of SPAN
   literalToDomHelper = (classes, literalString) ->
-    Factory = if literalString.match /\n|<|>/
-      literalString = literalString.replace /[<]/g, "&lt;"
-      literalString = literalString.replace /[>]/g, "&gt;"
+    Factory = if literalString.match /\s\s+|\n/
       Pre
     else
       Span
