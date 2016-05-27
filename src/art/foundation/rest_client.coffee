@@ -145,10 +145,10 @@ module.exports = class RestClient
 
       request.setRequestHeader k, v for k, v of headers if headers
 
-      request.onerror = (event) ->
-        reject merge restRequestStatus, event: event, response: getResponse(), error: "XMLHttpRequest triggered onerror"
+      request.addEventListener "error", (event) ->
+        reject merge restRequestStatus, event: event, response: getResponse(), error: "XMLHttpRequest error"
 
-      request.onload  = (event) ->
+      request.addEventListener "load", (event) ->
         {status, response} = request
 
         if (status / 100 | 0) == 2
@@ -157,7 +157,7 @@ module.exports = class RestClient
           catch error
             reject merge restRequestStatus, event: event, status: status, response: rescuedGetResponse(), error: error
         else
-          reject merge restRequestStatus, event: event, status: status, response: rescuedGetResponse(), error: "response status was #{status}"
+          reject merge restRequestStatus, event: event, status: status, response: rescuedGetResponse(), error: "HTTP #{status} error"
 
       if onProgress
         progressCallbackInternal = (event) ->
@@ -165,8 +165,8 @@ module.exports = class RestClient
           onProgress? restRequestStatus = merge restRequestStatus, event:event, progress: (if total > 0 then loaded / total else 0)
 
         if verb == "GET"
-          request.onprogress = progressCallbackInternal
+          request.addEventListener "progress", progressCallbackInternal
         else
-          request.upload.onprogress = progressCallbackInternal
+          request.upload.addEventListener "progress", progressCallbackInternal
 
       request.send data
