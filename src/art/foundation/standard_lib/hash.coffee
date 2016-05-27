@@ -19,6 +19,19 @@ module.exports = class Hash
   @objectLength: objectKeyCount
 
   ###
+  IN:
+    inputArray: any array
+    transformFunction: (element) -> [key, value]
+      default: transforms an array of the form: [[key1, value1], [key2, value2], etc...]
+  ###
+  @arrayToMap: (inputArray, transformFunction = (element) -> element) ->
+    outputMap = {}
+    for element in inputArray
+      [key, value] = transformFunction element
+      outputMap[key] = value
+    outputMap
+
+  ###
 
   merge "flattens" its arguments and then adds all keys from all objects in
   the list into a new object which is returned.
