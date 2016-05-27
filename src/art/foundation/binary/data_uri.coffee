@@ -1,7 +1,7 @@
 StandardLib = require '../standard_lib'
 
 {binary}     = require "./binary_string"
-{readAsDataURL} = require '../browser/file'
+{readAsDataURL} = require './file'
 
 {Promise, isString} = StandardLib
 
