@@ -1,6 +1,6 @@
 # promise-polyfill takes advantage of setImmediate for performance gains
 # This polyfil promises good setImmediate performance: https://github.com/YuzuJS/setImmediate
-require 'promise-polyfill'
+Promise = require 'promise-polyfill'
 
 ###
 ArtPromise extends ES6 Promises in the following ways:
