@@ -1,3 +1,4 @@
+
 module.exports = [
   require "./binary"
   require "./class_system"
@@ -7,4 +8,5 @@ module.exports = [
   require "./async"
   require "./call_stack"
   require "./global_counts"
+  require "json!art-foundation/package.json"
 ]
