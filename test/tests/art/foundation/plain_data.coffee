@@ -39,7 +39,10 @@ suite "Art.Foundation.PlainData", ->
     tester = (v, expectedResult) ->
       test "toJsonStructure #{inspect v} -> #{inspect expectedResult}", ->
         result = toJsonStructure v
-        assert.eq expectedResult, result
+        if expectedResult instanceof RegExp
+          assert.match result, expectedResult
+        else
+          assert.eq expectedResult, result
 
     suite "json atomic types", ->
       tester 123, 123
@@ -52,7 +55,7 @@ suite "Art.Foundation.PlainData", ->
       tester [], []
 
     suite "non-json types", ->
-      tester (->), "function () {}"
+      tester (->), /\s*function\s*\(\)\s*{}/
       d = new Date
       tester d, d.toString()
 

@@ -18,8 +18,10 @@ if self.document
 
     addFailure: (test, err) ->
       @failedTests.push (
-        promisedMapStackTrace stack = err.stack
-        .then (mappedStack) ->
+        p = if stack = err.stack
+          promisedMapStackTrace stack
+        else Promise.resolve()
+        p.then (mappedStack) ->
           [test, err, mappedStack]
       )
 

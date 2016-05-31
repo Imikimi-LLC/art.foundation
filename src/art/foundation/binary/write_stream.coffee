@@ -3,7 +3,7 @@ ClassSystem = require '../class_system'
 
 {binary} = require "./binary_string"
 
-{Promise, readFileAsArrayBuffer} = StandardLib
+{Promise, readFileAsArrayBuffer, bound} = StandardLib
 {BaseObject, log} = ClassSystem
 
 bufferSize = 1024

@@ -4,10 +4,11 @@
 (module.exports = require './namespace')
 .includeInNamespace(require './_binary')
 .addModules
-  BinaryString: require './binary_string'
-  DataUri:      require './data_uri'
-  EncodedImage: require './encoded_image'
-  File:         require './file'
-  Stream:       require './stream'
-  Utf8:         require './utf8'
-  WriteStream:  require './write_stream'
+  BinaryString:            require './binary_string'
+  DataUri:                 require './data_uri'
+  EncodedImage:            require './encoded_image'
+  File:                    require './file'
+  Stream:                  require './stream'
+  TypedarraySlicePolyfill: require './typedarray_slice_polyfill'
+  Utf8:                    require './utf8'
+  WriteStream:             require './write_stream'
