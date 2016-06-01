@@ -34,19 +34,18 @@ module.exports = class Dom
 
     0
 
-  @domElementOffset: (elem) ->
-    box = elem.getBoundingClientRect()
+  @domElementOffset: (element) ->
+    box = element.getBoundingClientRect()
 
-    body = document.body
-    docEl = document.documentElement
+    {body, documentElement} = document
 
-    scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop
-    scrollLeft = window.pageXOffset || docEl.scrollLeft || body.scrollLeft
+    scrollTop  = window.pageYOffset || documentElement.scrollTop  || body.scrollTop
+    scrollLeft = window.pageXOffset || documentElement.scrollLeft || body.scrollLeft
 
-    clientTop = docEl.clientTop || body.clientTop || 0
-    clientLeft = docEl.clientLeft || body.clientLeft || 0
+    clientTop  = documentElement.clientTop  || body.clientTop  || 0
+    clientLeft = documentElement.clientLeft || body.clientLeft || 0
 
-    top  = box.top +  scrollTop - clientTop
+    top  = box.top  + scrollTop  - clientTop
     left = box.left + scrollLeft - clientLeft
 
     top:  Math.round top
