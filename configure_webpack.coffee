@@ -35,6 +35,7 @@ module.exports = ({entries, outputPath, dirname}, rest...) ->
         { test: /\.css$/, loader: "style-loader!css-loader" }
         { test: /\.png$/, loader: "url-loader?limit=100000" }
         { test: /\.jpg$/, loader: "file-loader" }
+        { test: /\.json$/, loader: "json-loader" }
       ]
   if rest.length > 0
     [result].concat rest

@@ -8,5 +8,6 @@ module.exports = [
   require "./async"
   require "./call_stack"
   require "./global_counts"
-  require "json!art-foundation/package.json"
+  package: _package = require "art-foundation/package.json"
+  version: _package.version
 ]
