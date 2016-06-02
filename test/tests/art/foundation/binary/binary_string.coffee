@@ -3,6 +3,8 @@ Foundation = require 'art-foundation'
 
 {inspect, log, binary, BinaryString} = Foundation
 
+self.atob ||= require 'atob'
+
 allPossibleValuesString = new BinaryString new ArrayBuffer 256
 for i in [0..255]
   allPossibleValuesString.bytes[i] = i
