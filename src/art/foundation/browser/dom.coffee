@@ -14,7 +14,7 @@ module.exports = class Dom
 
   @getDevicePixelRatio: -> (self.devicePixelRatio? && self.devicePixelRatio) || 1
   @zIndex: ( target, setZIndex ) ->
-    target = document.getElementById target
+    target = document.getElementById target unless target instanceof HTMLElement
     return target.style.zIndex = setZIndex if setZIndex != undefined
 
     element = target
