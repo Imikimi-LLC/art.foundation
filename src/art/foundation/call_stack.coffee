@@ -1,5 +1,6 @@
 Parse = require './browser/parse'
 parseURL = Parse.url
+{isString} = require './standard_lib'
 {inspect} = require './class_system/inspect'
 
 module.exports = class CallStack

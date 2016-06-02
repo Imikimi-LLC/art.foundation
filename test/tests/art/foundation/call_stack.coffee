@@ -6,8 +6,10 @@ rawLog = ->
 
 suite "Art.Foundation.CallStackLine", ->
   test "errorToString", ->
-    log "do test"
-    assert.eq "", errorToString new Error "hi"
+    assert.eq "hi", errorToString new Error "hi"
+    assert.eq "hi", errorToString "hi"
+    assert.eq "hi", errorToString {message: "hi"}
+    assert.eq "hi", errorToString {error: "hi"}
 
   test "log with function", ->
     myFunc = ->
