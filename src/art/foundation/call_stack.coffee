@@ -1,7 +1,9 @@
 Parse = require './browser/parse'
 parseURL = Parse.url
+{inspect} = require './class_system/inspect'
 
 module.exports = class CallStack
+  @errorToString: (error) -> error?.error || error?.message || (isString(error) && error) || inspect error
   @CallStackLine: class CallStackLine
     @getter: (map) ->
       Object.defineProperty @::, prop, {get: getter, configurable: yes} for prop, getter of map

@@ -1,10 +1,14 @@
 {assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
 Foundation = require "art-foundation"
-{inspectLean, rawLog, inspect} = Foundation
+{log, inspectLean, rawLog, inspect, errorToString} = Foundation
 
 rawLog = ->
 
 suite "Art.Foundation.CallStackLine", ->
+  test "errorToString", ->
+    log "do test"
+    assert.eq "", errorToString new Error "hi"
+
   test "log with function", ->
     myFunc = ->
       a = Foundation.callStack()
