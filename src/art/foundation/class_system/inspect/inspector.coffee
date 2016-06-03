@@ -1,8 +1,13 @@
 StandardLib = require '../../standard_lib'
 BaseObject = require "../base_object"
 Map = require "../map"
-Inspect = require "./namespace"
-{escapeJavascriptString, isString, isArray, isFunction, isObject, isClass, objectName, isBrowserObject} = StandardLib
+
+{
+  escapeJavascriptString
+  objectName
+  isString, isArray, isFunction, isObject, isClass, isBrowserObject
+  isPlainObject, isPlainArray
+} = StandardLib
 
 module.exports = class Inspector extends BaseObject
   @unquotablePropertyRegex: /^([0-9]+|[_a-zA-Z][_0-9a-zA-Z]*)$/
@@ -27,6 +32,29 @@ module.exports = class Inspector extends BaseObject
     @depth = 0
     @inspectingMap = new Map
     @done = false
+
+  @inspect: (obj, options = {}) =>
+    inspector = new Inspector options
+    inspector.inspect obj
+    inspector.result
+
+  # a non-recursive inspect
+  @shallowInspect: (obj) =>
+    if !obj?                                then ""+obj
+    else if @customInspectable obj          then @inspect obj
+    else if isString obj                    then escapeJavascriptString obj
+    else if isArray obj                     then "<<Array length: #{obj.length}>>"
+    else if isFunction(obj) && obj.name=="" then "<<function args: #{obj.length}>>"
+    else                                         "<<#{typeof obj}: #{obj.name || obj}>>"
+
+  # strips enclosing '{}' or '[]' from plainObjects and plainArrays
+  @inspectLean: (object, options) =>
+    fullInspect = @inspect object, options
+    if !isFunction(object?.inspect) && (isPlainObject(object) || (isPlainArray(object) && object.length > 1))
+      match = fullInspect.match /^\[(.+)\]$|^\{(.+)\}$/
+      if match then match[1] || match[2] || match[3] else fullInspect
+    else
+      fullInspect
 
   put: (s) ->
     return if @done

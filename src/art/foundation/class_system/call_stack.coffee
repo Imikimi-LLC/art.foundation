@@ -1,7 +1,5 @@
-Parse = require './browser/parse'
-parseURL = Parse.url
-{isString} = require './standard_lib'
-{inspect} = require './class_system/inspect'
+{isString, parseUrl} = require '../standard_lib'
+{inspect} = require './inspect'
 
 module.exports = class CallStack
   @errorToString: (error) -> error?.error || error?.message || (isString(error) && error) || inspect error
@@ -71,7 +69,7 @@ module.exports = class CallStack
 
     subParseSource: ->
       if @source
-        url = parseURL @source
+        url = parseUrl @source
         @sourceFileName = url.fileName
         @sourcePath = url.path
         @sourceHostWithPort = url.hostWithPort

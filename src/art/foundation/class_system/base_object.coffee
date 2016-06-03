@@ -1,6 +1,6 @@
 StandardLib = require '../standard_lib'
-CallStack    = require '../call_stack'
 WebpackHotLoader = require './webpack_hot_loader'
+{callStack} = require './call_stack'
 Log = require './log'
 
 {
@@ -11,7 +11,6 @@ Log = require './log'
 
 {nextUniqueObjectId} = Unique
 
-{callStack} = CallStack
 
 module.exports = class BaseObject
   @objectsCreated: 0

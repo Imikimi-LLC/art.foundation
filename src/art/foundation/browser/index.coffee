@@ -7,4 +7,3 @@
   Dom:                 require './dom'
   DomElementFactories: require './dom_element_factories'
   File:                require './file'
-  Parse:               require './parse'

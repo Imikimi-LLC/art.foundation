@@ -6,7 +6,6 @@ module.exports = [
 
   require "./web_worker"
   require "./progress_adapter"
-  require "./call_stack"
   require "./global_counts"
   package: _package = require "art-foundation/package.json"
   version: _package.version

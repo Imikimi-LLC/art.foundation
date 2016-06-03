@@ -1,4 +1,7 @@
 ###
+TODO: This is almost identical to ES6's Map: Switch to using a Polyfill like:
+  https://github.com/paulmillr/es6-shim
+
 Map is a Key-Value map which preserves order.
 
 Unlike Javascript objects, you can use any object or value as keys. This includes:

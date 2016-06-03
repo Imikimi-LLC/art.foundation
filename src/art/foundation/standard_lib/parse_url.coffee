@@ -1,5 +1,6 @@
-module.exports = class Parse
-  @query: (qs = self.location.search) ->
+# TODO: merge with standard_lib/regexp
+module.exports = class ParseUrl
+  @parseQuery: (qs = self.location?.search) ->
     obj = {}
     for pair in qs.replace('?', '').split('&')
       i = pair.indexOf '='
@@ -9,7 +10,7 @@ module.exports = class Parse
     obj
 
   # returns undefined if not a legal url
-  @url: (url) ->
+  @parseUrl: (url) =>
     # http://www.w3.org/Addressing/URL/5_BNF.html
     m = url.match ///
       (([A-Za-z]+):(//)?)?      # protocol
@@ -50,5 +51,5 @@ module.exports = class Parse
     pathName: pathName
     path: path
     fileName: fileName
-    query: query && Parse.query query
+    query: query && @parseQuery query
     anchor: anchor

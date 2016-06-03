@@ -6,7 +6,6 @@
 .addModules
   Analytics:               require './analytics'
   BatchLoader:             require './batch_loader'
-  CallStack:               require './call_stack'
   Epoch:                   require './epoch'
   GlobalCounts:            require './global_counts'
   JsonStore:               require './json_store'

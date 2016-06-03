@@ -2,8 +2,8 @@
 # file: art/foundation/class_system/inspect/index.coffee
 
 (module.exports = require './namespace')
+.includeInNamespace(require './_inspect')
 .addModules
   Inspector:  require './inspector'
   Inspector2: require './inspector2'
-  Main:       require './main'
 require './inspected'

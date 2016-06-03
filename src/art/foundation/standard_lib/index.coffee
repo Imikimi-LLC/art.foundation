@@ -12,6 +12,7 @@
   Hash:                require './hash'
   Math:                require './math'
   ObjectDiff:          require './object_diff'
+  ParseUrl:            require './parse_url'
   Promise:             require './promise'
   PromisedFileReader:  require './promised_file_reader'
   Regexp:              require './regexp'

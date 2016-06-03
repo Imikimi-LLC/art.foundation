@@ -6,6 +6,7 @@
 .addModules
   BaseModule:        require './base_module'
   BaseObject:        require './base_object'
+  CallStack:         require './call_stack'
   Clone:             require './clone'
   Log:               require './log'
   Map:               require './map'

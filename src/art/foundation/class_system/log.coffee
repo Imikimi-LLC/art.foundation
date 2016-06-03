@@ -1,7 +1,10 @@
-Foundation = require "../namespace"
+{inspectLean} = require './inspect'
+{callStack} = require './call_stack'
+
+
 module.exports = class Log
   # autodetect context from
-  #   stack (grabed with Foundation.callStack()). Ignores stack[0]
+  #   stack (grabed with callStack()). Ignores stack[0]
   #   defaultContext - what to report if context cannot be determined
 
   @contextString: (stack, defaultContext) ->
@@ -22,7 +25,7 @@ module.exports = class Log
   @autoSizedIndepect: (toInspect, maxLength = 512, maxDepth = 10) ->
     inspected = null
     depth = maxDepth
-    depth-- while (inspected = Foundation.Inspect.inspectLean toInspect, maxDepth:depth, maxLength:maxLength).match(/\.\.\.$/)
+    depth-- while (inspected = inspectLean toInspect, maxDepth:depth, maxLength:maxLength).match(/\.\.\.$/)
     inspected
 
   @loggedParamsString: (params) ->
@@ -54,7 +57,7 @@ Log.log = log = (args...) ->
     args[0]
   else
     args
-  stack = Foundation.callStack()
+  stack = callStack()
   Log.logCore m, stack, @name
   args[args.length-1]
 

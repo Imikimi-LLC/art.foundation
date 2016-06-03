@@ -7,6 +7,7 @@ module.exports = [
   require "./object_diff"
   require "./hash"
   require "./math"
+  require "./parse_url"
   require "./promised_file_reader"
   require "./regexp"
   require "./ruby"

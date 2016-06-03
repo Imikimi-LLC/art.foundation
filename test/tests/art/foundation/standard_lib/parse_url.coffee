@@ -1,12 +1,12 @@
 {assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
 Foundation = require "art-foundation"
 
-parseURL = Foundation.Browser.Parse.url
+{parseUrl} = Foundation
 
 if self.document
-  suite "Art.Foundation.Browser.Parse", ->
-    test "parseURL with just domain", ->
-      a = parseURL "myDomain.com"
+  suite "Art.Foundation.parseUrl", ->
+    test "just domain", ->
+      a = parseUrl "myDomain.com"
       assert.eq a,
         protocol: undefined
         username: undefined
@@ -20,8 +20,8 @@ if self.document
         query:    undefined
         anchor:   undefined
 
-    test "parseURL with everything", ->
-      a = parseURL "ftp://myName:myPassword@mySubDomain.myDomain.com:8080/myPath/myFile.html?param1=foo,bar&param2=baz#myAnchor"
+    test "with everything", ->
+      a = parseUrl "ftp://myName:myPassword@mySubDomain.myDomain.com:8080/myPath/myFile.html?param1=foo,bar&param2=baz#myAnchor"
       assert.eq a,
         protocol: "ftp"
         username: "myName"

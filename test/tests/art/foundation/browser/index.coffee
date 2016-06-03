@@ -2,6 +2,5 @@
 # file: tests/art/foundation/browser/index.coffee
 
 (module.exports = require './namespace')
-.includeInNamespace(require './browser')
 .addModules
   DomElementFactories: require './dom_element_factories'
