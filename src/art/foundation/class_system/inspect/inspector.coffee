@@ -1,5 +1,4 @@
 StandardLib = require '../../standard_lib'
-BaseObject = require "../base_object"
 Map = require "../map"
 
 {
@@ -9,7 +8,7 @@ Map = require "../map"
   isPlainObject, isPlainArray
 } = StandardLib
 
-module.exports = class Inspector extends BaseObject
+module.exports = class Inspector
   @unquotablePropertyRegex: /^([0-9]+|[_a-zA-Z][_0-9a-zA-Z]*)$/
 
   # Note = we never want to use a custom inspection function for function objects (which may be classes)
@@ -36,7 +35,7 @@ module.exports = class Inspector extends BaseObject
   @inspect: (obj, options = {}) =>
     inspector = new Inspector options
     inspector.inspect obj
-    inspector.result
+    inspector.getResult()
 
   # a non-recursive inspect
   @shallowInspect: (obj) =>
@@ -66,8 +65,7 @@ module.exports = class Inspector extends BaseObject
       s
     s
 
-  @getter
-    result: -> @outArray.join ""
+  getResult: -> @outArray.join ""
 
   maxDepthOutput: (obj) ->
     switch typeof obj

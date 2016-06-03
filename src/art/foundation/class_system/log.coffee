@@ -1,6 +1,5 @@
-{inspectLean} = require './inspect'
+Inspect = require './inspect'
 {callStack} = require './call_stack'
-
 
 module.exports = class Log
   # autodetect context from
@@ -25,7 +24,7 @@ module.exports = class Log
   @autoSizedIndepect: (toInspect, maxLength = 512, maxDepth = 10) ->
     inspected = null
     depth = maxDepth
-    depth-- while (inspected = inspectLean toInspect, maxDepth:depth, maxLength:maxLength).match(/\.\.\.$/)
+    depth-- while (inspected = Inspect.inspectLean toInspect, maxDepth:depth, maxLength:maxLength).match(/\.\.\.$/)
     inspected
 
   @loggedParamsString: (params) ->
