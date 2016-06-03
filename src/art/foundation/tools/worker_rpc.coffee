@@ -1,5 +1,5 @@
-StandardLib = require './standard_lib'
-ClassSystem = require './class_system'
+StandardLib = require '../standard_lib'
+ClassSystem = require '../class_system'
 WebWorker = require './web_worker'
 
 {Promise, isPlainArray, isFunction, isString, mergeInto} = StandardLib

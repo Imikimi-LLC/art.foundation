@@ -1,5 +1,5 @@
-StandardLib = require './standard_lib'
-ClassSystem = require './class_system'
+StandardLib = require '../standard_lib'
+ClassSystem = require '../class_system'
 {BaseObject} = ClassSystem
 {min, max, round, inspect} = StandardLib
 

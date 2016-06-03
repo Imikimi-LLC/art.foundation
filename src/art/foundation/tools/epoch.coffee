@@ -1,6 +1,6 @@
-Foundation = require './namespace'
-StandardLib = require './standard_lib'
-ClassSystem = require './class_system'
+Foundation = require '../namespace'
+StandardLib = require '../standard_lib'
+ClassSystem = require '../class_system'
 
 {BaseObject} = ClassSystem
 {inspect, Promise, requestAnimationFrame, evalAndThrowErrorsOutOfStack} = StandardLib

@@ -1,4 +1,4 @@
-StandardLib = require './standard_lib'
+StandardLib = require '../standard_lib'
 {isPlainObject, currentSecond} = StandardLib
 
 # for debugging - a quick way to count things

@@ -49,23 +49,23 @@ module.exports = class Log
     else
        @rawLog "#{@contextString stack, className} " + @loggedParamsString m
 
-# always returned the last argument passed in. That way you can:
-#     bar = foo # log foo's value in the middle of an expression, along with other values, without altering the rest of the expression
-#     bar = @log 1, 2, 3, foo
-Log.log = log = (args...) ->
-  m = if args.length == 1
-    args[0]
-  else
-    args
-  stack = callStack()
-  Log.logCore m, stack, @name
-  args[args.length-1]
+  # always returned the last argument passed in. That way you can:
+  #     bar = foo # log foo's value in the middle of an expression, along with other values, without altering the rest of the expression
+  #     bar = @log 1, 2, 3, foo
+  @log: (args...) =>
+    m = if args.length == 1
+      args[0]
+    else
+      args
+    stack = callStack()
+    @logCore m, stack, @name
+    args[args.length-1]
 
-# same output as log, but returns the last value of the objects key-value pair
-# logL: labeled Log
-Log.logL = (obj) ->
-  ret = null
-  for k, v of obj
-    ret = v
-  log obj
-  ret
+  # same output as log, but returns the last value of the objects key-value pair
+  # logL: labeled Log
+  @logL: (obj) ->
+    ret = null
+    for k, v of obj
+      ret = v
+    @log obj
+    ret
