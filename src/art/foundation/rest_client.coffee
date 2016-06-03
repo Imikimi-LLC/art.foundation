@@ -2,7 +2,7 @@
 #  http://www.w3.org/TR/XMLHttpRequest2/
 #  http://www.html5rocks.com/en/tutorials/file/xhr2/
 StandardLib = require './standard_lib'
-{present, Promise, log, merge, isNumber} = StandardLib
+{present, Promise, merge, isNumber, timeout} = StandardLib
 
 module.exports = class RestClient
 
@@ -104,7 +104,7 @@ module.exports = class RestClient
       data: data to restRequest - passed to xmlHttpRequest.restRequest
 
       plus all the options for get/put/post listed above
-      showZeroProgressAfter: milliseconds
+      showZeroProgressAfter: milliseconds (default: 100)
         if set to a number, this guarantess:
           - a progress callback,
           - if no progress has happened
@@ -114,6 +114,7 @@ module.exports = class RestClient
   ###
   @restRequest: (options) ->
     {verb, url, data, headers, onProgress, responseType, formData, showZeroProgressAfter} = options
+    showZeroProgressAfter = 100 unless isNumber showZeroProgressAfter
 
     if formData
       throw new Error "can't specify both 'data' and 'formData'" if data
@@ -152,9 +153,11 @@ module.exports = class RestClient
       request.setRequestHeader k, v for k, v of headers if headers
 
       request.addEventListener "error", (event) ->
+        onProgressCalled = true
         reject merge restRequestStatus, event: event, response: rescuedGetResponse(), error: "XMLHttpRequest triggered 'error' event"
 
       request.addEventListener "load", (event) ->
+        onProgressCalled = true
         {status} = request
 
         if (status / 100 | 0) == 2
@@ -167,8 +170,7 @@ module.exports = class RestClient
 
       onProgressCalled = false
       if onProgress
-        if isNumber showZeroProgressAfter
-          timeout showZeroProgressAfter, -> progressCallbackInternal {} unless onProgressCalled
+        timeout showZeroProgressAfter, -> progressCallbackInternal {} unless onProgressCalled
 
         progressCallbackInternal = (event) ->
           onProgressCalled = true
