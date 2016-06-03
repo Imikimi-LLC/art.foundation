@@ -1,7 +1,6 @@
-StandardLib = require '../standard_lib'
-{log, Promise} = StandardLib
+Promise = require './promise'
 
-module.exports = class Basic
+module.exports = class AsyncExtensions
 
   # IN: delay in ms
   # IN: f (optional) - function to invoke after delay

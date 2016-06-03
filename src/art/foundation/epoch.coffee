@@ -1,11 +1,9 @@
 Foundation = require './namespace'
 StandardLib = require './standard_lib'
 ClassSystem = require './class_system'
-Async = require      "./async"
 
 {BaseObject} = ClassSystem
-{requestAnimationFrame, evalAndThrowErrorsOutOfStack} = Async
-{inspect, Promise} = StandardLib
+{inspect, Promise, requestAnimationFrame, evalAndThrowErrorsOutOfStack} = StandardLib
 
 # The basic Epoch assumes each item is a function. The function is invoked when the epoch cycles.
 # You can inherit and overrid processEpochItems if you want to queue and process different items.

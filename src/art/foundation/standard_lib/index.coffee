@@ -6,6 +6,7 @@
 .addModules
   ArrayCompactFlatten: require './array_compact_flatten'
   ArrayExtensions:     require './array_extensions'
+  AsyncExtensions:     require './async_extensions'
   Eq:                  require './eq'
   Function:            require './function'
   Hash:                require './hash'

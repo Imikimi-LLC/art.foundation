@@ -5,7 +5,7 @@ module.exports = [
   require "./standard_lib"
 
   require "./web_worker"
-  require "./async"
+  require "./progress_adapter"
   require "./call_stack"
   require "./global_counts"
   package: _package = require "art-foundation/package.json"

@@ -1,10 +1,8 @@
 StandardLib = require './standard_lib'
-Async = require "./async"
 ClassSystem = require './class_system'
 {BaseObject} = ClassSystem
 
-{log, inspect}      = StandardLib
-{nextTick, timeout} = Async
+{log, inspect, nextTick, timeout} = StandardLib
 
 module.exports = class BatchLoader extends BaseObject
 

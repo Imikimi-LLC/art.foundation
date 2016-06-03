@@ -2,7 +2,7 @@
 #  http://www.w3.org/TR/XMLHttpRequest2/
 #  http://www.html5rocks.com/en/tutorials/file/xhr2/
 StandardLib = require './standard_lib'
-{present, Promise, log, merge} = StandardLib
+{present, Promise, log, merge, isNumber} = StandardLib
 
 module.exports = class RestClient
 
@@ -104,11 +104,16 @@ module.exports = class RestClient
       data: data to restRequest - passed to xmlHttpRequest.restRequest
 
       plus all the options for get/put/post listed above
+      showZeroProgressAfter: milliseconds
+        if set to a number, this guarantess:
+          - a progress callback,
+          - if no progress has happened
+          - after showZeroProgressAfter milliseconds
 
   OUT: see get/put/post above
   ###
   @restRequest: (options) ->
-    {verb, url, data, headers, onProgress, responseType, formData} = options
+    {verb, url, data, headers, onProgress, responseType, formData, showZeroProgressAfter} = options
 
     if formData
       throw new Error "can't specify both 'data' and 'formData'" if data
@@ -160,8 +165,13 @@ module.exports = class RestClient
         else
           reject merge restRequestStatus, event: event, status: status, response: rescuedGetResponse(), error: "response status was #{status}"
 
+      onProgressCalled = false
       if onProgress
+        if isNumber showZeroProgressAfter
+          timeout showZeroProgressAfter, -> progressCallbackInternal {} unless onProgressCalled
+
         progressCallbackInternal = (event) ->
+          onProgressCalled = true
           {total, loaded} = event
           onProgress? restRequestStatus = merge restRequestStatus, event:event, progress: (if total > 0 then loaded / total else 0)
 
