@@ -109,6 +109,7 @@ module.exports = class RestClient
   ###
   @restRequest: (options) ->
     {verb, url, data, headers, onProgress, responseType, formData} = options
+
     if formData
       throw new Error "can't specify both 'data' and 'formData'" if data
       data = new FormData
@@ -125,7 +126,7 @@ module.exports = class RestClient
 
       rescuedGetResponse = ->
         try
-          @getResponse()
+          getResponse()
         catch
           request.response
 
@@ -146,10 +147,10 @@ module.exports = class RestClient
       request.setRequestHeader k, v for k, v of headers if headers
 
       request.addEventListener "error", (event) ->
-        reject merge restRequestStatus, event: event, response: getResponse(), error: "XMLHttpRequest error"
+        reject merge restRequestStatus, event: event, response: rescuedGetResponse(), error: "XMLHttpRequest triggered 'error' event"
 
       request.addEventListener "load", (event) ->
-        {status, response} = request
+        {status} = request
 
         if (status / 100 | 0) == 2
           try
@@ -157,7 +158,7 @@ module.exports = class RestClient
           catch error
             reject merge restRequestStatus, event: event, status: status, response: rescuedGetResponse(), error: error
         else
-          reject merge restRequestStatus, event: event, status: status, response: rescuedGetResponse(), error: "HTTP #{status} error"
+          reject merge restRequestStatus, event: event, status: status, response: rescuedGetResponse(), error: "response status was #{status}"
 
       if onProgress
         progressCallbackInternal = (event) ->
