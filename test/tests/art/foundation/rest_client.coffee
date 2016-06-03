@@ -33,6 +33,7 @@ if self.XMLHttpRequest
     test "onProgress", ->
       lastProgress =
       RestClient.get "#{testAssetRoot}/array_buffer_rest_client_test/hello.txt",
+        showProgressAfter: 0
         onProgress: (progress) -> #onProgress
           lastProgress = progress
       .then (string) ->

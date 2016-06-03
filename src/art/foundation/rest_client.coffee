@@ -104,17 +104,35 @@ module.exports = class RestClient
       data: data to restRequest - passed to xmlHttpRequest.restRequest
 
       plus all the options for get/put/post listed above
-      showZeroProgressAfter: milliseconds (default: 100)
-        if set to a number, this guarantess:
-          - a progress callback,
-          - if no progress has happened
-          - after showZeroProgressAfter milliseconds
+      showProgressAfter: milliseconds (default: 100)
+        only show progress after # milliseconds
+
+      onProgress: (requestStatus) ->
+        see "All callbacks" below for details about inputs.
+        Note that onProgress is triggered a little differently than
+        the normal XMLHttpRequest progress events:
+          - it will only be called after showProgressAfter ms
+          - it is guaranteed to be called after showProgressAfter ms if the request hasn't completed
+          - if the request completes before showProgressAfter ms, it will never be called
 
   OUT: see get/put/post above
+
+  All callbacks look like this: (requestStatus) ->
+    requestStatus:
+      request:  XMLHttpRequest
+      progress: number # between 0 and 1
+      options:  options # passed-in options object
+      event:    the most recent event
+      response: # the processed response data, if ready
+      error:    # if any
+      status:   number # HTTP status code, if the request is complete
+
+  EFFECT:
+
   ###
   @restRequest: (options) ->
-    {verb, url, data, headers, onProgress, responseType, formData, showZeroProgressAfter} = options
-    showZeroProgressAfter = 100 unless isNumber showZeroProgressAfter
+    {verb, url, data, headers, onProgress, responseType, formData, showProgressAfter} = options
+    showProgressAfter = 100 unless isNumber showProgressAfter
 
     if formData
       throw new Error "can't specify both 'data' and 'formData'" if data
@@ -152,30 +170,48 @@ module.exports = class RestClient
 
       request.setRequestHeader k, v for k, v of headers if headers
 
+      requestResolved = false
+
       request.addEventListener "error", (event) ->
-        onProgressCalled = true
-        reject merge restRequestStatus, event: event, response: rescuedGetResponse(), error: "XMLHttpRequest triggered 'error' event"
+        requestResolved = true
+        reject merge restRequestStatus
+          event: event
+          response: rescuedGetResponse()
+          error: "XMLHttpRequest triggered 'error' event"
 
       request.addEventListener "load", (event) ->
-        onProgressCalled = true
+        requestResolved = true
         {status} = request
 
         if (status / 100 | 0) == 2
           try
             resolve getResponse()
           catch error
-            reject merge restRequestStatus, event: event, status: status, response: rescuedGetResponse(), error: error
+            reject merge restRequestStatus,
+              event: event
+              status: status
+              response: rescuedGetResponse()
+              error: error
         else
-          reject merge restRequestStatus, event: event, status: status, response: rescuedGetResponse(), error: "response status was #{status}"
+          reject merge restRequestStatus,
+            event: event
+            status: status
+            response: rescuedGetResponse()
+            error: "response status was #{status}"
 
-      onProgressCalled = false
       if onProgress
-        timeout showZeroProgressAfter, -> progressCallbackInternal {} unless onProgressCalled
+        initialProgressCalled = showProgressAfter <= 0
+        lastProgressEvent = null
+        timeout showProgressAfter, ->
+          initialProgressCalled = true
+          progressCallbackInternal lastProgressEvent || {}
 
         progressCallbackInternal = (event) ->
-          onProgressCalled = true
-          {total, loaded} = event
-          onProgress? restRequestStatus = merge restRequestStatus, event:event, progress: (if total > 0 then loaded / total else 0)
+          {total, loaded} = lastProgressEvent = event
+          if initialProgressCalled && !requestResolved
+            onProgress? restRequestStatus = merge restRequestStatus,
+              event: event
+              progress: if total > 0 then loaded / total else 0
 
         if verb == "GET"
           request.addEventListener "progress", progressCallbackInternal
