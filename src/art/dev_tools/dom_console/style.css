@@ -1,11 +1,5 @@
 @charset "UTF-8";
 .domConsole {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 500px;
-  bottom: 0;
-  border-left: 1px solid #aaaaaa;
   padding: 5px;
   overflow: auto;
   background-color: white; }

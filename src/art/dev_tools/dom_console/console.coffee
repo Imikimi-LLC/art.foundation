@@ -10,7 +10,7 @@ require "!style!css!./style.css" if self.document
 
 Foundation = require 'art-foundation'
 Atomic = require 'art-atomic'
-DomConsole = require './namespace'
+ToolBar = require './tool_bar'
 
 {color, Color, point, Point, matrix, Matrix, rect, Rectangle} = Atomic
 {
@@ -22,9 +22,7 @@ DomConsole = require './namespace'
   Promise
 } = Foundation
 
-{createDomElementFactories} = Foundation.Browser.Dom
-
-{Div, Pre, Span, Img, Li, Ul} = createDomElementFactories "Div Pre Span Img Li Ul"
+{Div, Pre, Span, Img, Li, Ul} = Foundation.Browser.DomElementFactories
 
 isImage = (o) -> o && ((typeof o.toImage == "function") || o.constructor == HTMLImageElement)
 htmlEscape = (str) -> str
@@ -42,29 +40,6 @@ insertBetweenEveryElement = (array, el) ->
 
 domConsoleId = 'Art-Dom-Console'
 
-DomConsole.enable = ->
-  Foundation.Log.alternativeLogger = DomConsole.Console.console
-  DomConsole.enabled = true
-  DomConsole.Console.console.show()
-
-DomConsole.disable = ->
-  DomConsole.enabled = false
-  Foundation.Log.alternativeLogger = null
-  DomConsole.Console.console.hide()
-  DomConsole.Console.console.reset()
-
-DomConsole.hide = -> DomConsole.Console.console.hide()
-DomConsole.show = -> DomConsole.Console.console.show()
-DomConsole.reset = -> DomConsole.Console.console.reset()
-
-DomConsole.logCore = (m, callStack, contextName) ->
-  DomConsole.Console.console.logCore m, callStack, contextName
-
-DomConsole.logF = (options) ->
-  DomConsole.Console.console.logF options
-DomConsole.log = (args...) ->
-  DomConsole.Console.console.log args...
-
 packageLogArgs = (args) ->
   if args.length == 1
     args[0]
@@ -75,11 +50,11 @@ wrapDomElement = (a, withB) ->
   bElement.append a
   bElement
 
-module.exports = createWithPostCreate class DomConsole.Console extends BaseObject
+module.exports = createWithPostCreate class Console extends BaseObject
   @singletonClass()
 
   @postCreate: ->
-    self.domConsole = DomConsole.singleton
+    self.domConsole = @singleton
     super
 
   constructor: ->
@@ -87,26 +62,43 @@ module.exports = createWithPostCreate class DomConsole.Console extends BaseObjec
     @_devicePixelRatio = Foundation.Browser.Dom.getDevicePixelRatio()
     @initDom()
 
-  reset: -> @domContainer.html ""
+  reset: -> @domContainer.innerHTML = ""
   hide: -> @domContainer.style.display = "none"
   show: -> @domContainer.style.display = "block"
+
+  @getter
+    shown: -> @domContainer.style.display == "block"
 
   toggleCollapsable = (el) ->
     child.style.display = "block" for child in el.parentElement.children
     el.style.display = "none"
 
   initDom: ->
-    domEl = Div
+    document.body.appendChild Div
       id: domConsoleId
-      class: "domConsole"
-      on: click: ({target})=>
-        while target
-          if target.className.match "collapsable"
-            toggleCollapsable target
-            break;
-          target = target.parentElement
+      style:
+        position: "fixed"
+        top: "0"
+        right: "0"
+        bottom: "0"
 
-    console.log "initDom_domEl",domEl
+        display: "flex"
+        flexDirection: "column"
+
+      ToolBar()
+
+      @domContainer = Div
+        class: "domConsole"
+        style:
+          width: "500px"
+          height: "100%"
+          borderLeft: "1px solid #aaa"
+        on: click: ({target})=>
+          while target
+            if target.className.match "collapsable"
+              toggleCollapsable target
+              break;
+            target = target.parentElement
 
     # leave space for mocha-stats bar
     if (mocha = $$("#mocha")).length > 0
@@ -126,13 +118,10 @@ module.exports = createWithPostCreate class DomConsole.Console extends BaseObjec
       timeout delay, -> fixMochaStats()
       mocha.style[0].marginRight = "530px"
 
-    document.body.appendChild domEl
-    @domContainer = $$ "#" + domConsoleId
-
   appendLog: (domElement)->
     @domContainer.appendChild Div class:"logLine", domElement
     nextTick =>
-      @domContainer.scrollTop = @domContainer[0].scrollHeight
+      @domContainer.scrollTop = @domContainer.scrollHeight
 
   # always returned the last argument passed in. That way you can:
   #     bar = foo # log foo's value in the middle of an expression, along with other values, without altering the rest of the expression
