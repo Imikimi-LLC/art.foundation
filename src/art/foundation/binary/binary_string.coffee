@@ -32,6 +32,9 @@ module.exports = class BinaryString extends BaseObject
     else throw new Error "invalid Binary string constructor argument: #{inspect arg}"
     @length = @bytes.length
 
+  slice: (a, b) ->
+    new BinaryString @bytes.slice a, b
+
   @fromBase64: (base64encoding)->
     byteString = atob base64encoding
 
