@@ -25,6 +25,12 @@ module.exports = createWithPostCreate class ToolBar extends Component
         display: "flex"
         flexDirection: "row"
         borderBottom: "1px solid #aaa"
+        borderLeft: "1px solid #aaa"
+        fontSize: "10px"
+        fontFamily: "Arial"
+        justifyContent: "flex-end"
+        backgroundColor: "#f7f3df"
+
       Div style: margin: "5px", "dom console"
       for action in ["reset", "show", "hide"]
         do (action) =>

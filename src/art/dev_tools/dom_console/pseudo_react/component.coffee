@@ -14,12 +14,11 @@ Difference between this and real React:
   - There is no @refs
   - Methods ARE NOT BOUND to instances
 
-  - There is no automatic re-rendering.
-    - @rerender is provided for manually rerendering
-
   - @setState and @state are minimally supported
     - setState is epoched, on a per-component basis
-    - setting the state results in a full @rerender!
+    - setting the state results in a full @rerender
+
+  - @rerender is provided for manually rerendering
 
   - @rerender DOEST NOT DIFF! It just re-generates EVERYTHING.
     There are NO INCREMENTAL UPDATES within a Component.
