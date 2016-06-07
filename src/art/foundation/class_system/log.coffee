@@ -6,47 +6,50 @@ module.exports = class Log
   #   stack (grabed with callStack()). Ignores stack[0]
   #   defaultContext - what to report if context cannot be determined
 
-  @contextString: (stack, defaultContext) ->
+  @contextString: (stack, defaultContext) =>
     if stack && caller = stack[1]
-      context = if caller.function
-        if caller.class
-          "#{caller.class}::#{caller.function}()"
-        else
-          caller.function+"()"
-      else if defaultContext
-        defaultContext+":"
+      if caller.original
+        caller.original
       else
-        ""
-      caller.sourceFileName + "-#{caller.sourceLine}: " + context if caller.sourceFileName
+        context = if caller.function
+          if caller.class
+            "#{caller.class}::#{caller.function}()"
+          else
+            caller.function+"()"
+        else if defaultContext
+          defaultContext+":"
+        else
+          ""
+        "at " + caller.sourceFileName + "-#{caller.sourceLine}: " + context if caller.sourceFileName
     else
-      "()"
+      "at #{defaultContext || "(unknown context)"}"
 
-  @autoSizedIndepect: (toInspect, maxLength = 512, maxDepth = 10) ->
+  @autoSizedIndepect: (toInspect, maxLength = 512, maxDepth = 10) =>
     inspected = null
     depth = maxDepth
     depth-- while (inspected = Inspect.inspectLean toInspect, maxDepth:depth, maxLength:maxLength).match(/\.\.\.$/)
     inspected
 
-  @loggedParamsString: (params) ->
+  @loggedParamsString: (params) =>
     if typeof params == "string"
       params
     else
       @autoSizedIndepect params
 
-  @hideLogging: -> @loggingHidden = true
-  @showLogging: -> @loggingHidden = false
+  @hideLogging: => @loggingHidden = true
+  @showLogging: => @loggingHidden = false
 
-  @rawLog: ->
+  @rawLog: =>
     console.log arguments... unless @loggingHidden
 
-  @rawErrorLog: ->
+  @rawErrorLog: =>
     console.error arguments... unless @loggingHidden
 
-  @logCore: (m, stack, className) ->
+  @logCore: (m, stack, className) =>
     if @alternativeLogger
       @alternativeLogger.logCore m, stack, className
     else
-       @rawLog "#{@contextString stack, className} " + @loggedParamsString m
+      @rawLog m, "| Foundation.log called " + @contextString stack, className
 
   # always returned the last argument passed in. That way you can:
   #     bar = foo # log foo's value in the middle of an expression, along with other values, without altering the rest of the expression
@@ -62,7 +65,7 @@ module.exports = class Log
 
   # same output as log, but returns the last value of the objects key-value pair
   # logL: labeled Log
-  @logL: (obj) ->
+  @logL: (obj) =>
     ret = null
     for k, v of obj
       ret = v
