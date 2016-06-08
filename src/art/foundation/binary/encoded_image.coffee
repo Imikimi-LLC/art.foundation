@@ -13,14 +13,12 @@ module.exports = class EncodedImage
   @get: get = (url) ->
     new Promise (resolve, reject) ->
       image = new Image
+      image.crossOrigin = "Anonymous" unless url.match /^file\:\/\//i
       ###
-      NOTE: This crossOrigin setting makes file:// urls not work with WkWebKit:
+      crossOrigin = "Anonymous" required to getImageData and avoid this error
+        "The canvas has been tainted by cross-origin data."
 
-      image.crossOrigin = "Anonymous"
-
-      Odly, everything currently seems to work without it. I thought it was required to request
-      remote images. I'm leaving it commented out here in case we have future problems. It is
-      possible we could included it only if the url is not a file:// url.
+      NOTE: This crossOrigin setting makes file:// urls not work with WkWebKit, so we don't use it then.
       ###
       image.onload  = -> resolve image
       image.onerror = reject
