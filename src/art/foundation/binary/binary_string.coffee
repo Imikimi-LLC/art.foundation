@@ -46,8 +46,8 @@ module.exports = class BinaryString extends BaseObject
 
     new BinaryString uint8Array
 
-  toDataUri: (callback) ->
-    throw new Error "BinaryString.toImage: callback is no longer supported; use returned Promise" if callback
+  # OUT: promise.then (dataUri) ->
+  toDataUri: ->
     readFileAsDataUrl new Blob [@bytes]
 
   @fromDataUri: (dataURI)->

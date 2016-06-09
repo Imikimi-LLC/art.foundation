@@ -1,6 +1,6 @@
 StandardLib = require '../standard_lib'
 {toDataUri} = require './data_uri'
-{Promise} = StandardLib
+{Promise, readFileAsDataUrl} = StandardLib
 
 module.exports = class EncodedImage
 
@@ -10,8 +10,15 @@ module.exports = class EncodedImage
     , (htmlImageOnerrorEvent) ->
 
   ###
-  @get: get = (url) ->
-    new Promise (resolve, reject) ->
+  @get: get = (url, options) ->
+    Promise.resolve()
+    .then ->
+      if options
+        Neptune.Art.Foundation.RestClient.getArrayBuffer url, options
+        .then (arrayBuffer) -> readFileAsDataUrl new Blob [arrayBuffer]
+        .then (dataUri) => url = dataUri
+
+    .then -> new Promise (resolve, reject) ->
       image = new Image
       image.crossOrigin = "Anonymous" unless url.match /^file\:\/\//i
       ###
