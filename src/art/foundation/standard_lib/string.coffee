@@ -38,12 +38,17 @@ module.exports = class StringExtensions
     else
       str.toString()
 
-  @getPadding: getPadding = (length, padding=" ")->
+  @getPadding: getPadding = (length, padding = " ")->
     Array(length).join padding
 
-  @pad: (str, length, padding="0")->
+  @pad: (str, length, padding, alignRight)->
     str = String(str)
-    getPadding(Math.max(length - str.length + 1, 0), padding) + str
+    return str if str.length >= length
+    exactPadding = getPadding Math.max(length - str.length + 1, 0), padding
+    if alignRight
+      exactPadding + str
+    else
+      str + exactPadding
 
   # take a string of anything and produce a javascript legal string
   @escapeDoubleQuoteJavascriptString: escapeDoubleQuoteJavascriptString = (str) =>

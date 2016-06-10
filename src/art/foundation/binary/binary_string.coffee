@@ -4,7 +4,7 @@ Utf8 = require   "./utf8"
 
 StandardLib = require '../standard_lib'
 ClassSystem = require '../class_system'
-{isString, isFunction, isPlainArray, log, min, inspect, readFileAsDataUrl} = StandardLib
+{isString, isFunction, isPlainArray, log, min, inspect, readFileAsDataUrl, compactFlatten, pad} = StandardLib
 {BaseObject, inspect} = ClassSystem
 
 encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
@@ -76,26 +76,36 @@ module.exports = class BinaryString extends BaseObject
     arrayBuffer: -> @bytes.buffer
     blob: -> new Blob [@bytes]
     plainArray: -> b for b in @bytes
-    inspectedString: (stride = 8)->
+    inspectedString: (stride = 8, maxBytes = 124)->
       count = 0
       characters = []
-      array = for b in @bytes
-        characters.push if b >= 31 && b <= 127
-          String.fromCharCode b
-        else
-          '•'
+      maxBytes = @length if @length < maxBytes
+      line = new Array stride
+      compactFlatten [
+        "BinaryString length: #{@length} bytes"
+        "First #{maxBytes} bytes:" if maxBytes < @length
+        for offset in [0...maxBytes] by stride
+          @_inspectLine offset, stride
+      ]
+      .join '\n'
 
-        y = b.toString 16
-        y = "0" + y if y.length < 2
-        if count++ == stride - 1
-          count = 0
-          y += "   #{characters.join ''}\n"
-          characters = []
-        else
-          y += " "
-        y
-      "BinaryString length: #{@length} bytes\n#{array.join ''}   #{characters.join ''}\n"
 
+  _inspectLine: (offset, length) ->
+    end = min @length, offset + length
+    characters = for i in [offset...end]
+      b = @bytes[i]
+      if b >= 31 && b <= 127
+        String.fromCharCode b
+      else
+        '•'
+
+    hexCharacters = for i in [offset...end]
+      b = @bytes[i]
+      y = b.toString 16
+      y = "0" + y if y.length < 2
+      y
+
+    "#{pad hexCharacters.join(' '), length * 3} '#{characters.join ''}'"
 
   ###
   toBase64 performance

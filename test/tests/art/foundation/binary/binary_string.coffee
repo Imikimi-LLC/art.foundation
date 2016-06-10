@@ -11,9 +11,14 @@ for i in [0..255]
 
 suite "Art.Foundation.Binary.BinaryString", ->
   test "allocate", ->
-    my_binary = binary "hello"
-    my_str = my_binary.toString()
-    assert.equal "hello", my_str
+    myBinary = binary "hello"
+    myString = myBinary.toString()
+    assert.equal "hello", myString
+
+  test "inspectedString", ->
+    myBinary = binary "hello frank, how are    you?"
+    log myBinary
+    assert.match myBinary.inspectedString, /68 65 6c 6c 6f 20 66 72/
 
   test "toBase64", ->
     allPossibleValuesString.toBase64()
