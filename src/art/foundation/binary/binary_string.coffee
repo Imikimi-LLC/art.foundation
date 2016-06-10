@@ -76,7 +76,7 @@ module.exports = class BinaryString extends BaseObject
     arrayBuffer: -> @bytes.buffer
     blob: -> new Blob [@bytes]
     plainArray: -> b for b in @bytes
-    inspectedString: (stride = 8, maxBytes = 124)->
+    inspectedString: (stride = 8, maxBytes = 128)->
       count = 0
       characters = []
       maxBytes = @length if @length < maxBytes
@@ -85,13 +85,15 @@ module.exports = class BinaryString extends BaseObject
         "BinaryString length: #{@length} bytes"
         "First #{maxBytes} bytes:" if maxBytes < @length
         for offset in [0...maxBytes] by stride
-          @_inspectLine offset, stride
+          @_inspectLine offset, stride, maxBytes
       ]
       .join '\n'
 
 
-  _inspectLine: (offset, length) ->
+  _inspectLine: (offset, length, maxBytes) ->
     end = min @length, offset + length
+    if maxBytes >= 0
+      end = min end, maxBytes
     characters = for i in [offset...end]
       b = @bytes[i]
       if b >= 31 && b <= 127

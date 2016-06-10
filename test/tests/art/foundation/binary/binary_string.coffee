@@ -20,6 +20,11 @@ suite "Art.Foundation.Binary.BinaryString", ->
     log myBinary
     assert.match myBinary.inspectedString, /68 65 6c 6c 6f 20 66 72/
 
+  test "getInspectedString 8, 12", ->
+    myBinary = binary "hello frank, how are    you?"
+    log inspect: -> myBinary.getInspectedString(8, 12)
+    assert.match myBinary.getInspectedString(8, 12), /'ank,'/
+
   test "toBase64", ->
     allPossibleValuesString.toBase64()
     .then (base64) ->
