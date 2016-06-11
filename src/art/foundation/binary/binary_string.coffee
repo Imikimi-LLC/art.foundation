@@ -4,17 +4,22 @@ Utf8 = require   "./utf8"
 
 StandardLib = require '../standard_lib'
 ClassSystem = require '../class_system'
-{isString, isFunction, isPlainArray, log, min, inspect, readFileAsDataUrl, compactFlatten, pad} = StandardLib
+{isString, isFunction, isPlainArray, log, min, inspect, readFileAsDataUrl, readFileAsArrayBuffer, compactFlatten, pad} = StandardLib
 {BaseObject, inspect} = ClassSystem
 
 encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 
 module.exports = class BinaryString extends BaseObject
-  @binary: (arg) ->
+  @binary: binary = (arg) ->
     if arg instanceof BinaryString
       arg
     else
       new BinaryString arg
+
+  # OUT: promise.then (binaryString) ->
+  @binaryFromBlob: (blob) ->
+    readFileAsArrayBuffer blob
+    .then (ab) -> binary ab
 
   @cloneUint8Array: (srcU8A) ->
     dstU8A = new Uint8Array new ArrayBuffer src.length
@@ -76,7 +81,7 @@ module.exports = class BinaryString extends BaseObject
     arrayBuffer: -> @bytes.buffer
     blob: -> new Blob [@bytes]
     plainArray: -> b for b in @bytes
-    inspectedString: (stride = 8, maxBytes = 128)->
+    inspectedString: (stride = 8, maxBytes = 64)->
       count = 0
       characters = []
       maxBytes = @length if @length < maxBytes
