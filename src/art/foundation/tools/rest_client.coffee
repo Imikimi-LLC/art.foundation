@@ -174,7 +174,7 @@ module.exports = class RestClient
 
       request.addEventListener "error", (event) ->
         requestResolved = true
-        reject merge restRequestStatus
+        reject merge restRequestStatus,
           event: event
           response: rescuedGetResponse()
           error: "XMLHttpRequest triggered 'error' event"
