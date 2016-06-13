@@ -166,6 +166,8 @@ module.exports = class RestClient
       # NOTE: IE11 and IOS7 don't support responseType "json"
       # https://developer.mozilla.org/en-US/docs/Web/API/FormData
       # http://caniuse.com/#search=FormData
+      # TODO: we should detect if it is supported and use it if it is;
+      #   The supported platforms probably decode the JSON off-thread.
       request.responseType = responseType if present(responseType) && responseType != "json"
 
       request.setRequestHeader k, v for k, v of headers if headers
