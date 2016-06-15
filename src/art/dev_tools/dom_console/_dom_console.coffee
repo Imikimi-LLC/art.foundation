@@ -15,6 +15,8 @@ module.exports = [
   hide:   -> console.hide()
   show:   -> console.show()
   reset:  -> console.reset()
+  increaseWidth: -> console.increaseWidth()
+  decreaseWidth: -> console.decreaseWidth()
 
   foo: -> "foo"
   getShown: -> console?.getShown()

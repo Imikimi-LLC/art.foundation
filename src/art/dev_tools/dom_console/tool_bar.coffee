@@ -22,6 +22,9 @@ module.exports = createWithPostCreate class ToolBar extends Component
     {shown} = @state
     Div
       style:
+        position: "fixed"
+        top: 0
+        right: 0
         display: "flex"
         flexDirection: "row"
         borderBottom: "1px solid #aaa"
@@ -31,8 +34,8 @@ module.exports = createWithPostCreate class ToolBar extends Component
         justifyContent: "flex-end"
         backgroundColor: "#f7f3df"
 
-      Div style: margin: "5px", "dom console"
-      for action in ["reset", "show", "hide"]
+      Div style: margin: "5px", "Art.Foundation.DomConsole"
+      for action in ["reset", "show", "hide", "increaseWidth", "decreaseWidth"]
         do (action) =>
           Div
             style: margin: "5px"

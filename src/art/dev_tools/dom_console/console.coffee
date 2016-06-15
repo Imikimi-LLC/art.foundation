@@ -38,7 +38,7 @@ insertBetweenEveryElement = (array, el) ->
     res.push v
   res
 
-domConsoleId = 'Art-Dom-Console'
+domConsoleId = 'artDomConsole'
 
 packageLogArgs = (args) ->
   if args.length == 1
@@ -59,12 +59,16 @@ module.exports = createWithPostCreate class Console extends BaseObject
 
   constructor: ->
     window.domConsole = @
+    @_width = 500
     @_devicePixelRatio = Foundation.Browser.Dom.getDevicePixelRatio()
     @initDom()
 
   reset: -> @domContainer.innerHTML = ""
-  hide: -> @domContainer.style.display = "none"
-  show: -> @domContainer.style.display = "block"
+  hide: -> @domConsoleParent.style.display = "none"
+  show: -> @domConsoleParent.style.display = "block"
+
+  increaseWidth: -> @width+=25
+  decreaseWidth: -> @width-=25
 
   @getter
     shown: -> @domContainer.style.display == "block"
@@ -73,32 +77,44 @@ module.exports = createWithPostCreate class Console extends BaseObject
     child.style.display = "block" for child in el.parentElement.children
     el.style.display = "none"
 
+  @setter
+    width: (w) ->
+      @_width = w
+      console.log width: w
+      @domConsoleParent.style.width = "#{w}px"
+  @getter "width"
+
   initDom: ->
-    document.body.appendChild Div
-      id: domConsoleId
-      style:
-        position: "fixed"
-        top: "0"
-        right: "0"
-        bottom: "0"
-
-        display: "flex"
-        flexDirection: "column"
-
-      ToolBar()
-
-      @domContainer = Div
-        class: "domConsole"
+    document.body.appendChild Div null,
+      Div
         style:
-          width: "500px"
-          height: "100%"
-          borderLeft: "1px solid #aaa"
-        on: click: ({target})=>
-          while target
-            if target.className.match "collapsable"
-              toggleCollapsable target
-              break;
-            target = target.parentElement
+          display: "flex"
+          flexDirection: "row"
+          position: "fixed"
+          left: "0"
+          right: "0"
+          top: "0"
+          bottom: "0"
+        Div
+          id: "#{domConsoleId}Area"
+          style: flex: "1 1 auto"
+
+        @domConsoleParent = Div
+          class: "domConsole"
+          style:
+            paddingTop: "25px"
+            flex: "0 0 auto"
+            height: "100%"
+            width: "#{@_width}px"
+            borderLeft: "1px solid #aaa"
+          @domContainer = Div
+            on: click: ({target})=>
+              while target
+                if target.className.match "collapsable"
+                  toggleCollapsable target
+                  break;
+                target = target.parentElement
+      ToolBar()
 
     # leave space for mocha-stats bar
     if (mocha = $$("#mocha")).length > 0
@@ -121,7 +137,7 @@ module.exports = createWithPostCreate class Console extends BaseObject
   appendLog: (domElement)->
     @domContainer.appendChild Div class:"logLine", domElement
     nextTick =>
-      @domContainer.scrollTop = @domContainer.scrollHeight
+      @domConsoleParent.scrollTop = @domConsoleParent.scrollHeight
 
   # always returned the last argument passed in. That way you can:
   #     bar = foo # log foo's value in the middle of an expression, along with other values, without altering the rest of the expression
