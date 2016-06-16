@@ -1,8 +1,6 @@
 @charset "UTF-8";
 .domConsole {
-  padding: 5px;
-  overflow: auto;
-  background-color: white; }
+  }
   .domConsole img {
     image-rendering: -moz-crisp-edges;
     image-rendering: -o-crisp-edges;

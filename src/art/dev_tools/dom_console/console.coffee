@@ -85,6 +85,8 @@ module.exports = createWithPostCreate class Console extends BaseObject
   @getter "width"
 
   initDom: ->
+    mocha = document.getElementById "mocha"
+    bodyChildren = (child for child in document.body.childNodes)
     document.body.appendChild Div null,
       Div
         style:
@@ -97,17 +99,25 @@ module.exports = createWithPostCreate class Console extends BaseObject
           bottom: "0"
         Div
           id: "#{domConsoleId}Area"
-          style: flex: "1 1 auto"
+          style:
+            flex: "1 1 auto"
+            overflow: "scroll"
+          bodyChildren
 
         @domConsoleParent = Div
-          class: "domConsole"
           style:
+            overflow: "auto"
+            backgroundColor: "white"
+            top: "0"
+            bottom: "0"
             paddingTop: "25px"
             flex: "0 0 auto"
-            height: "100%"
             width: "#{@_width}px"
             borderLeft: "1px solid #aaa"
           @domContainer = Div
+            class: "domConsole"
+            style:
+              padding: "5px"
             on: click: ({target})=>
               while target
                 if target.className.match "collapsable"
@@ -117,22 +127,21 @@ module.exports = createWithPostCreate class Console extends BaseObject
       ToolBar()
 
     # leave space for mocha-stats bar
-    if (mocha = $$("#mocha")).length > 0
+    if mocha
       maxAttempts = 8
       delay = 125/2
       fixMochaStats = ->
         unless maxAttempts--
-          console.log "fixMochaStats... giving up; sorry for the ugly screen"
+          console.log "domConsoleMocha fixMochaStats... giving up; sorry for the ugly screen"
           return
         delay *= 2
-        ms = $$("#mocha-stats")
-        if ms.length == 0
-          console.log "fixMochaStats... (waiting #{delay}ms for #mocha-stats div to appear: #{maxAttempts})"
-          timeout delay, fixMochaStats
+
+        if ms = document.getElementById "mocha-stats"
+          ms.style.position = "relative"
         else
-          ms.style[0].right = "530px"
-      timeout delay, -> fixMochaStats()
-      mocha.style[0].marginRight = "530px"
+          console.log "domConsoleMocha fixMochaStats... (waiting #{delay}ms for #mocha-stats div to appear: #{maxAttempts})"
+          timeout delay, fixMochaStats
+      timeout delay, fixMochaStats
 
   appendLog: (domElement)->
     @domContainer.appendChild Div class:"logLine", domElement
