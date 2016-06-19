@@ -49,6 +49,8 @@ module.exports = class BaseObject
           - isFunction fromObject[propName]
           - isFunction toObject[propName]
           - !toObject.hasOwnProperty propName
+          - propName does NOT start with "_"
+
   ###
   @imprintObject: imprintObject = (toObject, fromObject, preserveState = false) ->
 
@@ -57,7 +59,13 @@ module.exports = class BaseObject
         delete toObject[k]
 
     for k, fromValue of fromObject when fromObject.hasOwnProperty k
-      if !preserveState || isFunction(fromValue) || isFunction(toObject[k]) || !toObject.hasOwnProperty k
+      if (
+          !preserveState ||
+          isFunction(fromValue) ||
+          isFunction(toObject[k]) ||
+          !k.match(/^_/) ||
+          !toObject.hasOwnProperty k
+        )
         toObject[k] = fromValue
 
     fromObject
@@ -174,6 +182,7 @@ module.exports = class BaseObject
         version: classModuleState.hotReloadVersion
 
       liveClass.imprintFromClass hotUpdatedFromClass
+      liveClass._hotClassModuleState = classModuleState
       liveClass.postCreate(
         hotReloaded
         classModuleState
