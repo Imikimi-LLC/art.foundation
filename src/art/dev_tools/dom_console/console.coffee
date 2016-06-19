@@ -240,7 +240,6 @@ module.exports = createWithPostCreate class Console extends BaseObject
   arrayToDomTreeView: (arrayOfInspectedObjects, options) ->
 
     if arrayOfInspectedObjects.length == 0
-      console.log "empty damn array!"
       return Span class:"array", "[]"
 
     @treeViewCollapsable [
