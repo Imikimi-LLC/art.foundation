@@ -20,12 +20,14 @@ module.exports = class EncodedImage
 
     .then -> new Promise (resolve, reject) ->
       image = new Image
-      image.crossOrigin = "Anonymous" unless url.match /^file\:\/\//i
+      image.crossOrigin = "Anonymous" unless url.match /^(file|data)\:/i
       ###
       crossOrigin = "Anonymous" required to getImageData and avoid this error
         "The canvas has been tainted by cross-origin data."
 
-      NOTE: This crossOrigin setting makes file:// urls not work with WkWebKit, so we don't use it then.
+      NOTE:
+        file: urls break with crossOrigin in WkWebKit
+        data: urls break with crossOrigin in Safari
       ###
       image.onload  = -> resolve image
       image.onerror = reject
