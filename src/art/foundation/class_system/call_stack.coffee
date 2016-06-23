@@ -1,6 +1,7 @@
 {isString, parseUrl} = require '../standard_lib'
 {inspect} = require './inspect'
 
+# TODO: switch to using https://github.com/stacktracejs/stacktrace.js
 module.exports = class CallStack
   @errorToString: (error) -> error?.error || error?.message || (isString(error) && error) || inspect error
   @CallStackLine: class CallStackLine
