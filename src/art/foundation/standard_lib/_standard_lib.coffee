@@ -1,4 +1,5 @@
 module.exports = [
+  [require("./promise"), "testPromise"]
   require "./array_extensions"
   require "./async_extensions"
   require "./array_compact_flatten"

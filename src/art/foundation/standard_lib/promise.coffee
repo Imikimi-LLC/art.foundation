@@ -24,6 +24,9 @@ module.exports = class ArtPromise #extends Promise
   @reject: Promise.reject
   @resolve: Promise.resolve
   @then: (f) -> Promise.resolve().then f
+  @testPromise: (promise) ->
+    promise.then  (v) -> console.log "promise.resolve", v
+    promise.catch (v) -> console.log "promise.reject", v
   @mapAll: (map) ->
     keys = Object.keys map
     Promise.all(map[key] for key in keys)
