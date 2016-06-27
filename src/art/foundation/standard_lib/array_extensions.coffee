@@ -9,6 +9,11 @@ module.exports = class ArrayExtensions
   @keepAll: keepAll = -> true
   @keepIfRubyTrue: keepIfRubyTrue = (a) -> a != undefined && a != null && a != false
 
+  # OUT: the array
+  @reverseForEach: (array, f) ->
+    f v for v in array by -1
+    array
+
   @arrayToTruthMap: (array) ->
     res = {}
     for a in array

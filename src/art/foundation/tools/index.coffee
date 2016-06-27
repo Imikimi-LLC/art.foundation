@@ -14,5 +14,6 @@
   SingleObjectTransaction: require './single_object_transaction'
   Stat:                    require './stat'
   Transaction:             require './transaction'
+  Validator:               require './validator'
   WebWorker:               require './web_worker'
   WorkerRpc:               require './worker_rpc'

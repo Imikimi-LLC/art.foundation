@@ -97,7 +97,9 @@ module.exports = class ArtPromise #extends Promise
 
     # invoke f after the last serialized invocation's promises are resolved
     # OUT: promise.then (fResult) ->
-    then: (f) -> @_lastPromise = @_lastPromise.then f
+    then: (f, rejected) -> @_lastPromise = @_lastPromise.then f, rejected
+
+    catch: (f) -> @_lastPromise = @_lastPromise.catch f
 
   ###
   OUT: serializedF = -> Promise.resolve f arguments...

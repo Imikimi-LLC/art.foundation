@@ -77,7 +77,7 @@ module.exports = class Types
       obj != "" && obj != undefined && obj != null
 
   @isObject: isObject = (obj) =>
-    !!obj && typeof obj == "object" && !isArray obj
+    !!obj && typeof obj == "object" && !isPlainArray obj
 
   @functionName: functionName = (f) ->
     (f.name || ((matched = "#{f}".match(/function ([a-zA-Z]+)\(/)) && matched[1]) || "function")
