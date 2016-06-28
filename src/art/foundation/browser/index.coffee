@@ -2,6 +2,7 @@
 # file: art/foundation/browser/index.coffee
 
 (module.exports = require './namespace')
+.includeInNamespace(require './_browser')
 .addModules
   Cookie:              require './cookie'
   Dom:                 require './dom'
