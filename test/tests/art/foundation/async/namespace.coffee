@@ -3,5 +3,5 @@
 
 Foundation = require '../namespace'
 module.exports = Foundation.Async ||
-Foundation.addNamespace class Async extends Neptune.Base
+Foundation.addNamespace 'Async', class Async extends Neptune.Base
   ;

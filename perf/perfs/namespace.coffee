@@ -3,5 +3,5 @@
 
 require 'neptune-namespaces'
 module.exports = Neptune.Perfs ||
-Neptune.addNamespace class Perfs extends Neptune.Base
+Neptune.addNamespace 'Perfs', class Perfs extends Neptune.Base
   ;

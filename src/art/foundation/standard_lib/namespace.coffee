@@ -3,5 +3,5 @@
 
 Foundation = require '../namespace'
 module.exports = Foundation.StandardLib ||
-Foundation.addNamespace class StandardLib extends Neptune.Base
+Foundation.addNamespace 'StandardLib', class StandardLib extends Neptune.Base
   ;

@@ -3,5 +3,5 @@
 
 DomConsole = require '../namespace'
 module.exports = DomConsole.PseudoReact ||
-DomConsole.addNamespace class PseudoReact extends Neptune.Base
+DomConsole.addNamespace 'PseudoReact', class PseudoReact extends Neptune.Base
   ;

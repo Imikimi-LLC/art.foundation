@@ -3,5 +3,5 @@
 
 DevTools = require '../namespace'
 module.exports = DevTools.DomConsole ||
-DevTools.addNamespace class DomConsole extends Neptune.Base
+DevTools.addNamespace 'DomConsole', class DomConsole extends Neptune.Base
   ;

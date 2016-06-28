@@ -3,5 +3,5 @@
 
 Perfs = require '../namespace'
 module.exports = Perfs.Art ||
-Perfs.addNamespace class Art extends Neptune.Base
+Perfs.addNamespace 'Art', class Art extends Neptune.Base
   ;

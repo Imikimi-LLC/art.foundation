@@ -3,5 +3,5 @@
 
 ClassSystem = require '../namespace'
 module.exports = ClassSystem.Inspect ||
-ClassSystem.addNamespace class Inspect extends Neptune.Base
+ClassSystem.addNamespace 'Inspect', class Inspect extends Neptune.Base
   ;

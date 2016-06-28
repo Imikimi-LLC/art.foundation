@@ -3,5 +3,5 @@
 
 Foundation = require '../namespace'
 module.exports = Foundation.Binary ||
-Foundation.addNamespace class Binary extends Neptune.Base
+Foundation.addNamespace 'Binary', class Binary extends Neptune.Base
   ;

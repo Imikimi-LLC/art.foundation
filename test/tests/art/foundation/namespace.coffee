@@ -3,5 +3,5 @@
 
 Art = require '../namespace'
 module.exports = Art.Foundation ||
-Art.addNamespace class Foundation extends Neptune.Base
+Art.addNamespace 'Foundation', class Foundation extends Neptune.Base
   ;

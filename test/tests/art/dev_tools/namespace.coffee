@@ -3,5 +3,5 @@
 
 Art = require '../namespace'
 module.exports = Art.DevTools ||
-Art.addNamespace class DevTools extends Neptune.Base
+Art.addNamespace 'DevTools', class DevTools extends Neptune.Base
   ;

@@ -3,5 +3,5 @@
 
 Foundation = require '../namespace'
 module.exports = Foundation.Browser ||
-Foundation.addNamespace class Browser extends Neptune.Base
+Foundation.addNamespace 'Browser', class Browser extends Neptune.Base
   ;

@@ -3,5 +3,5 @@
 
 Foundation = require '../namespace'
 module.exports = Foundation.ClassSystem ||
-Foundation.addNamespace class ClassSystem extends Neptune.Base
+Foundation.addNamespace 'ClassSystem', class ClassSystem extends Neptune.Base
   ;

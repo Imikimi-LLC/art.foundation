@@ -3,5 +3,5 @@
 
 require 'neptune-namespaces'
 module.exports = Neptune.Art ||
-Neptune.addNamespace class Art extends Neptune.Base
+Neptune.addNamespace 'Art', class Art extends Neptune.Base
   ;

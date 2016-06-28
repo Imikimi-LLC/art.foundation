@@ -3,5 +3,5 @@
 
 Tests = require '../namespace'
 module.exports = Tests.Art ||
-Tests.addNamespace class Art extends Neptune.Base
+Tests.addNamespace 'Art', class Art extends Neptune.Base
   ;
