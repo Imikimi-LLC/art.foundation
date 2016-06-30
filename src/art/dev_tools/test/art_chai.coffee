@@ -52,4 +52,11 @@ assert.neq = (a, b, optionalInfo) ->
     message += "info: #{optionalInfo}\n" if optionalInfo
     assert.fail "1", "2", message
 
+
+assert.rejects = (promise, optionalInfo) ->
+  optionalInfo || = "The promise"
+  str = "#{optionalInfo} should be rejected."
+  promise.then -> Promise.reject str
+  .catch (v) -> throw v if v == str
+
 module.exports = Chai
