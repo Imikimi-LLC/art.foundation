@@ -17,8 +17,9 @@ module.exports = class Validator extends BaseObject
   # Usage:
   #   This:           @fields webPage: @fieldTypes.id
   #   is the same as: @fields webPage: validate: (v) -> isId v
+  #   and this:       @fields webPage: type: "id"
   @fieldTypes: fieldTypes =
-    id:     validate: (v) -> isId v
+    id:     required: true, validate: (v) -> isId v
     color:  validate: (v) -> isHexColor v
     number: validate: (v) -> isNumber v
     date:
@@ -115,4 +116,11 @@ module.exports = class Validator extends BaseObject
   # PRIVATE
   ###################
   _addField: (field, options) ->
-    @_fieldProps[field] = options
+    @_fieldProps[field] = merge null,
+      fieldTypes[options.type]
+      options
+      if _instanceof = options.instanceof
+        {validate} = options
+        validate: (v) ->
+          (v instanceof _instanceof) &&
+          (!validate || validate v)
