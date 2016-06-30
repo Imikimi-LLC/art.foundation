@@ -22,7 +22,7 @@
   "devDependencies": {},
   "scripts": {
     "test": "webpack-dev-server -d --progress",
-    "tests-in-node": "neptune-namespaces -r test/tests/ -r src/*;mocha -u tdd --compilers coffee:coffee-script/register",
+    "test-in-node": "neptune-namespaces --std;mocha -u tdd --compilers coffee:coffee-script/register",
     "nn": "neptune-namespaces --std"
   },
   "author": "Shane Brinkman-Davis Delamore, Imikimi LLC",
