@@ -1,6 +1,6 @@
 {
   "name": "art-foundation",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Foundation classes for the Art framework. Javascript extensions",
   "main": "main.js",
   "dependencies": {
