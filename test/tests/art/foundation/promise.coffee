@@ -1,6 +1,6 @@
 {assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
 Foundation = require "art-foundation"
-{WorkerRpc, BaseObject, timeout, Promise, intRand, log} = Foundation
+{WorkerRpc, BaseObject, timeout, Promise, intRand, log, deepAll} = Foundation
 
 suite "Art.Foundation.Promise", ->
 
@@ -69,6 +69,41 @@ suite "Art.Foundation.Promise", ->
     .then ->
       assert.ok count >= 1
       assert.ok count <= 3
+
+suite "Art.Foundation.Promise.deepAll", ->
+  test 'deepAll {}', ->
+    deepAll
+      a: Promise.resolve 123
+      b: Promise.resolve c: 1, d: 2
+    .then (result) ->
+      assert.eq result,
+        a: 123
+        b: c: 1, d: 2
+
+  test 'deepAll [{}]', ->
+    deepAll [
+      999
+      a: Promise.resolve 123
+      b: Promise.resolve c: 1, d: 2
+    ]
+    .then (result) ->
+      assert.eq result, [
+        999
+        a: 123
+        b: c: 1, d: 2
+      ]
+
+  test 'deepAll []', ->
+    deepAll [
+      Promise.resolve 123
+      Promise.resolve c: 1, d: 2
+    ]
+    .then (result) ->
+      assert.eq result, [
+        123
+        c: 1, d: 2
+      ]
+
 
 suite "Art.Foundation.Promise.Serializer", ->
   test "Promise.serialize", ->

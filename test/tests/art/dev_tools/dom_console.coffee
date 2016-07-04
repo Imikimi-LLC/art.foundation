@@ -26,7 +26,7 @@ if self.document
     image.src = "https://upload.wikimedia.org/wikipedia/en/2/24/Lenna.png"
     testLog image: image
     testLog
-      foo: Promise.resolve(123)
+      foo: Promise.resolve a:12, b:13
       bar: timeout(10).then -> 456
     testLog
       foo: Promise.reject(123)
