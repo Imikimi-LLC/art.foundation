@@ -20,6 +20,8 @@ ToolBar = require './tool_bar'
   createWithPostCreate
   colorRegex
   Promise
+  containsPromises
+  deepAll
 } = Foundation
 
 {Div, Pre, Span, Img, Li, Ul} = Foundation.Browser.DomElementFactories
@@ -160,7 +162,14 @@ module.exports = createWithPostCreate class Console extends BaseObject
     options.log
 
   format: (domEl, options) ->
-    domEl = wrapDomElement domEl, "<#{options.tag}/>" if options && options.tag
+    {label, labelColor} = options
+    # domEl = wrapDomElement domEl, "<#{options.tag}/>" if options && options.tag
+    if label
+      domEl = Div null,
+        Div label, style: color: labelColor
+        Div
+          style: paddingLeft: "10px"
+          domEl
     domEl
 
   arrayKidsToDomArray: (arrayOfInspectedObjects, Factory, options, addCommasAndBrackets) ->
@@ -331,8 +340,12 @@ module.exports = createWithPostCreate class Console extends BaseObject
       @literalToDom inspectedObject
 
   logSerializer = new Promise.Serializer
+  logCount = 1
   logCore: (m, callStack, name, options = {}) ->
-    logSerializer.then => new Promise (resolve) =>
+    localLogCount = logCount
+    if hasPromises = containsPromises m
+      options = merge options, label: "log #{localLogCount}: RESOLVING PROMISES", labelColor: "#444"
+    ret = logSerializer.then => new Promise (resolve) =>
       console.log m
       options.treeView = true
       {maxDepth} = options
@@ -346,3 +359,12 @@ module.exports = createWithPostCreate class Console extends BaseObject
         inspector.inspect m, (inspected) =>
           domEl = @toDom inspected, options
           resolve @appendLog @format domEl, options
+
+    if hasPromises
+      deepAll m, (promiseResult) -> 'promise.then': promiseResult
+      .then (resolvedM) =>
+        @logCore resolvedM, callStack, name, merge options, label: "log #{localLogCount}: RESOLVED PROMISES", labelColor: "green"
+      .catch (rejected) =>
+        @logCore rejected, callStack, name, merge options, label: "log #{localLogCount}: PROMISES WAS REJECTED", labelColor: "#a00"
+    logCount++
+    ret

@@ -1,5 +1,5 @@
 Foundation = require 'art-foundation'
-{log, inspectLean, inspect, isPlainArray} = Foundation
+{log, inspectLean, inspect, isPlainArray, timeout} = Foundation
 if self.document
   suite "Art.DevTools.DomConsole", ->
     testLog = (args...) ->
@@ -25,3 +25,11 @@ if self.document
     image = document.createElement "img"
     image.src = "https://upload.wikimedia.org/wikipedia/en/2/24/Lenna.png"
     testLog image: image
+    testLog
+      foo: Promise.resolve(123)
+      bar: timeout(10).then -> 456
+    testLog
+      foo: Promise.reject(123)
+      bar: Promise.resolve(456)
+    # a.catch -> 123
+    null
