@@ -48,6 +48,8 @@ module.exports = class Log
   @logCore: (m, stack, className) =>
     if @alternativeLogger
       @alternativeLogger.logCore m, stack, className
+    else if Neptune.isNode
+      @rawLog Inspect.formattedInspect m
     else
       @rawLog m, "\n# Foundation.log called " + @contextString stack, className
 

@@ -3,6 +3,8 @@
 
 (module.exports = require './namespace')
 .addModules
-  Inspected:  require './inspected'
-  Inspector2: require './inspector2'
-  Main:       require './main'
+  FormattedInspect:   require './formatted_inspect'
+  Inspected:          require './inspected'
+  Inspector2:         require './inspector2'
+  Main:               require './main'
+  ToInspectedObjects: require './to_inspected_objects'

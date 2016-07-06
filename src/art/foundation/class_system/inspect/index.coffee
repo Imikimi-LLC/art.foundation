@@ -4,6 +4,8 @@
 (module.exports = require './namespace')
 .includeInNamespace(require './_inspect')
 .addModules
-  Inspector:  require './inspector'
-  Inspector2: require './inspector2'
+  FormattedInspect:   require './formatted_inspect'
+  Inspector:          require './inspector'
+  Inspector2:         require './inspector2'
+  ToInspectedObjects: require './to_inspected_objects'
 require './inspected'
