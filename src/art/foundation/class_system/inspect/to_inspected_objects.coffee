@@ -8,7 +8,7 @@ Inspector = require  "./inspector"
 StandardLib = require '../../standard_lib'
 {deepMap, isPlainArray, isPlainObject, isClass, isString, isFunction, pluralize} = StandardLib
 
-toInspectedObjects = (m) ->
+module.exports = toInspectedObjects = (m) ->
   return m unless m?
   {inspectedObjects} = m
 
@@ -24,6 +24,6 @@ toInspectedObjects = (m) ->
     "<#{m.getNamespacePath?() || m.getName?() || m.name || "unknown class"}>"
   else if isFunction m
     (m.name || "function") + "(#{pluralize m.length, 'argument'})"
+  else if self.HTMLImageElement && m instanceof self.HTMLImageElement
+    m
   else m.toString()
-
-module.exports = toInspectedObjects

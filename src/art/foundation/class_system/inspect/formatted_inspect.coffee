@@ -61,7 +61,7 @@ formattedInspectRecursive = (m, maxLineLength) ->
 
     if !containsConsecutiveArrays && !containsConsecutiveObjects && maxLineLength >= inspectedLength + (inspectedValues.length - 1) * 2
       if inspectedValues.length <= 1
-        "[#{inspectedValues.join ', '}]"
+        "[] #{inspectedValues.join ', '}"
       else
         inspectedValues.join ', '
     else

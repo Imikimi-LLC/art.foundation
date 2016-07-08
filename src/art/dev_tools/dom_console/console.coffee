@@ -363,8 +363,8 @@ module.exports = createWithPostCreate class Console extends BaseObject
     if hasPromises
       deepAll m, (promiseResult) -> 'promise.then': promiseResult
       .then (resolvedM) =>
-        @logCore resolvedM, callStack, name, merge options, label: "log #{localLogCount}: RESOLVED PROMISES", labelColor: "green"
+        @logCore resolvedM, callStack, name, merge options, label: "log #{localLogCount}: ALL PROMISES RESOLVED", labelColor: "green"
       .catch (rejected) =>
-        @logCore rejected, callStack, name, merge options, label: "log #{localLogCount}: PROMISES WAS REJECTED", labelColor: "#a00"
+        @logCore rejected, callStack, name, merge options, label: "log #{localLogCount}: ONE OR MORE PROMISES WERE REJECTED", labelColor: "#a00"
     logCount++
     ret
