@@ -89,55 +89,6 @@ module.exports = class BaseObject
       @namespace = oldNamespace
     @
 
-  @inspect: -> @getClassPathName()
-
-  ###
-  inspect: ->
-  IN: ()
-  OUT: string
-
-  Can override with same or alternate, recursion-block-supported signature:
-    IN: (inspector) ->
-    OUT: if inspector then null else string
-
-    To handle the case where the inspector is not set, we
-    recommneded declaring your 'inspect' as follows:
-      inspect: (inspector) ->
-        return Foundation.inspect @ unless inspector
-        # ...
-        # custom code which writes all output to inspector.put
-        # and uses inspector.inspect for inspecting sub-objects
-        # ...
-        null
-
-    EFFECT:
-      call inspector.put one or multiple times with strings to add to the inspected output
-      call inspector.inspect foo to sub-inspect other objects WITH RECURSION BLOCK
-
-  # Example 1:
-  inspect: (inspector) ->
-    return Foundation.inspect @ unless inspector
-    inspector.put @getClassPathName()
-
-  # Example 2:
-  inspect: ->
-    @getClassPathName()
-  ###
-
-  ###
-  getInspectObjects: -> plainObjects
-
-  usually implemented this way:
-  @getter inspectObjects: -> plainObjects or objects which implement "inspect"
-
-  You can provide this function for fine-grained control of what Inspector2 outputs and hence
-  what DomConsole displays.
-
-  If you would like for a string to appear without quotes, use:
-    {inspect: -> 'your string without quotes here'}
-  ###
-
-
   # @name is not settable, so we have @_name as an override for use with dynamically generated classes
   @getName: ->
     @_name || @name
@@ -401,6 +352,97 @@ module.exports = class BaseObject
 
   @getClassName: (klass = @) ->
     klass.getName?() || klass.name
+
+
+  ######################################################
+  # inspect
+  ######################################################
+  @inspect: -> @getClassPathName()
+
+  ###
+  inspect: ->
+  IN: ()
+  OUT: string
+
+  Can override with same or alternate, recursion-block-supported signature:
+    IN: (inspector) ->
+    OUT: if inspector then null else string
+
+    To handle the case where the inspector is not set, we
+    recommneded declaring your 'inspect' as follows:
+      inspect: (inspector) ->
+        return Foundation.inspect @ unless inspector
+        # ...
+        # custom code which writes all output to inspector.put
+        # and uses inspector.inspect for inspecting sub-objects
+        # ...
+        null
+
+    EFFECT:
+      call inspector.put one or multiple times with strings to add to the inspected output
+      call inspector.inspect foo to sub-inspect other objects WITH RECURSION BLOCK
+
+  # Example 1:
+  inspect: (inspector) ->
+    return Foundation.inspect @ unless inspector
+    inspector.put @getClassPathName()
+
+  # Example 2:
+  inspect: ->
+    @getClassPathName()
+  ###
+
+  ###
+  getInspectedObjects: -> plainObjects
+
+  usually implemented this way:
+  @getter inspectedObjects: -> plainObjects or objects which implement "inspect"
+
+  TODO: I think I want to refactor inspectedObjects to ONLY return near-JSON-compatible objects:
+    1. strings
+    2. maps
+    3. arrays
+
+    Everything else should be rendered to a string. In general, strings should Eval to the object
+    they represent:
+
+      toInspectedObject(null):                    'null' # null becomes a string
+      toInspectedObject(true):                    'true' # true becomes a string
+      toInspectedObject(false):                   'false' # false becomes a string
+      toInspectedObject(undefined):               'undefined' # undefined becomes a string
+      toInspectedObject('hi'):                    '"hi"' # ESCAPED
+      toInspectedObject((a) -> a):                'function(a){return a;}'
+      toInspectedObject(rgbColor())               "rgbColor('#000000')"
+
+    NOTE: inspectedObjects differs from plainObjects. The latter should be 100% JSON,
+      and should return actual values where JSON allows, otherwise, return JSON data structures
+      that encode the object's information in a human-readable format, ideally one that can be
+      used as an input to the constructor of the object's class to recreate the original object.
+
+      plainObjects:
+        null:         null
+        true:         true
+        false:        false
+        'str':        'str' # NOT escaped
+        undefined:    null
+        ((a) -> a):   'function(a){return a;}'
+        rgbColor():   r: 0, g: 0, b: 0, a: 0
+
+  You can provide this function for fine-grained control of what Inspector2 outputs and hence
+  what DomConsole displays.
+
+  If you would like for a string to appear without quotes, use:
+    {inspect: -> 'your string without quotes here'}
+  ###
+
+  @getter
+    inspectObjects: ->
+      console.warn "inspectObjects/getInspectObjects is DEPRICATED. Use: inspectedObjects/getInspectedObjects"
+      @getInspectedObjects()
+
+    inspectedObjects: ->
+      "<#{@getClassPath}>"
+
 
   ######################################################
   # Class Methods

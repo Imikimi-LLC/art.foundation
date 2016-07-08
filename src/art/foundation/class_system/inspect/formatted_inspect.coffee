@@ -23,7 +23,9 @@ formattedInspectRecursive = (m, maxLineLength) ->
 
     forceMultilineOutput = false
     shouldBeOnOwnLine = false
+    keyCount = 0
     inspectedValues = for key, value of m
+      keyCount++
       maxKeyLength = max maxKeyLength, key.length
       inspectedValue = formatMultilineSubStructure value, formattedInspectRecursive value, maxLineLength
       key = inspect key if key.match /[:\n]/
@@ -31,6 +33,8 @@ formattedInspectRecursive = (m, maxLineLength) ->
       forceMultilineOutput ||= shouldBeOnOwnLine # if previous entry should be on own line, force all on own line
       shouldBeOnOwnLine = !inspectedValue.match /^([^,:]|\(.*\)|\{.*\}|\".*\"|\'.*\'|\[.*\])*$/
       [key, inspectedValue]
+
+    return "{}" if keyCount == 0
 
     index = 0
     if !forceMultilineOutput && maxLineLength >= inspectedLength + (inspectedValues.length - 1) * 2
@@ -72,6 +76,8 @@ formattedInspectRecursive = (m, maxLineLength) ->
       """
       #{indentedInspectedArray.join "\n"}
       """
+  else if !m
+    "#{m}"
   else
     throw new Error "expecting string: #{inspect m}" unless isString m
     m

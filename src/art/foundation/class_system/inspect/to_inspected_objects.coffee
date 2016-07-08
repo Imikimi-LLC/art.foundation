@@ -10,7 +10,7 @@ StandardLib = require '../../standard_lib'
 
 module.exports = toInspectedObjects = (m) ->
   return m unless m?
-  {inspectedObjects} = m
+  inspectedObjects = m.getInspectedObjects?()
 
   m = inspectedObjects if inspectedObjects
 

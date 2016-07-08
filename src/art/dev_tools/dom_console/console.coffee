@@ -1,7 +1,7 @@
 
 ###
 To customize how an object shows up in the DOM console, add
-getInspectObjects member method. For more info, see base_object.coffee
+getInspectedObjects member method. For more info, see base_object.coffee
 ###
 
 require "!style!css!./style.css" if self.document
