@@ -10,9 +10,9 @@ StandardLib = require '../../standard_lib'
 
 module.exports = toInspectedObjects = (m) ->
   return m unless m?
-  inspectedObjects = m.getInspectedObjects?()
-
-  m = inspectedObjects if inspectedObjects
+  oldm = m
+  m = m.getInspectedObjects?() || m
+  console.log toInspectedObjects: m, oldm:m
 
   if isFunction m.inspect
     m.inspect()

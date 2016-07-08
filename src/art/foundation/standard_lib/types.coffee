@@ -45,6 +45,7 @@ module.exports = class Types
   @isString: isString = (obj) => typeof obj == "string"
   @isFunction: isFunction = (obj) => typeof obj == "function"
   @isEmptyObject: (obj) => Object.keys(obj).length == 0
+  @isBoolean: (obj) => obj == true || obj == false
   @isClass: isClass = (obj) =>
     !! (
       typeof obj is "function" && (

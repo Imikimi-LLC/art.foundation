@@ -15,6 +15,7 @@ suite "Art.Foundation.Inspect.formattedInspect.singleLine", ->
 
   testFI ((a)->), 'function(1 argument)'
   testFI a:1, "a: 1"
+  testFI inspect:(->'inspectOutput'), "inspectOutput"
   testFI [], "[] "
   testFI [1], "[] 1"
   testFI [1,2], "1, 2"
