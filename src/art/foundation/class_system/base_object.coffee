@@ -3,6 +3,8 @@ WebpackHotLoader = require './webpack_hot_loader'
 {callStack} = require './call_stack'
 Log = require './log'
 
+{inspectedObjectLiteral} = require './inspect/inspected_object_literal'
+
 {
   capitalize, decapitalize, log, extendClone
   isFunction, objectName, isPlainObject, functionName, isString
@@ -357,7 +359,6 @@ module.exports = class BaseObject
   ######################################################
   # inspect
   ######################################################
-  @inspect: -> @getClassPathName()
 
   ###
   inspect: ->
@@ -391,6 +392,9 @@ module.exports = class BaseObject
   inspect: ->
     @getClassPathName()
   ###
+  @inspect: -> @getClassPathName()
+
+  inspect: -> "<#{@class.namespacePath}>"
 
   ###
   getInspectedObjects: -> plainObjects
@@ -441,8 +445,11 @@ module.exports = class BaseObject
       @getInspectedObjects()
 
     inspectedObjects: ->
-      "<#{@getClassPath}>"
+      inspectedObjectLiteral "<#{@class.namespacePath}>"
 
+  @classGetter
+    inspectedObjects: ->
+      inspectedObjectLiteral @namespacePath
 
   ######################################################
   # Class Methods

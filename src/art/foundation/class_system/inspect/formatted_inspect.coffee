@@ -1,7 +1,7 @@
-{isString, isPlainObject, isPlainArray, max, pad} = require '../../standard_lib'
+{isString, isPlainObject, isPlainArray, max, pad, isFunction} = require '../../standard_lib'
 {inspect} = require './inspector'
 {log} = require '../log'
-toInspectedObjects = require './to_inspected_objects'
+{toInspectedObjects} = require './to_inspected_objects'
 
 niceNodeInspectIndent = '  '
 newLineWithNiceNodeInspectIndent = "\n#{niceNodeInspectIndent}"
@@ -53,13 +53,17 @@ formattedInspectRecursive = (m, maxLineLength) ->
     containsConsecutiveObjects = false
     containsConsecutiveArrays = false
     inspectedValues = for value in m
-      if isPlainObject value
+      if _isPlainObject = isPlainObject value
         containsConsecutiveObjects ||= lastWasObject
         lastWasObject = true
+      else
+        lastWasObject = false
       if isPlainArray value
         containsConsecutiveArrays ||= lastWasArray
         lastWasArray = true
-      inspected = formatMultilineSubStructure value, formattedInspectRecursive value, maxLineLength
+      inspected = formattedInspectRecursive value, maxLineLength
+      inspected = formatMultilineSubStructure value, inspected unless _isPlainObject
+
       inspectedLength += inspected.length
       inspected
 
@@ -71,15 +75,12 @@ formattedInspectRecursive = (m, maxLineLength) ->
     else
       indentedInspectedArray = for inspectedEl, i in inspectedValues
         v = inspectedEl
-        v = "{} #{v}" if containsConsecutiveObjects && isPlainObject m[i]
+        v = "{}#{if v.match("\n") then "\n" else " "}#{v}" if containsConsecutiveObjects && isPlainObject m[i]
         v
       """
       #{indentedInspectedArray.join "\n"}
       """
-  else if !m
-    "#{m}"
   else
-    throw new Error "expecting string: #{inspect m}" unless isString m
-    m
+    inspect m
 
 module.exports = (m, maxLineLength = 80) -> formattedInspectRecursive toInspectedObjects(m), maxLineLength

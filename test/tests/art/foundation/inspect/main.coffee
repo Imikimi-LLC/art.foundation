@@ -132,16 +132,15 @@ suite "Art.Foundation.Inspect.basic", ->
     assert.equal '{a: 1, b: 2, bar: {c: 3, d: 4, foo: [<great grandparent>]}}', inspect foo
 
   test "inspect namespaced class", ->
-    class Foo
-
-    class Foo.Bar extends Foundation.BaseObject
+    class FooBar extends Foundation.BaseObject
+      @namespacePath: "Foo.Bar"
       constructor: ->
         @a = 1
         @b = 2
         @c = 3
 
-    o = new Foo.Bar
-    assert.equal "{Neptune.Art.Foundation.ClassSystem.Bar a: 1, b: 2, c: 3}", inspect o
+    o = new FooBar
+    assert.equal "<Foo.Bar>", inspect o
 
 suite "Art.Foundation.Inspect.custom inspect", ->
   test "custom signature: inspect: (inspector) -> ", ->

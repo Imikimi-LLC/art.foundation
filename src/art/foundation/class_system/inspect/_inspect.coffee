@@ -6,6 +6,6 @@ Then, move into StandardLib.
 module.exports = [
   [(require  "./inspector"), "shallowInspect inspectLean inspect"]
   formattedInspect: require './formatted_inspect'
-  toInspectedObjects: require './to_inspected_objects'
-
+  require './to_inspected_objects'
+  require './inspected_object_literal'
 ]

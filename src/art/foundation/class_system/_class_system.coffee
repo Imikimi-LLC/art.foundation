@@ -1,5 +1,5 @@
 module.exports = [
-  [require("./inspect"), "inspect inspectLean shallowInspect"]
+  require "./inspect"
   [require("./base_object"), "createWithPostCreate mixInto createAllClass createHotWithPostCreate"]
   require "./clone"
   require "./log"
