@@ -15,7 +15,6 @@ module.exports = class InspectedObjects
     else if isString m
       m
     else if isFunction m
-      inspectedObjectLiteral (m.name || "function") + "(#{pluralize m.length, 'argument'})"
-    else #if self.HTMLImageElement && m instanceof self.HTMLImageElement
+      inspectedObjectLiteral "#{m}".slice 0, 1000
+    else
       m
-    #else m.toString()
