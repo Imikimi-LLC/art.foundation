@@ -1,27 +1,27 @@
 {assert} = Chai = require 'chai'
 Foundation = require 'art-foundation'
-{log, eq, inspect, inspectLean, floatEq} = Foundation
+{log, eq, inspect, formattedInspect, floatEq} = Foundation
 
 {assert} = Chai
 
 eqFailure = (a, b, optionalInfo, method) ->
-    aInspected = inspectLean a
-    bInspected = inspectLean b
+    aInspected = formattedInspect a
+    bInspected = formattedInspect b
     if aInspected == bInspected
-      aInspected = inspectLean a, noCustomInspectors: true
-      bInspected = inspectLean b, noCustomInspectors: true
+      aInspected = formattedInspect a, noCustomInspectors: true
+      bInspected = formattedInspect b, noCustomInspectors: true
     message = "expected\n  #{aInspected.replace /\n/g, "\n  "}\nto equal (#{method})\n  #{bInspected.replace /\n/g, "\n  "}\n"
     message += "info: #{optionalInfo}\n" if optionalInfo
     assert.fail a, b, message
 
 withinFailure = (a, b, c, optionalInfo, method) ->
-    aInspected = inspectLean a
-    bInspected = inspectLean b
-    cInspected = inspectLean c
+    aInspected = formattedInspect a
+    bInspected = formattedInspect b
+    cInspected = formattedInspect c
     if aInspected == bInspected || aInspected == cInspected
-      aInspected = inspectLean a, noCustomInspectors: true
-      bInspected = inspectLean b, noCustomInspectors: true
-      cInspected = inspectLean c, noCustomInspectors: true
+      aInspected = formattedInspect a, noCustomInspectors: true
+      bInspected = formattedInspect b, noCustomInspectors: true
+      cInspected = formattedInspect c, noCustomInspectors: true
     message = "expected\n  #{aInspected.replace /\n/g, "\n  "}\nto be >=\n  #{bInspected.replace /\n/g, "\n  "}\nand <=\n  #{cInspected.replace /\n/g, "\n  "}"
     message += "\ninfo: #{optionalInfo}\n" if optionalInfo
     assert.fail [a, c], b, message
