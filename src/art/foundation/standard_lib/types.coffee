@@ -109,13 +109,20 @@ module.exports = class Types
     return true for k of o
     false
 
-  @deepEach: deepEach = (v, f) ->
+  ###
+  IN:
+    f: (value, [key]) ->
+      f is called on every non-plainObject and non-plainArray reachable by traversing
+      the plainObject/plainArray structure
+      If f is called on a propery of a plainObject, the key for that property is also passed in.
+  ###
+  @deepEach: deepEach = (v, f, key) ->
     if isPlainArray v
       deepEach subV, f for subV in v
     else if isPlainObject v
-      deepEach subV, f for k, subV of v
+      deepEach subV, f, k for k, subV of v
     else
-      f v
+      f v, key
     v
 
   ###
