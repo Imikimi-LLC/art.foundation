@@ -15,6 +15,6 @@ module.exports = class InspectedObjects
     else if isString m
       m
     else if isFunction m
-      inspectedObjectLiteral "#{m}".slice 0, 1000
+      inspectedObjectLiteral "#{m}".slice 0, 5 * 80
     else
       m
