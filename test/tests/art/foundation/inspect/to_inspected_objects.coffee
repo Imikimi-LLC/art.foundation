@@ -4,10 +4,10 @@ Foundation = require "art-foundation"
 
 suite "Art.Foundation.Inspect.toInspectedObjects", ->
   test "toInspectedObjects 'hi'", ->
-    assert.eq toInspectedObjects('hi'), 'hi'
+    assert.eq toInspectedObjects('hi'), inspectedObjectLiteral '"hi"'
 
   test "toInspectedObjects function", ->
-    assert.eq toInspectedObjects((a)->), inspectedObjectLiteral 'function(1 argument)'
+    assert.eq toInspectedObjects((a)->), inspectedObjectLiteral 'function (a) {}'
 
   test "toInspectedObjects a:1", ->
     assert.eq toInspectedObjects(a:1), a: 1
@@ -27,7 +27,7 @@ suite "Art.Foundation.Inspect.toInspectedObjects", ->
       ),
       a: inspectedObjectLiteral "abc"
 
-  test "toInspectedObjects twice shouldn't change result", ->
+  test "toInspectedObjects twice doesn't change result", ->
     testStuff =
       string: "my string"
       number: 123
@@ -37,3 +37,10 @@ suite "Art.Foundation.Inspect.toInspectedObjects", ->
     once = toInspectedObjects testStuff
     twice = toInspectedObjects once
     assert.eq once, twice
+
+    assert.eq once,
+      string:       inspectedObjectLiteral '"my string"'
+      number:       123
+      literal:      inspectedObjectLiteral "my literal"
+      nestedObject: a: 1, b: 2
+      nestedArray:  [1, 2]

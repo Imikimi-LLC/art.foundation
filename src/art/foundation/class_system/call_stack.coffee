@@ -3,7 +3,8 @@
 
 # TODO: switch to using https://github.com/stacktracejs/stacktrace.js
 module.exports = class CallStack
-  @errorToString: (error) -> error?.error || error?.message || (isString(error) && error) || inspect error
+  @errorToString: (error) ->
+    error?.error || error?.message || (isString(error) && error) || Neptune.Art.Foundation.formattedInspect error
   @CallStackLine: class CallStackLine
     @getter: (map) ->
       Object.defineProperty @::, prop, {get: getter, configurable: yes} for prop, getter of map

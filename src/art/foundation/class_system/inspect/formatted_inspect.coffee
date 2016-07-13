@@ -80,6 +80,8 @@ formattedInspectRecursive = (m, maxLineLength) ->
       """
       #{indentedInspectedArray.join "\n"}
       """
+  else if isString m
+    m
   else
     inspect m
 

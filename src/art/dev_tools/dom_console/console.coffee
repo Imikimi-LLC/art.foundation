@@ -6,13 +6,11 @@ getInspectedObjects member method. For more info, see base_object.coffee
 
 require "!style!css!./style.css" if self.document
 
-{$$} = require "art-foundation/src/extlib/node_list" if self.window
-
 Foundation = require 'art-foundation'
 Atomic = require 'art-atomic'
 ToolBar = require './tool_bar'
 
-{color, Color, point, Point, matrix, Matrix, rect, Rectangle} = Atomic
+{color, Color, point} = Atomic
 {
   BaseObject, inspect, clone, merge, Map, nextTick, timeout, flatten,
   isArray, isString, isFunction

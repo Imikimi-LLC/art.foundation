@@ -132,6 +132,7 @@ module.exports = class Inspector
         obj.inspect @
       else
         @put obj.inspect()
+    else if obj instanceof RegExp                           then @put "#{obj}"
     else if isObject(obj) || isFunction(obj)                then @inspectObject obj
     else                                                         @put "#{obj}"
 

@@ -13,11 +13,16 @@ suite "Art.Foundation.Inspect.formattedInspect.singleLine", ->
       log inspect: -> str
       log input
       log o
-      assert.eq o, out
+      assert.match o, out
 
-  testFI ((a)->), 'function(1 argument)'
+  testFI ((a)->), 'function (a) {}'
   testFI a:1, "a: 1"
-  testFI inspect:(->'inspectOutput'), "inspect: inspect(0 arguments)"
+  testFI /hi/, "/hi/"
+  testFI inspect:(->'inspectOutput'), ///
+    inspect.*function
+    (.|\n)*
+    inspectOutput
+    ///
   testFI [], "[] "
   testFI ['string', foo: 'bar'], "\"string\", foo: \"bar\""
   testFI [1], "[] 1"
@@ -70,9 +75,9 @@ suite "Art.Foundation.Inspect.formattedInspect.multiLine", ->
       foo: "B"
       bar: "C"
     ]), """
-    "A"
-    foo: "B"
-    bar: "C"
+    A
+    foo: B
+    bar: C
     """
 
   testFIMultiLine [

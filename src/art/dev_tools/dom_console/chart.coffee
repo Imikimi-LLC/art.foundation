@@ -1,4 +1,3 @@
-
 Atomic = require 'art-atomic'
 Foundation = require 'art-foundation'
 {point, color, rect, Matrix} = Atomic
