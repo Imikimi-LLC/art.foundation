@@ -21,7 +21,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "neptune-namespaces --std;webpack-dev-server -d --progress",
+    "test": "neptune-namespaces --std; webpack-dev-server -d --progress",
     "test-in-node": "neptune-namespaces --std;mocha -u tdd --compilers coffee:coffee-script/register",
     "nn": "neptune-namespaces --std"
   },
