@@ -112,6 +112,37 @@ module.exports = class ArtPromise #extends Promise
       - invoking serializedF queues f in this serializer instance's sequence via @then
     IN: any function with any signature
     OUT: (f's signature) -> promise.then (fResult) ->
+
+    Example with Comparison:
+
+      # all asyncActionReturningPromise(element)s get called immediately
+      # and may complete randomly at some later event
+      myArray.forEach (element) ->
+        asyncActionReturningPromise element
+
+      # VS
+
+      # asyncActionReturningPromise(element) only gets called
+      # after the previous call completes.
+      # If a previous call failes, the remaining calls never happen.
+      serializer = new Promise.Serializer
+      myArray.forEach serializer.serialize (element) ->
+        asyncActionReturningPromise element
+
+      # bonus, you can do things when all the promises complete:
+      serializer.then =>
+
+      # or if anything fails
+      serializer.catch =>
+
+      # VS - shortcut
+
+      # Just insert "Promise.serialize" before your forEach function to ensure serial invocations.
+      # However, you don't get the full functionality of the previous example.
+      myArray.forEach Promise.serialize (element) ->
+        asyncActionReturningPromise element
+
+
     ###
     serialize: (f) ->
       =>
@@ -123,6 +154,12 @@ module.exports = class ArtPromise #extends Promise
     then: (f, rejected) -> @_lastPromise = @_lastPromise.then f, rejected
 
     catch: (f) -> @_lastPromise = @_lastPromise.catch f
+
+    # ignore previous errors, always do f after previous successes or failures complete.
+    always: (f) ->
+      @_lastPromise = @_lastPromise
+      .catch => null
+      .then f
 
   ###
   OUT: serializedF = -> Promise.resolve f arguments...

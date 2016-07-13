@@ -123,6 +123,14 @@ suite "Art.Foundation.Promise.Serializer", ->
       assert.eq order, [0, 1, 2]
       assert.eq delaysUsed, delays
 
+  test "always", ->
+    serializer = new Promise.Serializer
+    serializer.then -> throw "oh no!"
+    serializer.always -> "oh, ok!"
+    serializer.then (out)-> assert.eq out, "oh, ok!"
+    serializer.always -> "oh, ok!!!"
+    serializer.then (out)-> assert.eq out, "oh, ok!!!"
+
   test "serializer with forEach", ->
     count = 0
     delays = [100, 0, 10]
