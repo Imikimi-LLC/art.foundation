@@ -1,4 +1,4 @@
-Inspect = require './inspect'
+Inspect = require './inspect/namespace'
 {callStack} = require './call_stack'
 
 module.exports = class Log

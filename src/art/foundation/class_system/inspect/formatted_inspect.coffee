@@ -1,6 +1,5 @@
 {isString, isPlainObject, isPlainArray, max, pad, isFunction} = require '../../standard_lib'
 {inspect} = require './inspector'
-{log} = require '../log'
 {toInspectedObjects} = require './to_inspected_objects'
 
 niceNodeInspectIndent = '  '
@@ -85,4 +84,5 @@ formattedInspectRecursive = (m, maxLineLength) ->
   else
     inspect m
 
-module.exports = (m, maxLineLength = 80) -> formattedInspectRecursive toInspectedObjects(m), maxLineLength
+module.exports = class FormattedInspect
+  @formattedInspect: (m, maxLineLength = 80) -> formattedInspectRecursive toInspectedObjects(m), maxLineLength
