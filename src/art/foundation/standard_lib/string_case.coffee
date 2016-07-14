@@ -1,3 +1,4 @@
+{compactFlatten} = require './array_compact_flatten'
 module.exports = class StringCase
 
   @capitalize: (str) ->
@@ -6,15 +7,29 @@ module.exports = class StringCase
   @decapitalize: (str) ->
     str.charAt(0).toLowerCase() + str.slice 1
 
+  @getCodeWords: (str) ->
+    _words = str.match /[a-zA-Z][a-zA-Z0-9]*/g
+    words = for word in _words
+      word.match /[A-Z]+[a-z0-9]*|[a-z0-9]+/g
+
+    # Neptune.Art.Foundation.log
+    #   getCodeWords:
+    #     _words: _words
+    #     words: words
+    compactFlatten words
+
+  @getLowerCaseCodeWords: (str) =>
+    word.toLowerCase() for word in @getCodeWords str
+
   # lowerCamelCase or snake_case to UpperCamelCase
   @upperCamelCase: (str) =>
-    (@capitalize word for word in str.split '_').join ""
+    (@capitalize word for word in @getLowerCaseCodeWords str).join ""
 
   # UpperCamelCase or snake_case to lowerCamelCase
   @lowerCamelCase: (str) =>
-    words = str.split '_'
-    "#{@decapitalize words[0]}#{(@capitalize words[i] for i in [1...words.length]).join ""}"
+    words = @getLowerCaseCodeWords str
+    "#{@decapitalize words[0]}#{(@capitalize word for word in words.slice 1).join ""}"
 
   # UpperCamelCase or lowerCamelCase to snake_case
   @snakeCase: (str) =>
-    (word.toLowerCase() for word in str.split /(?=[A-Z])/).join "_"
+    (@getLowerCaseCodeWords str).join "_"
