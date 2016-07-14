@@ -151,15 +151,34 @@ module.exports = class ArtPromise #extends Promise
 
     # invoke f after the last serialized invocation's promises are resolved
     # OUT: promise.then (fResult) ->
-    then: (f, rejected) -> @_lastPromise = @_lastPromise.then f, rejected
+    then: (resolved, rejected) -> @_lastPromise = @_lastPromise.then resolved, rejected
 
-    catch: (f) -> @_lastPromise = @_lastPromise.catch f
+    catch: (rejected) -> @_lastPromise = @_lastPromise.catch rejected
 
     # ignore previous errors, always do f after previous successes or failures complete.
     always: (f) ->
       @_lastPromise = @_lastPromise
       .catch => null
       .then f
+
+    ###
+    OUT: promise that resolves / rejects only when there are no more
+      pending tasks queued with the serializer.
+
+      .then (lastResult) ->
+      .catch (lastError) ->
+
+    NOTE: allDonePromise could complete, then more tasks could be queued with the serializer.
+      Promises can't be resolved/rejected twice, so when the more-tasks complete, the first
+      allDonePromise won't do anything.
+      However, you can call allDonePromise again once the tasks are queued and get notified
+      when THEY are done.
+    ###
+    allDonePromise: ->
+      currentLastPromise = @_lastPromise
+      currentLastPromise
+      .then (lastResult) => if currentLastPromise == @_lastPromise then lastResult else @allDonePromise()
+      .catch (lastError) => if currentLastPromise == @_lastPromise then throw lastError else @allDonePromise()
 
   ###
   OUT: serializedF = -> Promise.resolve f arguments...
