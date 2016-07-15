@@ -26,6 +26,14 @@ module.exports = class InspectedObjects
       else
         escapeJavascriptString m
     else if isFunction m
-      inspectedObjectLiteral "#{m}".slice 0, 5 * 80
+      functionString = "#{m}"
+      reducedFunctionString = functionString
+      .replace /\s+/g, ' '
+      .replace /^function (\([^)]*\))/, "$1 ->"
+      .replace /^\(\)\s*/, ''
+      inspectedObjectLiteral if reducedFunctionString.length < 80
+        reducedFunctionString
+      else
+        functionString.slice 0, 5 * 80
     else
       m
