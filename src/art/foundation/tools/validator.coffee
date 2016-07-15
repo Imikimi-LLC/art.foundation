@@ -4,27 +4,73 @@ StandardLib = require '../standard_lib'
   merge, log, BaseObject, shallowClone
   isNumber, isString, isPlainObject, isPlainArray
   Promise
+  isBoolean
 } = StandardLib
 
 {BaseObject} = require '../class_system'
 
-idRegExpStr = "[a-z0-9]+"
-isId = (v) -> isString(v) && v.match ///^#{idRegExpStr}$///i
+isId = (v) -> isString(v) && v.match ///^[-_a-z0-9]+$///i
 isHexColor = (v) -> isString(v) && v.match /^#([a-f0-9]{3})|([a-f0-9]{6})/i
 
 module.exports = class Validator extends BaseObject
+
+  ###
+  @dataTypes only includes the Standard Json types:
+    except 'null':
+      no field has the type of 'null'
+      instead, it has some other type and can be 'null' unless it is 'required'
+  ###
+  @dataTypes: dataTypes =
+    boolean:    validate: (a) -> isBoolean a
+    number:     validate: (a) -> isNumber a
+    string:     validate: (a) -> isString a
+    object:     validate: (a) -> isPlainObject a
+    array:      validate: (a) -> isPlainArray a
+
+  booleanDataType = "boolean"
+  numberDataType =  "number"
+  stringDataType =  "string"
+  objectDataType =  "object"
+  arrayDataType =   "array"
+
+  ###
+  standard FieldType props:
+    validate: (v) -> true/false
+    preprocess: (v1) -> v2
+    required: true/false
+    type: one of @dataTypes, default: 'string'
+
+  You can add your own, too, but they are ignored by this class.
+  ###
   # fieldTypes are just easy, pre-defined Objects with the right properties:
   # Usage:
   #   This:           @fields webPage: @fieldTypes.id
   #   is the same as: @fields webPage: validate: (v) -> isId v
   #   and this:       @fields webPage: type: "id"
   @fieldTypes: fieldTypes =
-    id:     required: true, validate: (v) -> isId v
-    color:  validate: (v) -> isHexColor v
-    number: validate: (v) -> isNumber v
+    boolean:  type: booleanDataType
+    number:   type: numberDataType
+    string:   {}
+    object:   type: objectDataType
+    array:    type: arrayDataType
+
+    count:    type: numberDataType
+
+    id:
+      required: true
+      validate: (v) -> isId v
+
     date:
       validate:   (v) -> isString(v) || (v instanceof Date)
       preprocess: (v) -> if isString(v) then new Date v else v
+
+    timestamp: # milliseconds since 1970; to get the current timestamp: Date.now()
+      type: numberDataType
+      validate:   (v) -> isNumber(v) || (v instanceof Date)
+      preprocess: (v) -> if v instanceof Date then v - 0 else v
+
+    color:
+      validate: (v) -> isHexColor v
 
     email:
       validate: (v) -> isString(v) && v.trim().match emailRegexp
@@ -34,15 +80,13 @@ module.exports = class Validator extends BaseObject
       validate: (v) -> isString(v) && v.match urlRegexp
       preprocess: (v) -> normalizeUrl v # downcase protocol and domain name
 
-    boolean:  validate: (v) -> v == true || v == false
-    count:    validate: (v) -> isNumber v
-    object:   validate: (v) -> isPlainObject v
-    string:   validate: (v) -> isString v
-    array:    validate: (v) -> isPlainArray v
-
     trimmedString:
-      validate: (v) -> isString v
       preprocess: (v) -> v.trim()
+
+  # apply defaults
+  for k, v of fieldTypes
+    v.type ||= stringDataType
+    v.validate ||= dataTypes[v.type].validate
 
   constructor: (fieldDeclarationMap) ->
     @_fieldProps = {}
