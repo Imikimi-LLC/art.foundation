@@ -343,14 +343,25 @@ module.exports = class BaseObject
   ######################################################
   # Class Info
   ######################################################
-  @classGetter
-    classPath:      -> @namespace.namespacePath
-    classPathArray: -> @namespacePathArray ||= @getClassPath().split "."
-    classPathName:  ->
-      if p = @namespace?.namespacePath
-        p + "." + @getClassName()
-      else
-        @getClassName()
+  @getNamespacePath: ->
+    if !@namespacePath
+      # no namespacePath
+      @namespacePath = "#{@getName()} extends #{@__super__.class.getNamespacePath()}"
+    else if @__super__?.class.getNamespacePath?() == @namespacePath
+      # namespacePath was inherited
+      @namespacePath = "#{@getName()} extends #{@namespacePath}"
+    else
+      @namespacePath
+
+  # DEPRICATED - use NN stuff
+  # @classGetter
+  #   classPath:      -> @namespace.namespacePath
+  #   classPathArray: -> @namespacePathArray ||= @getClassPath().split "."
+  #   classPathName:  ->
+  #     if p = @namespace?.namespacePath
+  #       p + "." + @getClassName()
+  #     else
+  #       @getClassName()
 
   @getClassName: (klass = @) ->
     klass.getName?() || klass.name
@@ -445,11 +456,11 @@ module.exports = class BaseObject
       @getInspectedObjects()
 
     inspectedObjects: ->
-      inspectedObjectLiteral "<#{@class.namespacePath}>"
+      inspectedObjectLiteral "<#{@class.getNamespacePath()}>"
 
   @classGetter
     inspectedObjects: ->
-      inspectedObjectLiteral @namespacePath
+      inspectedObjectLiteral @getNamespacePath()
 
   ######################################################
   # Class Methods
