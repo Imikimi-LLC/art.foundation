@@ -1,51 +1,70 @@
 {assert} = Chai = require 'chai'
 Foundation = require 'art-foundation'
-{log, eq, inspect, formattedInspect, floatEq, compactFlatten, escapeRegExp, isString} = Foundation
+{
+  log, eq, inspect, formattedInspect, floatEq, compactFlatten, escapeRegExp, isString
+  Types
+  inspectedObjectLiteral
+  wordsArray
+  compactFlattenJoin
+} = Foundation
 
 {assert} = Chai
 
-indent = (str) ->
-  '  ' + str.replace /\n/g, "\n  "
+indent = (str) -> '  ' + str.replace /\n/g, "\n  "
+
+addTester = (name, tester) ->
+  assert[name] = switch tester.length
+    when 1
+      (testValue, context) ->
+        unless tester testValue
+          failWithExpectedMessage context,
+            inspectedObjectLiteral name
+            "to be true for"
+            testValue
+    when 2
+      (value1, value2, context) ->
+        unless tester value1, value2
+          failWithExpectedMessage context,
+            value1
+            "to be #{name}"
+            value2
+    else throw new Error "unsupported tester - expecting 1 or 2 args. name: #{name}, tester #{tester}"
+
+maxLength = 30
+format = (val) ->
+  val = formattedInspect val, maxLength
+  if val.length >= maxLength || val.match /\n/
+    "\n\n#{indent val}\n"
+  else
+    val
 
 failWithExpectedMessage = (context, a, verb, b, verb2, c) ->
-  assert.fail a, b, (compactFlatten [
-    context
-    "expected"
-    indent formattedInspect a
-    "to #{verb}"
-    indent formattedInspect b
-    if verb2
-      [
-        "and to #{verb}"
-        indent formattedInspect c
-      ]
-  ]).join("\n\n") + "\n"
+  assert.fail a, b,compactFlattenJoin " ", [
+    "expected #{format a}"
+    "#{verb} #{format b}"
+    "and #{verb} #{format c}" if verb2
+    "\nContext: #{context}\n" if context
+  ]
 
-assert.eq      = (a, b, context) -> failWithExpectedMessage context, a, "eq",      b if !eq a, b, true
-assert.floatEq = (a, b, context) -> failWithExpectedMessage context, a, "floatEq", b if !floatEq a, b
-assert.neq     = (a, b, context) -> failWithExpectedMessage context, a, "not eq",  b if eq a, b, true
-
+# generalize this if we have more assert functions with TWO binary tests
 assert.within = (a, b, c, context) ->
   if a && a.gte && a.lte
-    failWithExpectedMessage context, a, "be gte", b, "be lte", c unless a.gte(b) and a.lte(c)
+    failWithExpectedMessage context, a, "to be gte", b, "to be lte", c unless a.gte(b) and a.lte(c)
   else
-    failWithExpectedMessage context, a, "be >=",  b, "be <=" , c unless a >= b and a <=c
+    failWithExpectedMessage context, a, "to be >=",  b, "to be <=" , c unless a >= b and a <=c
 
-assert.instanceof = (klass, obj, context) ->
-  failWithExpectedMessage context, obj, "be an instance of", klass unless obj instanceof klass
-
+# returns promise
+# Either use as last line of test, or follow with .then ->
 assert.rejects = (promise, context) ->
   context || = "The promise"
   str = "#{context} should be rejected."
   promise.then -> Promise.reject str
   .catch (v) -> throw v if v == str
 
-assert.match  = (a, b, context) ->
-  b = escapeRegExp b if isString b
-  failWithExpectedMessage context, a, "match", b if not a.match b
-
-assert.doesNotMatch = (a, b, context) ->
-  b = escapeRegExp b if isString b
-  failWithExpectedMessage context, a, "not match", b if a.match b
+addTester name, tester for name, tester of Types when name.match /^is/
+addTester name, Foundation[name] for name in wordsArray "gt gte lte lt eq neq floatEq"
+addTester "instanceof", (klass, obj) -> obj instanceof klass
+addTester "match",    (a) -> a.match if isString a then escapeRegExp a else a
+addTester "notMatch", (a) -> !a.match if isString a then escapeRegExp a else a
 
 module.exports = Chai

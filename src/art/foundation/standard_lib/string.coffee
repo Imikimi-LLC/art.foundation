@@ -3,12 +3,33 @@ Types          = require './types'
 {wordsRegex} = require './regexp'
 {intRand} = FoundationMath
 {isString, isNumber, isPlainObject, isArray} = Types
+{compactFlatten} = require './array_compact_flatten'
 
 escapedQuoteRegex    = /[\\]["]/
 escapedNonQuoteRegex = /[\\][^"]/
 {floor} = Math
 
 module.exports = class StringExtensions
+
+  ###
+  IN: an array and optionally a string, in any order
+    joiner: the string
+    array-to-flatten-and-join: the array
+
+  OUT:
+    compactFlatten(array).join joiner || ""
+
+  NOTE: this uses Ruby's default value for joining - the empty array, not ',' which is JavaScripts
+  ###
+  @compactFlattenJoin: (a, b) ->
+    array = null
+    joiner = if isString a
+      array = b
+      a
+    else
+      array = a
+      b || ""
+    compactFlatten(array).join joiner
 
   @wordsArray: (str) -> str.match wordsRegex
   @wordArray: @wordsArray

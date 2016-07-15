@@ -57,9 +57,13 @@ module.exports = class Types
     )
 
   @isJsonAtomicType: isJsonAtomicType = (a) -> isString(a) || isNumber(a) || a == true || a == false || a == null
-  @isJsonType: -> isJsonAtomicType(a) || isPlainObject(a) || isPlainArray(a)
+  @isJsonType: (a) -> isJsonAtomicType(a) || isPlainObject(a) || isPlainArray(a)
 
 
+  @gt:  (a, b) -> if isFunction a.gt  then a.gt b else a > b
+  @lt:  (a, b) -> if isFunction a.lt  then a.lt b else a < b
+  @gte: (a, b) -> if isFunction a.gte then a.gte b else a >= b
+  @lte: (a, b) -> if isFunction a.lte then a.lte b else a <= b
 
   ###
   like RubyOnRails#present:

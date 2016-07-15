@@ -6,6 +6,7 @@ Foundation = require "art-foundation"
   consistentJsonStringify
   splitRuns
   humanFriendlyShorten
+  compactFlattenJoin
 } = Foundation
 
 suite "Art.Foundation.String.misc", ->
@@ -17,6 +18,9 @@ suite "Art.Foundation.String.misc", ->
   test "allIndexes", ->
     str = "hi there mom. How are    you?"
     assert.eq allIndexes(str, /\s+/g), [2, 8, 13, 17, 21]
+
+  test "compactFlattenJoin", ->
+    assert.eq "a messy mess", compactFlattenJoin " ", [["a"], null, undefined, [], "messy", [[["mess"]]]]
 
 suite "Art.Foundation.String.pluralize", ->
 
