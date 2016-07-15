@@ -347,9 +347,9 @@ module.exports = class BaseObject
     if !@namespacePath
       # no namespacePath
       @namespacePath = "#{@getName()} extends #{@__super__.class.getNamespacePath()}"
-    else if @__super__?.class.getNamespacePath?() == @namespacePath
+    else if @__super__?.class.namespacePath == @namespacePath
       # namespacePath was inherited
-      @namespacePath = "#{@getName()} extends #{@namespacePath}"
+      @namespacePath = "#{@getName()} extends #{@__super__.class.getNamespacePath()}"
     else
       @namespacePath
 
