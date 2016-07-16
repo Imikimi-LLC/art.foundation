@@ -131,7 +131,7 @@ module.exports = class BaseObject
 
       hotReloaded = liveClass != hotUpdatedFromClass
       hotReloaded && Log.log "Foundation.BaseObject: subClass hot-reload":
-        subClass: liveClass.getClassPathName()
+        subClass: liveClass.getNamespacePath()
         version: classModuleState.hotReloadVersion
 
       liveClass.imprintFromClass hotUpdatedFromClass
@@ -397,13 +397,13 @@ module.exports = class BaseObject
   # Example 1:
   inspect: (inspector) ->
     return Foundation.inspect @ unless inspector
-    inspector.put @getClassPathName()
+    inspector.put @getNamespacePath()
 
   # Example 2:
   inspect: ->
-    @getClassPathName()
+    @getNamespacePath()
   ###
-  @inspect: -> @getClassPathName()
+  @inspect: -> @getNamespacePath()
 
   inspect: -> "<#{@class.namespacePath}>"
 
@@ -493,9 +493,7 @@ module.exports = class BaseObject
     className: -> @class.getClassName()
     class: -> @constructor
     keys: -> Object.keys @
-    classPathArray: -> @class.getClassPathArray()
-    classPath:      -> @class.getClassPath()
-    classPathName:  -> @class.getClassPathName()
+    namespacePath:  -> @class.getNamespacePath()
     classPathNameAndId: -> "#{@classPathName}:#{@objectId}"
     uniqueId: -> @__uniqueId ||= nextUniqueObjectId() # unique across all things
     objectId: -> @__uniqueId ||= nextUniqueObjectId() # number unique across objects

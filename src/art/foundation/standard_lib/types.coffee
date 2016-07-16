@@ -89,7 +89,7 @@ module.exports = class Types
 
   @objectName: objectName = (obj) ->
     if !obj then "" + obj
-    else if a = obj.getClassPathName?() then a
+    else if a = obj.getNamespacePath?() then a
     else if a = obj.classPathName then a
     else if obj.constructor == Object then "Object"
     else if isFunction obj then functionName obj

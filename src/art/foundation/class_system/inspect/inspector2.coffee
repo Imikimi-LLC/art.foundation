@@ -97,8 +97,8 @@ module.exports = class Inspector2 extends BaseObject
     else if isArray obj             then @inspectArray obj
     else if isClass obj             then new Inspected.Core objectName obj
     # else if isFunction obj
-    #   if isFunction obj.getClassPathName
-    #     new Inspected.Core obj.getClassPathName()
+    #   if isFunction obj.getNamespacePath
+    #     new Inspected.Core obj.getNamespacePath()
     #   else
     #     new Inspected.Core objectName obj
     else if isHTMLImageElement obj  then @inspectHTMLImageElement obj
