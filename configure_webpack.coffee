@@ -1,9 +1,41 @@
+StandardLib = require './src/art/foundation/standard_lib'
+{peek, deepMerge, consistentJsonStringify} = StandardLib
+
 path = require "path"
 NeptuneNamespacesGenerator = require 'neptune-namespaces/generator'
 
 runNeptuneNamespaces = require './standard_neptune_namespace_generators'
 
-module.exports = ({entries, outputPath, dirname}, rest...) ->
+ChildProcess = require 'child_process'
+
+standardNpmPackageProps =
+  license: 'ISC'
+  name: peek process.cwd().split("/")
+  version: ChildProcess.execSync("git describe").toString().match(/\d+\.\d+\.\d+/)[0]
+  dependencies:
+    'neptune-namespaces': '^0.5.5'
+    'chai': '^3.5.0'
+    'coffee-loader': '^0.7.2'
+    'coffee-script': '^1.10.0'
+    'css-loader': '^0.23.1'
+    'json-loader': '^0.5.4'
+    'mocha': '^2.5.3'
+    'script-loader': '^0.7.0'
+    'sourcemapped-stacktrace': '^1.1.3'
+    'style-loader': '^0.13.1'
+    'webpack': '^1.13.1'
+    'webpack-dev-server': '^1.14.0'
+  scripts:
+    test:     'neptune-namespaces --std; webpack-dev-server -d --progress'
+    dev:      'neptune-namespaces --std; webpack-dev-server -d --progress'
+    hot:      'neptune-namespaces --std; webpack-dev-server --hot --inline --progress'
+    nodeTest: 'neptune-namespaces --std;mocha -u tdd --compilers coffee:coffee-script/register'
+    nn:       'neptune-namespaces --std'
+
+fs = require('fs');
+
+module.exports = (options, rest...) ->
+  {entries, outputPath, dirname} = options
   outputPath ||= "dist"
   console.log "art-foundation: configure-webpack"
   console.log "  entries:    #{entries}"
@@ -13,6 +45,12 @@ module.exports = ({entries, outputPath, dirname}, rest...) ->
 
   entry = ArtWebpackConfigurator._transformEntries entries
   console.log ""
+  if npmPackage = options.package
+    npmPackage = deepMerge standardNpmPackageProps, npmPackage
+    contents = consistentJsonStringify npmPackage, "  "
+    console.log "writing: package.json"
+    console.log "contents:", contents
+    fs.writeFileSync "package.json", contents
 
   result =
     entry: entry
