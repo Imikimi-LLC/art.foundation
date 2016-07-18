@@ -86,6 +86,73 @@ suite "Art.Foundation.String.consistentJsonStringify", ->
     assert.eq '[1, "hi", null, true, false, {"bar": 2, "foo": 1}, [1, 2, 3]]'
     , consistentJsonStringify a
 
+suite "Art.Foundation.String.consistentJsonStringify.indent", ->
+  test "basic object", ->
+    obj =
+      foo: 123
+      bar: 456
+
+    assert.eq """
+      {
+        "bar": 456,
+        "foo": 123
+      }
+      """
+    , consistentJsonStringify obj, '  '
+
+  test "nested objects", ->
+    obj =
+      foo: one: 1, two: 2
+      bar: three: 3, four: 4
+
+    assert.eq """
+      {
+        "bar": {
+          "four": 4,
+          "three": 3
+        },
+        "foo": {
+          "one": 1,
+          "two": 2
+        }
+      }
+      """
+    , consistentJsonStringify obj, '  '
+
+  test "basic array", ->
+    obj = [
+      123
+      456
+    ]
+
+    assert.eq """
+      [
+        123,
+        456
+      ]
+      """
+    , consistentJsonStringify obj, '  '
+
+  test "nested arrays", ->
+    obj = [
+      [1, 2]
+      [3, 4]
+    ]
+
+    assert.eq """
+      [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ]
+      ]
+      """
+    , consistentJsonStringify obj, '  '
+
 suite "Art.Foundation.String.splitRuns", ->
   test "splitRuns ''", -> assert.eq [], splitRuns ''
   test "splitRuns ' '", -> assert.eq [[' ', 1]], splitRuns ' '

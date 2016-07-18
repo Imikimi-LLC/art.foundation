@@ -134,24 +134,52 @@ module.exports = class StringExtensions
     f result while result = regex.exec str
     null
 
-  @consistentJsonStringify: consistentJsonStringify = (object) ->
-    if object == false || object == true || object == null || isNumber object
+  standardIndent =
+    joiner: ', '
+    openObject: '{'
+    openArray: '['
+    closeObject: "}"
+    closeArray: "]"
+
+  @consistentJsonStringify: consistentJsonStringify = (object, indent) ->
+    out = if object == false || object == true || object == null || isNumber object
       "" + object
     else if isString object
       escapeJavascriptString object
-    else if isPlainObject object
-      "{" + (
-        for k in (Object.keys object).sort() when object[k] != undefined
-          escapeJavascriptString(k) + ": " + consistentJsonStringify object[k]
-      ).join(', ') +
-      "}"
-    else if isArray object
-      "[" +
-      (consistentJsonStringify v for v in object).join(', ') +
-      "]"
     else
-      console.error error = "invalid object type for Json. Expecting: null, false, true, number, string, plain-object or array", object
-      throw new Error error
+      indentObject = if indent
+        if typeof indent == "string"
+          joiner:       ",\n#{indent}"
+          openObject:   "{\n#{indent}"
+          openArray:    "[\n#{indent}"
+          closeObject:  "\n}"
+          closeArray:   "\n]"
+          totalIndent: indent
+          indent: indent
+        else
+          totalIndent:  totalIndent = indent.indent + lastTotalIndent = indent.totalIndent
+          joiner:       ",\n#{totalIndent}"
+          openObject:   "{\n#{totalIndent}"
+          openArray:    "[\n#{totalIndent}"
+          closeObject:  "\n#{lastTotalIndent}}"
+          closeArray:   "\n#{lastTotalIndent}]"
+          indent:       indent.indent
+
+      {joiner, openObject, openArray, closeObject, closeArray} = indentObject || standardIndent
+
+      if isPlainObject object
+        openObject + (
+          for k in (Object.keys object).sort() when object[k] != undefined
+            escapeJavascriptString(k) + ": " + consistentJsonStringify object[k], indentObject
+        ).join(joiner) +
+        closeObject
+      else if isArray object
+        openArray +
+        (consistentJsonStringify v, indentObject for v in object).join(joiner) +
+        closeArray
+      else
+        console.error error = "invalid object type for Json. Expecting: null, false, true, number, string, plain-object or array", object
+        throw new Error error
 
   @splitRuns = (str) ->
     return [] if str.length == 0

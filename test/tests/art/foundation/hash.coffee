@@ -11,6 +11,7 @@ Foundation = require "art-foundation"
   objectKeyCount
   compact
   plainObjectsDeepEq
+  deepMerge
 } = Foundation
 
 suite "Art.Foundation.Hash", ->
@@ -104,7 +105,35 @@ suite "Art.Foundation.Hash", ->
     b = objectWithout a, "cat", "frog"
     assert.eq true, a == b
 
-  suite "objectKeyCount", ->
-    test "objectKeyCount {}"        , -> assert.eq 0, objectKeyCount {}
-    test "objectKeyCount a:1"       , -> assert.eq 1, objectKeyCount a:1
-    test "objectKeyCount a:1, b:2"  , -> assert.eq 2, objectKeyCount a:1, b:2
+suite "Art.Foundation.Hash.objectKeyCount", ->
+  test "objectKeyCount {}"        , -> assert.eq 0, objectKeyCount {}
+  test "objectKeyCount a:1"       , -> assert.eq 1, objectKeyCount a:1
+  test "objectKeyCount a:1, b:2"  , -> assert.eq 2, objectKeyCount a:1, b:2
+
+suite "Art.Foundation.Hash.deepMerge", ->
+  test "same as merge", ->
+    a = foo: 1, bar: 2
+    b = bar: 3, baz: 4
+    assert.eq deepMerge(a, b), merge(a, b)
+
+  test "nested objects with the same key get merged", ->
+    a = foo: 1, bar: {one: 1, two: 2}
+    b = bad: "wolf"
+    c = bar: {two: 200, three: 3}, baz: 4
+    assert.neq deepMerge(a, b, c), merge(a, b, c)
+    assert.eq deepMerge(a, b, c),
+      foo: 1
+      bar: one: 1, two: 200, three: 3
+      baz: 4
+      bad: "wolf"
+
+
+  test "three level test", ->
+    a = bad: "wolf"
+    b = foo: 1, bar: baz: a: 123
+    c = foo: 1, bar: baz: b: 123
+    assert.neq deepMerge(a, b, c), merge(a, b, c)
+    assert.eq deepMerge(a, b, c),
+      bad: "wolf"
+      foo: 1
+      bar: baz: a: 123, b: 123

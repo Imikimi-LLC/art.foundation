@@ -1,4 +1,5 @@
 {compactFlatten} = require './array_compact_flatten'
+{isPlainObject} = require './types'
 
 module.exports = class Hash
   # http://jsperf.com/counting-object-properties/3
@@ -42,7 +43,7 @@ module.exports = class Hash
   keys, the value set in the result is the last object's in the list with that key.
 
   ###
-  @merge: => mergeInto {}, arguments
+  @merge: merge = => mergeInto {}, arguments
 
   ###
   The same as 'merge' with one difference:
@@ -60,6 +61,14 @@ module.exports = class Hash
       source = sources[i]
       result[k] = v for k, v of source
     result
+
+  @deepMerge: deepMerge = ->
+    list = compactFlatten arguments
+    out = merge list
+    for k, v of out
+      if isPlainObject v
+        out[k] = deepMerge (val[k] for val in list)
+    out
 
   # true if o2 has all the properties of o1 (possibly more, and possibly with different values including undefined or nul)
   @hasAllProps: (o1, o2) ->
