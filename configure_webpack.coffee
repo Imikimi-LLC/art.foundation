@@ -60,10 +60,9 @@ class ArtWebpackConfigurator
       entryConfig[entry] = ["./#{entry}"]
     @_selectEnties entryConfig
 
-
-
 module.exports = (options, rest...) ->
   {entries, outputPath, dirname} = options
+  dirname ||= process.cwd()
   outputPath ||= "dist"
   console.log "art-foundation: configure-webpack"
   console.log "  entries:    #{entries}"
