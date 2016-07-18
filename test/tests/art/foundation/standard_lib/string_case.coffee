@@ -17,6 +17,7 @@ suite "Art.Foundation.String.Case", ->
     assert.eq "Foo", capitalize "Foo"
     assert.eq "Foo bar", capitalize "foo bar"
 
+
 testCodeCase = (testIn) ->
   suite "Art.Foundation.String.Case.getLowerCaseCodeWords", ->
     test "getLowerCaseCodeWords #{formattedInspect testIn} >> ['foo', 'bar', 'baz']", ->
