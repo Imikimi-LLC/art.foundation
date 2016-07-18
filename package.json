@@ -7,9 +7,7 @@
     "atob": "^2.0.3",
     "neptune-namespaces": "^0.5.5",
     "promise-polyfill": "^5.2.1",
-    "art-atomic": "git://github.com/Imikimi-LLC/art-atomic.git"
-  },
-  "devDependencies": {
+    "art-atomic": "git://github.com/Imikimi-LLC/art-atomic.git",
     "chai": "^3.5.0",
     "coffee-loader": "^0.7.2",
     "coffee-script": "^1.10.0",
