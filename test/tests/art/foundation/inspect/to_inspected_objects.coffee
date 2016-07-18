@@ -7,7 +7,7 @@ suite "Art.Foundation.Inspect.toInspectedObjects", ->
     assert.eq toInspectedObjects('hi'), inspectedObjectLiteral '"hi"'
 
   test "toInspectedObjects function", ->
-    assert.eq toInspectedObjects((a)->), inspectedObjectLiteral 'function (a) {}'
+    assert.eq toInspectedObjects((a)->), inspectedObjectLiteral '(a) -> {}'
 
   test "toInspectedObjects a:1", ->
     assert.eq toInspectedObjects(a:1), a: 1
