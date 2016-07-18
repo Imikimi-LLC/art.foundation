@@ -1,15 +1,14 @@
 StandardLib = require './src/art/foundation/standard_lib'
 {peek, deepMerge, consistentJsonStringify} = StandardLib
 fs = require 'fs'
-ChildProcess = require 'child_process'
 path = require "path"
 runNeptuneNamespaces = require './standard_neptune_namespace_generators'
-
 
 standardNpmPackageProps =
   license: 'ISC'
   name: peek process.cwd().split("/")
-  version: ChildProcess.execSync("git describe").toString().match(/\d+\.\d+\.\d+/)[0]
+  version: JSON.parse(fs.readFileSync("package.json").toString()).version
+  author: "Shane Brinkman-Davis Delamore, Imikimi LLC"
   dependencies:
     'neptune-namespaces': '^0.5.5'
     'chai': '^3.5.0'
