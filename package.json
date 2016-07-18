@@ -16,7 +16,7 @@
     "webpack": "^1.13.1",
     "webpack-dev-server": "^1.14.0"
   },
-  "description": "Foundation classes for the Art framework. Javascript extensions",
+  "description": "Foundation classes for the Art framework. Javascript extensions.",
   "license": "ISC",
   "name": "art-foundation",
   "scripts": {
