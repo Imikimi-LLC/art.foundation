@@ -1,5 +1,5 @@
 Foundation = require 'art-foundation'
-{createObjectTreeFactories, wordsArray, lowerCamelCase, log, BaseObject, mergeInto, isPlainObject} = Foundation
+{createObjectTreeFactories, wordsArray, lowerCamelCase, log, BaseObject, mergeInto, isPlainObject, isString} = Foundation
 
 testNamesString = "Alice Bill John SallyMae"
 testNames = wordsArray testNamesString
@@ -75,18 +75,30 @@ suite "Art.Foundation.ObjectTreeFactory.using factories", ->
     tree = Alice info:{a:123}, Bill(), info:{b:456}
     assert.eq tree.plainObjects, ["alice", info:{b:456}, ["bill"]]
 
-suite "Art.Foundation.ObjectTreeFactory.using factories with custom mergePropsInto", ->
+suite "Art.Foundation.ObjectTreeFactory.using factories with custom mergePropsInto and preprocessElement", ->
 
-  {Alice, Bill, John, SallyMae} = createObjectTreeFactories testNamesLowerCamelCased, (name, props, children) ->
-    new MyObject name, props, children
-  , ''
-  , (into, source) ->
-    for k, v of source
-      into[k] = if isPlainObject v
-        mergeInto into[k], v
+  {Alice, Bill, John, SallyMae} = createObjectTreeFactories
+    mergePropsInto: (into, source) ->
+      log mergePropsInto: into, into, source: source
+      for k, v of source
+        into[k] = if isPlainObject v
+          mergeInto into[k], v
+        else
+          v
+
+    preprocessElement: (element) ->
+      if isString element
+        text: element
       else
-        v
+        element
+
+    testNamesLowerCamelCased
+    (name, props, children) -> new MyObject name, props, children
 
   test "Alice info:{a:123}, Bill(), info:{b:456}", ->
     tree = Alice info:{a:123}, Bill(), info:{b:456}
     assert.eq tree.plainObjects, ["alice", info:{a:123, b:456}, ["bill"]]
+
+  test "Alice info:{a:123}, 'hi'", ->
+    tree = Alice info:{a:123}, 'hi'
+    assert.eq tree.plainObjects, ["alice", info:{a:123}, text: 'hi']

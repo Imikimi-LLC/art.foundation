@@ -129,19 +129,20 @@ module.exports = class DomElementFactories
 
   ###
   @createDomElementFactories: (list...) =>
-    @createObjectTreeFactories list, (nodeName, props, children) =>
-      element = document.createElement nodeName
-      @setDomElementProps element, props
-      @setDomElementChildren element, children
+    @createObjectTreeFactories
+      mergePropsInto: (into, source) ->
+        for k, v of source
+          into[k] = if k == "style"
+            mergeInto into[k], v
+          else
+            v
+      list
+      (nodeName, props, children) =>
+        element = document.createElement nodeName
+        @setDomElementProps element, props
+        @setDomElementChildren element, children
 
-      element
-    , ''
-    , (into, source) ->
-      for k, v of source
-        into[k] = if k == "style"
-          mergeInto into[k], v
-        else
-          v
+        element
 
   @allDomElementNames: "
     A Abbr Acronym Address Applet Area Article Aside Audio B Base BaseFont Bdi Bdo
