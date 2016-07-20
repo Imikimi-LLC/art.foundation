@@ -19,6 +19,12 @@ module.exports = class Hash
 
   @objectLength: objectKeyCount
 
+  @toObject: ->
+    out = {}
+    list = compactFlatten arguments
+    out[list[i]] = list[i+1] for i in [0...list.length] by 2
+    out
+
   ###
   IN:
     inputArray: any array

@@ -176,6 +176,7 @@ module.exports = class ArrayExtensions
       array
 
   @arrayWithout: (array, index, amount = 1) =>
+    index = array.length - 1 unless index?
     @remove array.slice(), index, amount
 
   @arrayWithoutValue: (array, value) =>

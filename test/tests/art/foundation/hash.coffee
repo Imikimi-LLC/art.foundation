@@ -12,9 +12,10 @@ Foundation = require "art-foundation"
   compact
   plainObjectsDeepEq
   deepMerge
+  toObject
 } = Foundation
 
-suite "Art.Foundation.Hash", ->
+suite "Art.Foundation.Hash.merge", ->
 
   test "merge(a, b)", ->
     a = foo:1
@@ -92,6 +93,7 @@ suite "Art.Foundation.Hash", ->
     assert.neq a, res
     assert.neq b, res
 
+suite "Art.Foundation.Hash.objectWithout", ->
 
   test "objectWithout", ->
     a = foo:1, bar:2, fooz:3, baz:4
@@ -104,6 +106,43 @@ suite "Art.Foundation.Hash", ->
     a = foo:1, bar:2, fooz:3, baz:4
     b = objectWithout a, "cat", "frog"
     assert.eq true, a == b
+
+suite "Art.Foundation.Hash.toObject", ->
+  test "simple key-value", ->
+    assert.eq (toObject 123, "foo"), 123: "foo"
+
+  test "two key-values", ->
+    assert.eq (toObject 123, "foo", 456, "bar"), 123: "foo", 456: "bar"
+
+  test "array of pairs", ->
+    assert.eq
+      foo: 1
+      bar: 2
+      baz: 3
+      bat: 4
+    , toObject [
+      ["baz", 3]
+      ["foo", 1]
+      ["bat", 4]
+      ["bar", 2]
+    ]
+
+  test "compactFlatten IN DA HOUSE", ->
+    assert.eq
+      foo: 1
+      bar: 2
+      baz: 3
+      bat: 4
+    , toObject [
+      null
+      ["baz", 3]
+      [
+        ["foo", 1]
+        ["bat", 4]
+      ]
+      undefined
+      [[["bar", 2]]]
+    ]
 
 suite "Art.Foundation.Hash.objectKeyCount", ->
   test "objectKeyCount {}"        , -> assert.eq 0, objectKeyCount {}
