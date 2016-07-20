@@ -109,10 +109,42 @@ suite "Art.Foundation.Hash.objectWithout", ->
 
 suite "Art.Foundation.Hash.toObject", ->
   test "simple key-value", ->
-    assert.eq (toObject 123, "foo"), 123: "foo"
+    assert.eq
+      123: "foo"
+    , toObject 123, "foo"
 
   test "two key-values", ->
-    assert.eq (toObject 123, "foo", 456, "bar"), 123: "foo", 456: "bar"
+    assert.eq
+      123: "foo"
+      456: "bar"
+    , toObject 123, "foo", 456, "bar"
+
+  test "missing value for key becomes undefined", ->
+    assert.eq
+      foo: undefined
+    , toObject "foo"
+
+  test "null values", ->
+    assert.eq
+      1: null
+      2: false
+      3: undefined
+      4: 0
+      456: "foo"
+    ,
+      toObject 1, null, 2, false, 3, undefined, 4, 0, null, undefined, 456, "foo"
+
+  test "objects in the list get merged in", ->
+    assert.eq
+      foo: 1
+      bar: 2
+      bob: 3
+      123: "foo"
+    , toObject
+      foo: 1
+      bar: 2
+      [123, "foo"]
+      bob: 3
 
   test "array of pairs", ->
     assert.eq
@@ -124,6 +156,20 @@ suite "Art.Foundation.Hash.toObject", ->
       ["baz", 3]
       ["foo", 1]
       ["bat", 4]
+      ["bar", 2]
+    ]
+
+  test "last value for same key sticks", ->
+    assert.eq
+      foo: 1
+      bar: 2
+      baz: 3
+      bat: 5
+    , toObject [
+      ["baz", 3]
+      ["foo", 1]
+      ["bat", 4]
+      ["bat", 5]
       ["bar", 2]
     ]
 

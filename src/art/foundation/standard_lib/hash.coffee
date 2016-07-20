@@ -1,4 +1,4 @@
-{compactFlatten} = require './array_compact_flatten'
+{compactFlatten, deepArrayEach} = require './array_compact_flatten'
 {isPlainObject} = require './types'
 
 module.exports = class Hash
@@ -19,10 +19,41 @@ module.exports = class Hash
 
   @objectLength: objectKeyCount
 
+  ###
+  NOTE:
+    null and undefined keys are NOT SUPPORTED
+
+    They should be converted to strings, first,
+    which is what they would become anyway.
+
+  IN: 0 or more arguments
+    out = {}
+
+    all elements returned by deepArrayEach arguments are considered one at a time:
+
+      if isPlainObject element
+        merge into out
+
+      else if element?
+        out[element] = next element (or undefined if none)
+      else
+        skip null and undefined keys
+
+  OUT: plain object
+  ###
   @toObject: ->
     out = {}
-    list = compactFlatten arguments
-    out[list[i]] = list[i+1] for i in [0...list.length] by 2
+    i = 0
+    key = null
+    deepArrayEach arguments, (element) ->
+      if isPlainObject element
+        mergeInto out, element
+      else if key
+        out[key] = element
+        key = null
+      else if element?
+        key = element
+    out[key] = undefined if key
     out
 
   ###
