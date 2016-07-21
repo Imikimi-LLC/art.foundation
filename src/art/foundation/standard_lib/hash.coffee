@@ -1,4 +1,4 @@
-{compactFlatten, deepArrayEach} = require './array_compact_flatten'
+{compactFlatten, deepArrayEach, isArrayOrArguments} = require './array_compact_flatten'
 {isPlainObject} = require './types'
 
 module.exports = class Hash
@@ -28,32 +28,33 @@ module.exports = class Hash
 
   IN: 0 or more arguments
     out = {}
+    list = arguments
 
-    all elements returned by deepArrayEach arguments are considered one at a time:
-
-      if isPlainObject element
-        merge into out
-
-      else if element?
-        out[element] = next element (or undefined if none)
-      else
-        skip null and undefined keys
+    for element in list
+      objects: merge into out
+      arrays or argument lists: recurse using element as the list
+      null or undefined: skip
+      else out[element] = next element (or undefined if none)
 
   OUT: plain object
   ###
-  @toObject: ->
-    out = {}
-    i = 0
+  toObjectInternal = (list, out) ->
     key = null
-    deepArrayEach arguments, (element) ->
+    for element in list
       if key
         out[key] = element
         key = null
       else if isPlainObject element
         mergeInto out, element
+      else if isArrayOrArguments element
+        toObjectInternal element, out
       else if element?
         key = element
     out[key] = undefined if key
+
+  @toObject: ->
+    out = {}
+    toObjectInternal arguments, out
     out
 
   ###

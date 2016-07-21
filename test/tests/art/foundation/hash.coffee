@@ -195,6 +195,11 @@ suite "Art.Foundation.Hash.toObject", ->
       myKey: x: 1, y: 2
     , toObject 'myKey', x: 1, y: 2
 
+  test "toObject 'myKey', [1, 2]", ->
+    assert.eq
+      myKey: [1, 2]
+    , toObject 'myKey', [1, 2]
+
 suite "Art.Foundation.Hash.objectKeyCount", ->
   test "objectKeyCount {}"        , -> assert.eq 0, objectKeyCount {}
   test "objectKeyCount a:1"       , -> assert.eq 1, objectKeyCount a:1
