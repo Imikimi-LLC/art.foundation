@@ -46,11 +46,11 @@ module.exports = class Hash
     i = 0
     key = null
     deepArrayEach arguments, (element) ->
-      if isPlainObject element
-        mergeInto out, element
-      else if key
+      if key
         out[key] = element
         key = null
+      else if isPlainObject element
+        mergeInto out, element
       else if element?
         key = element
     out[key] = undefined if key
