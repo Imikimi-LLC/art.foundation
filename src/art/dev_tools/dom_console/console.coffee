@@ -347,7 +347,7 @@ module.exports = createWithPostCreate class Console extends BaseObject
       console.log m
       options.treeView = true
       {maxDepth} = options
-      maxDepth = 10 unless isNumber maxDepth
+      maxDepth = 20 unless isNumber maxDepth
 
       inspector = new Foundation.Inspect.Inspector2 withImages: true, maxDepth: maxDepth
 
