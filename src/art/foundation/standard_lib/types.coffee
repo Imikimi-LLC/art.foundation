@@ -69,17 +69,30 @@ module.exports = class Types
   like RubyOnRails#present:
     "An object is present if it's not blank."
 
+  IN:
+    obj:
+      object tested for presence
+    returnIfNotPresent: [false]
+      what to return if not present
+
+  OUT:
+    if obj is "present"
+      obj
+    else
+      returnIfNotPresent
+
   Examples:
     "", undefined, null => false
     0 => true
 
   If 'obj' has method: obj.present() => !!obj.present()
   ###
-  @present: (obj) ->
-    if isFunction obj?.present
-      !!obj.present()
+  @present: (obj, returnIfNotPresent = false) ->
+    present = if isFunction obj?.present
+      obj.present()
     else
-      obj != "" && obj != undefined && obj != null
+      obj != "" && obj != undefined && obj != null && obj != false
+    if present then obj else returnIfNotPresent
 
   @isObject: isObject = (obj) =>
     !!obj && typeof obj == "object" && !isPlainArray obj

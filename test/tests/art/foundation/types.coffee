@@ -111,26 +111,6 @@ suite "Art.Foundation.Types", ->
     class Foo
     assert.eq "Foo", objectName Foo
 
-  test "present strings", ->
-    assert.eq false, present ''
-    assert.eq true, present 'jh'
-
-  test "present null, undefined", ->
-    assert.eq false, present null
-    assert.eq false, present undefined
-
-  test "present numbers", ->
-    assert.eq true, present 0
-    assert.eq true, present 0.5
-    assert.eq true, present 1
-    assert.eq true, present -1
-
-  test "present custom", ->
-    o1 = present: -> true
-    o2 = present: -> false
-    assert.eq true, present o1
-    assert.eq false, present o2
-
   test "objectName -> == 'function'", ->
     assert.eq 'function', objectName ->
 
@@ -154,3 +134,32 @@ suite "Art.Foundation.Types", ->
 
   test "objectName Map == 'Art.Foundation.ClassSystem.Map'", ->
     assert.eq 'Neptune.Art.Foundation.ClassSystem.Map', objectName Map
+
+suite "Art.Foundation.Types.present", ->
+
+  test "present strings", ->
+    assert.eq false, present ''
+    assert.eq 'jh', present 'jh'
+
+  test "present null, undefined, false", ->
+    assert.eq true, present true
+    assert.eq false, present false
+    assert.eq false, present null
+    assert.eq false, present undefined
+
+  test "present numbers", ->
+    assert.eq 0, present 0
+    assert.eq 0.5, present 0.5
+    assert.eq 1, present 1
+    assert.eq -1, present -1
+
+  test "present custom", ->
+    o1 = present: -> true
+    o2 = present: -> false
+    assert.eq o1, present o1
+    assert.eq false, present o2
+
+  test "returnIfNotPresent value", ->
+    assert.eq "hi", present false, "hi"
+    assert.eq "hi", present "", "hi"
+
