@@ -1,6 +1,8 @@
 {assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
 Foundation = require "art-foundation"
-{clone, eq, shallowEq, inspect, plainObjectsDeepEq, plainObjectsDeepDiff, compare} = Foundation
+{clone, eq, shallowEq, inspect, plainObjectsDeepEq, plainObjectsDeepDiff, compare,
+  float64Precision,  floatTrue0
+} = Foundation
 # 'lib/art/atomic'
 # {point} = Atomic
 
@@ -278,6 +280,12 @@ suite "Art.Foundation.Eq", ->
     test "plainObjectsDeepEq complexStructure", ->
       assert.eq true, plainObjectsDeepEq complexStructure, sameComplexStructure
       assert.eq false, plainObjectsDeepEq complexStructure, differentComplexStructure
+
+    test "eq uses floatTrue0 for comparing numbers", ->
+      assert.notEqual 0, float64Precision / 2
+      assert.equal 0, floatTrue0 float64Precision / 2
+      assert.eq 0, float64Precision / 2
+
 
   suite "plainObjectsDeepDiff", ->
 

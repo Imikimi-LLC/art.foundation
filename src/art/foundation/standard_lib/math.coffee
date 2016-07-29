@@ -58,8 +58,12 @@ module.exports = class Math
 
   @floatEq:       (n1, n2) -> n1 == n2 || float64Precision > abs n1 - n2
   @float32Eq:     (n1, n2) -> n1 == n2 || float32Precision > abs n1 - n2
-  @floatEq0:      (n1)     -> n1 == 0  || float64Precision > abs n1
-  @float32Eq0:    (n1)     -> n1 == 0  || float32Precision > abs n1
+  @floatEq0:      (n)      -> n  == 0  || float64Precision > abs n
+  @float32Eq0:    (n)      -> n  == 0  || float32Precision > abs n
+
+  # OUT: 0 if n is floatEq0/float32Eq0, else n
+  @floatTrue0:    (n) -> if n == 0  || float64Precision > abs n then 0 else n
+  @float32True0:  (n) -> if n == 0  || float32Precision > abs n then 0 else n
 
   # return intenger between [0, max)
   @random:  random

@@ -1,5 +1,6 @@
 {remove}             = require './array_extensions'
 {objectKeyCount}     = require './hash'
+{floatTrue0}      = require './math'
 {isString, isNumber} = require './types'
 {min} = Math
 
@@ -91,9 +92,9 @@ module.exports = class Eq
   @_compare: (a, b, recursionBlockArray) =>
     return 0 if a == b
 
-    if a && b && a.constructor == _constructor = b.constructor
+    if a? && b? && a.constructor == _constructor = b.constructor
       return a.localeCompare b if isString a
-      return a - b if isNumber a
+      return floatTrue0 a - b if isNumber a
 
       # recursion block
       if recursionBlockArray

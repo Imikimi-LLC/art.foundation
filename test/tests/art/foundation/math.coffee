@@ -1,6 +1,11 @@
 {assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
 {Math} = require 'art-foundation'
 
+{
+  float64Precision, floatTrue0
+  float32Precision, float32True0
+} = Math
+
 # 'lib/art'
 # point = Art.Atomic.Point.point
 # rect = Art.Atomic.Rectangle.rect
@@ -66,3 +71,19 @@ suite "Art.Foundation.Math", ->
       assert.eq v | 0, v
       assert.ok v >= 0
       assert.ok v < 10
+
+  test "floatTrue0", ->
+    assert.equal 100, floatTrue0 100
+    assert.equal 0, floatTrue0 0
+    assert.equal 0.00001, floatTrue0 0.00001
+    assert.equal float64Precision, floatTrue0 float64Precision
+    assert.ok 0 != float64Precision / 2
+    assert.equal 0, floatTrue0 float64Precision / 2
+
+  test "float32True0", ->
+    assert.equal 100, float32True0 100
+    assert.equal 0, float32True0 0
+    assert.equal 0.00001, float32True0 0.00001
+    assert.equal float32Precision, float32True0 float32Precision
+    assert.ok 0 != float32Precision / 2
+    assert.equal 0, float32True0 float32Precision / 2
