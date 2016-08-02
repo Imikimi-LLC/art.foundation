@@ -242,11 +242,11 @@ module.exports = class BaseObject
   #   but they are not updated with any later-changes.
   #   If we ever need that functionality, we'll need to make a special Object-type
   #   that extendClone recognizes that handles the logic of "ExtendableArray".
-  @getPrototypePropertyExtendedByInheritance: (propertyName, defaultStructure) ->
+  @getPrototypePropertyExtendedByInheritance: (propertyName, defaultStructure, _clone = extendClone) ->
     if @::hasOwnProperty propertyName
       @::[propertyName]
     else
-      @::[propertyName] = extendClone @__super__[propertyName] || defaultStructure
+      @::[propertyName] = _clone @__super__[propertyName] || defaultStructure
 
   #####################################
   # Properties, Getters and Setters
