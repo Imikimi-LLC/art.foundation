@@ -26,6 +26,9 @@ module.exports = class ArrayExtensions
       res[a] = false
     res
 
+  @uniqueValues: (sortedArray, eqF = ((a, b) -> a == b)) ->
+    v for v, i in sortedArray when i == 0 || !eqF v, sortedArray[i-1]
+
   ###
   IN:
     array: an array or falsy value

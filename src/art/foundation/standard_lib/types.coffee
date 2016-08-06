@@ -143,6 +143,19 @@ module.exports = class Types
     v
 
   ###
+  deepEachAll: just like deepEach except 'f' gets called on every value found including the initial value.
+  ###
+  @deepEachAll: deepEachAll = (v, f, key) ->
+    f v, key
+    if isPlainArray v
+      deepEachAll subV, f for subV in v
+    else if isPlainObject v
+      deepEachAll subV, f, k for k, subV of v
+    else
+
+    v
+
+  ###
   only creates a new array if the children changed
   ###
   deepMapArray = (array, mapper, options) ->
