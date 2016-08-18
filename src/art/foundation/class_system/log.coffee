@@ -1,5 +1,6 @@
 Inspect = require './inspect/namespace'
 {callStack} = require './call_stack'
+{isString} = require "../standard_lib"
 
 module.exports = class Log
   # autodetect context from
@@ -49,7 +50,10 @@ module.exports = class Log
     if @alternativeLogger
       @alternativeLogger.logCore m, stack, className
     else if Neptune.isNode
-      @rawLog Inspect.formattedInspect m
+      @rawLog if isString m
+        m
+      else
+        Inspect.formattedInspect m
     else
       @rawLog m, "\n# Foundation.log called " + @contextString stack, className
 
