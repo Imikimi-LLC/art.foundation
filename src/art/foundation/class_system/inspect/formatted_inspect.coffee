@@ -27,7 +27,7 @@ formattedInspectRecursive = (m, maxLineLength) ->
       keyCount++
       maxKeyLength = max maxKeyLength, key.length
       inspectedValue = formatMultilineSubStructure value, formattedInspectRecursive value, maxLineLength
-      key = inspect key if key.match /[:\n]/
+      key = inspect key unless key.match /^[_a-zA-Z[_a-zA-Z0-9]*$/
       inspectedLength += inspectedValue.length + key.length + 2
       forceMultilineOutput ||= shouldBeOnOwnLine # if previous entry should be on own line, force all on own line
       shouldBeOnOwnLine = !inspectedValue.match /^([^,:]|\(.*\)|\{.*\}|\".*\"|\'.*\'|\[.*\])*$/
