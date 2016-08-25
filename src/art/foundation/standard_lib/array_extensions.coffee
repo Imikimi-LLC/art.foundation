@@ -268,6 +268,11 @@ module.exports = class ArrayExtensions
     return array if from < 0
     arrayWithElementMoved array, from, to
 
+  @arrayWithElementReplaced: (array, value, index) ->
+    array = array.slice()
+    array[index] = value
+    array
+
   # array.sort is not guaranteed to be stable
   @stableSort: (array, compare) ->
     compare ||= (a, b) -> a - b
