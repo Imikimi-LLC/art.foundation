@@ -13,10 +13,32 @@ ArtPromise extends ES6 Promises in the following ways:
 If native promises are supported, they are used,
 otherwise a polyfill is used.
 
-TODO: ES6 says Promises are designed to be extensible:
+TODO:
+  ES6 says Promises are designed to be extensible:
   http://www.ecma-international.org/ecma-262/6.0/#sec-promise-objects
 
+  If I properly extend Promise, will my new methods be available on all promise objects... ???
+    At least all promises chained off of one created using my Promise class... ???
+
   But I had problems doing that. Maybe it's how CoffeeScript extends things?
+
+TODO:
+  I want a way to do 'then' and 'catch' without effecting any following 'thens' or 'caches'
+
+  It's easy to implement, but what to call it? Leaning towards tapThen. If I had Ruby's 'tap', then
+  I could do this effectively with:
+
+    .tap (a) -> a.then ->
+    but
+    .tapThen ->
+    is even nicer
+
+  Will it be available on returned promises?
+    (see ES6 Promise extension above)
+
+  tapThen: (successF, failF) ->
+    @then successF, failF
+    @ # return the current promise, not the one returned from the then-call above
 ###
 module.exports = class ArtPromise #extends Promise
   @ES6Promise: Promise
