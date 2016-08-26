@@ -4,8 +4,20 @@ module.exports = class Ruby
   @rubyTrue:  (a) -> a!=undefined && a!=null && a!=false
   @rubyFalse: (a) -> a==undefined || a==null || a==false
 
-  @rubyOr: (a, b) -> if a? then a else b
-  @rubyAnd: (a, b) -> if a? then b else a
+  @rubyOr: (a, b) ->
+    if arguments.length == 2
+      if a? then a else b
+    else
+      for a in arguments
+        break if a?
+      a
+  @rubyAnd: (a, b) ->
+    if arguments.length == 2
+      if a? then b else a
+    else
+      for a in arguments
+        break unless a?
+      a
 
   @reopenInstanceProps: (klass, instanceProps) ->
     klass::[k] = v for own k, v of instanceProps
