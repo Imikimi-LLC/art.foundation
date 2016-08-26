@@ -4,5 +4,6 @@
 module.exports = require './namespace'
 .addModules
   ParseUrl:   require './parse_url'  
+  Ruby:       require './ruby'       
   StringCase: require './string_case'
   String:     require './string'     

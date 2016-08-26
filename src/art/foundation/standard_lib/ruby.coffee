@@ -1,22 +1,22 @@
 module.exports = class Ruby
   # would this be faster?: (a) -> a || a != 0
 
-  @rubyTrue:  (a) -> a!=undefined && a!=null && a!=false
+  @rubyTrue:  rubyTrue = (a) -> a!=undefined && a!=null && a!=false
   @rubyFalse: (a) -> a==undefined || a==null || a==false
 
   @rubyOr: (a, b) ->
     if arguments.length == 2
-      if a? then a else b
+      if rubyTrue a then a else b
     else
       for a in arguments
-        break if a?
+        break if rubyTrue a
       a
   @rubyAnd: (a, b) ->
     if arguments.length == 2
-      if a? then b else a
+      if rubyTrue a then b else a
     else
       for a in arguments
-        break unless a?
+        break unless rubyTrue a
       a
 
   @reopenInstanceProps: (klass, instanceProps) ->
