@@ -4,7 +4,7 @@ Foundation = require "art-foundation"
 {parseUrl} = Foundation
 
 if self.document
-  suite "Art.Foundation.parseUrl", ->
+  suite "Art.Foundation.StandardLib.parseUrl", ->
     test "just domain", ->
       a = parseUrl "myDomain.com"
       assert.eq a,

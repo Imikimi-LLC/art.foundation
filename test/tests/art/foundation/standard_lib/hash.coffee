@@ -15,9 +15,9 @@ Foundation = require "art-foundation"
   toObject
 } = Foundation
 
-suite "Art.Foundation.Hash.merge", ->
+suite "Art.Foundation.StandardLib.Hash.merge", ->
 
-  test "merge(a, b)", ->
+  test "merge a, b", ->
     a = foo:1
     b = bar:2
     res = merge a, b
@@ -27,21 +27,21 @@ suite "Art.Foundation.Hash.merge", ->
     assert.neq a, res
     assert.neq b, res
 
-  test "merge(a, b, c)", ->
+  test "merge a, b, c", ->
     a = foo:1
     b = foo:2
     c = foo:3
     res = merge a, b, c
     assert.eq res, foo:3
 
-  test "merge(a, [b, c])", ->
+  test "merge a, [b, c]", ->
     a = foo:1
     b = foo:2
     c = foo:3
     res = merge a, [b, c]
     assert.eq res, foo:3
 
-  test "merge(a, null, c)", ->
+  test "merge a, null, c", ->
     a = foo:1
     b = null
     c = foo:3
@@ -52,17 +52,20 @@ suite "Art.Foundation.Hash.merge", ->
     res = merge()
     assert.eq res, {}
 
-  test "merge([a, b])", ->
+  test "merge [a, b]", ->
     a = foo:1
     b = bar:2
     res = merge [a, b]
     assert.eq res, foo: 1, bar: 2
 
+suite "Art.Foundation.StandardLib.Hash.mergeInto", ->
   test "mergeInto()", ->
-    res = mergeInto()
-    assert.eq res, null
+    assert.eq null, mergeInto()
 
-  test "mergeInto(a, b)", ->
+  test "mergeInto null, b", ->
+    assert.eq bar: 2, mergeInto null, bar: 2
+
+  test "mergeInto a, b", ->
     a = foo:1
     b = bar:2
     res = mergeInto a, b
@@ -70,22 +73,23 @@ suite "Art.Foundation.Hash.merge", ->
     assert.eq a, res
     assert.eq b, bar:2
 
-  test "pureMerge()", ->
-    res = pureMerge()
-    assert.eq res, null
+suite "Art.Foundation.StandardLib.Hash.pureMerge", ->
 
-  test "pureMerge(a)", ->
+  test "pureMerge()", ->
+    assert.eq null, pureMerge()
+
+  test "pureMerge a", ->
     a = foo:1
     res = pureMerge a
     assert.eq true, res == a
 
-  test "pureMerge(a, b) b shadows a", ->
+  test "pureMerge(a, b) when b shadows a", ->
     a = foo:1
     b = foo:2
     res = pureMerge a, b
     assert.eq true, res == b
 
-  test "pureMerge(a, b) b doesn't shadow a", ->
+  test "pureMerge(a, b) when b doesn't shadow a", ->
     a = foo:1
     b = bar:2
     res = pureMerge a, b
@@ -93,7 +97,7 @@ suite "Art.Foundation.Hash.merge", ->
     assert.neq a, res
     assert.neq b, res
 
-suite "Art.Foundation.Hash.objectWithout", ->
+suite "Art.Foundation.StandardLib.Hash.objectWithout", ->
 
   test "objectWithout", ->
     a = foo:1, bar:2, fooz:3, baz:4
@@ -107,7 +111,7 @@ suite "Art.Foundation.Hash.objectWithout", ->
     b = objectWithout a, "cat", "frog"
     assert.eq true, a == b
 
-suite "Art.Foundation.Hash.toObject", ->
+suite "Art.Foundation.StandardLib.Hash.toObject", ->
   test "simple key-value", ->
     assert.eq
       123: "foo"
@@ -200,12 +204,12 @@ suite "Art.Foundation.Hash.toObject", ->
       myKey: [1, 2]
     , toObject 'myKey', [1, 2]
 
-suite "Art.Foundation.Hash.objectKeyCount", ->
+suite "Art.Foundation.StandardLib.Hash.objectKeyCount", ->
   test "objectKeyCount {}"        , -> assert.eq 0, objectKeyCount {}
   test "objectKeyCount a:1"       , -> assert.eq 1, objectKeyCount a:1
   test "objectKeyCount a:1, b:2"  , -> assert.eq 2, objectKeyCount a:1, b:2
 
-suite "Art.Foundation.Hash.deepMerge", ->
+suite "Art.Foundation.StandardLib.Hash.deepMerge", ->
   test "same as merge", ->
     a = foo: 1, bar: 2
     b = bar: 3, baz: 4

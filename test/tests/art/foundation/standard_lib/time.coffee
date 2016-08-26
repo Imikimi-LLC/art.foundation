@@ -2,7 +2,7 @@
 Foundation = require "art-foundation"
 {stackTime, log, currentSecond} = Foundation
 
-suite "Art.Foundation.Time", ->
+suite "Art.Foundation.StandardLib.Time", ->
   test "stackTime", ->
     insideTime = 0
     startTime = currentSecond()

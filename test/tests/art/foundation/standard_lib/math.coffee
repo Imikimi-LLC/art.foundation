@@ -11,7 +11,7 @@
 # rect = Art.Atomic.Rectangle.rect
 # Rectangle = Art.Atomic.Rectangle
 
-suite "Art.Foundation.Math", ->
+suite "Art.Foundation.StandardLib.Math", ->
   test "floatEq", ->
     smallestDifferent = 1 + Math.float64Precision
     largestSame = 1 + Math.float64Precision/2

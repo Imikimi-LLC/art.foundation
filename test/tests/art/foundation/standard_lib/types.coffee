@@ -15,7 +15,7 @@
   Map
 } = require "art-foundation"
 
-suite "Art.Foundation.Types", ->
+suite "Art.Foundation.StandardLib.Types", ->
   test "isPromise Promise.resolve()", -> assert.eq true, isPromise Promise.resolve()
   test "isPromise Promise.reject()", -> assert.eq true, isPromise Promise.reject()
   test "isPromise 1 is false", -> assert.eq false, isPromise 1
@@ -129,13 +129,13 @@ suite "Art.Foundation.Types", ->
   test "objectName undefined == 'undefined'", ->
     assert.eq 'undefined', objectName undefined
 
-  test "objectName new Map == 'Art.Foundation.ClassSystem.Map'", ->
-    assert.eq 'Neptune.Art.Foundation.ClassSystem.Map', objectName new Map
+  test "objectName new Map == 'Art.Foundation.StandardLib.ClassSystem.Map'", ->
+    assert.eq 'Neptune.Art.Foundation.StandardLib.ClassSystem.Map', objectName new Map
 
-  test "objectName Map == 'Art.Foundation.ClassSystem.Map'", ->
-    assert.eq 'Neptune.Art.Foundation.ClassSystem.Map', objectName Map
+  test "objectName Map == 'Art.Foundation.StandardLib.ClassSystem.Map'", ->
+    assert.eq 'Neptune.Art.Foundation.StandardLib.ClassSystem.Map', objectName Map
 
-suite "Art.Foundation.Types.present", ->
+suite "Art.Foundation.StandardLib.Types.present", ->
 
   test "present strings", ->
     assert.eq false, present ''

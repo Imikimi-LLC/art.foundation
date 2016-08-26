@@ -79,8 +79,7 @@ module.exports = class DomElementFactories
   @isString: isString = (obj) => typeof obj == "string"
   @isPlainObject: isPlainObject = (obj) => obj.constructor == Object
 
-  @mergeInto: mergeInto = (into, source) ->
-    into ||= {}
+  @mergeInto: mergeInto = (into = {}, source) ->
     into[k] = v for k, v of source
     into
 

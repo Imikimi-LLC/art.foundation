@@ -9,7 +9,7 @@ Foundation = require "art-foundation"
   compactFlattenJoin
 } = Foundation
 
-suite "Art.Foundation.String.misc", ->
+suite "Art.Foundation.StandardLib.String.misc", ->
 
   test "randomString", ->
     assert.eq 32, randomString(32).length
@@ -22,7 +22,7 @@ suite "Art.Foundation.String.misc", ->
   test "compactFlattenJoin", ->
     assert.eq "a messy mess", compactFlattenJoin " ", [["a"], null, undefined, [], "messy", [[["mess"]]]]
 
-suite "Art.Foundation.String.pluralize", ->
+suite "Art.Foundation.StandardLib.String.pluralize", ->
 
   test "pluralize 'user'", ->
     assert.eq "users", pluralize "user"
@@ -32,7 +32,7 @@ suite "Art.Foundation.String.pluralize", ->
   test "pluralize 2, 'user'", -> assert.eq "2 users", pluralize 2, "user"
 
 
-suite "Art.Foundation.String.consistentJsonStringify", ->
+suite "Art.Foundation.StandardLib.String.consistentJsonStringify", ->
   test "consistentJsonStringify null, true, false", ->
     assert.eq "null", consistentJsonStringify null
     assert.eq "true", consistentJsonStringify true
@@ -86,7 +86,7 @@ suite "Art.Foundation.String.consistentJsonStringify", ->
     assert.eq '[1, "hi", null, true, false, {"bar": 2, "foo": 1}, [1, 2, 3]]'
     , consistentJsonStringify a
 
-suite "Art.Foundation.String.consistentJsonStringify.indent", ->
+suite "Art.Foundation.StandardLib.String.consistentJsonStringify.indent", ->
   test "basic object", ->
     obj =
       foo: 123
@@ -153,7 +153,7 @@ suite "Art.Foundation.String.consistentJsonStringify.indent", ->
       """
     , consistentJsonStringify obj, '  '
 
-suite "Art.Foundation.String.splitRuns", ->
+suite "Art.Foundation.StandardLib.String.splitRuns", ->
   test "splitRuns ''", -> assert.eq [], splitRuns ''
   test "splitRuns ' '", -> assert.eq [[' ', 1]], splitRuns ' '
   test "splitRuns ' a'", -> assert.eq [[' ', 1], ['a', 1]], splitRuns ' a'
@@ -171,7 +171,7 @@ hfsStest = (input, maxLength, output) ->
     assert.eq true, actualOutput.length <= maxLength
     assert.eq true, actualOutput.length >= maxLength / 2
 
-suite "Art.Foundation.String.humanFriendlyShorten.no whitespace", ->
+suite "Art.Foundation.StandardLib.String.humanFriendlyShorten.no whitespace", ->
   test "'foobar', 0 throws error", -> assert.throw -> humanFriendlyShorten "foobar", 0
 
   hfsStest 'foobar', 1 , '…'
@@ -180,17 +180,17 @@ suite "Art.Foundation.String.humanFriendlyShorten.no whitespace", ->
   hfsStest 'foobar', 6 , 'foobar'
   hfsStest 'foobar', 10, 'foobar'
 
-suite "Art.Foundation.String.humanFriendlyShorten.untrimmed whitespace", ->
+suite "Art.Foundation.StandardLib.String.humanFriendlyShorten.untrimmed whitespace", ->
   test "'  foobar  ', 6 == 'foobar'",  -> assert.eq "foobar", humanFriendlyShorten "  foobar  ", 6
 
-suite "Art.Foundation.String.humanFriendlyShorten.multi-word", ->
+suite "Art.Foundation.StandardLib.String.humanFriendlyShorten.multi-word", ->
   hfsStest 'foo bar', 1 , '…'
   hfsStest 'foo bar', 5 , 'foo…'
   hfsStest 'foo bar', 6 , 'foo…'
   hfsStest 'foo bar', 7 , 'foo bar'
   hfsStest 'foo bar', 10, 'foo bar'
 
-suite "Art.Foundation.String.humanFriendlyShorten.multi-word - ensure at least half maxLength", ->
+suite "Art.Foundation.StandardLib.String.humanFriendlyShorten.multi-word - ensure at least half maxLength", ->
   hfsStest 'f bartender', 3, 'f…'
   hfsStest 'f bartender', 4, 'f b…'
 

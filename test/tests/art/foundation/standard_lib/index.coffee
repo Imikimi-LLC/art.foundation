@@ -3,7 +3,15 @@
 
 module.exports = require './namespace'
 .addModules
+  Array:      require './array'      
+  Eq:         require './eq'         
+  Hash:       require './hash'       
+  Math:       require './math'       
+  ObjectDiff: require './object_diff'
   ParseUrl:   require './parse_url'  
   Ruby:       require './ruby'       
   StringCase: require './string_case'
   String:     require './string'     
+  Time:       require './time'       
+  Types:      require './types'      
+  Unique:     require './unique'     

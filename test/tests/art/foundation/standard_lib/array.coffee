@@ -20,7 +20,7 @@ Foundation = require 'art-foundation'
   moveArrayElement
 } = Foundation
 
-suite "Art.Foundation.Array.move", ->
+suite "Art.Foundation.StandardLib.Array.move", ->
   moveArrayElementTest = (inArray, from, to, outArray) ->
     test "moveArrayElement #{inspect inArray}, #{from}, #{to} >>> #{inspect outArray}", ->
       assert.eq outArray, moveArrayElement inArray, from, to
@@ -67,7 +67,7 @@ suite "Art.Foundation.Array.move", ->
   test 'arrayWithElementValueMoved [1,2,3], 3, 0', ->
     assert.eq [3,1,2], arrayWithElementValueMoved [1,2,3],3, 0
 
-suite "Art.Foundation.Array", ->
+suite "Art.Foundation.StandardLib.Array", ->
 
   test "compact", ->
     assert.eq (compact [1,2,3,null,4]), [1,2,3,4]
@@ -250,7 +250,7 @@ suite "Art.Foundation.Array", ->
     assert.eq ["child2", "child3", false, "child4"], compact flatten structure
     assert.eq ["child2", "child3", false, "child4"], compactFlatten structure
 
-suite "Art.Foundation.Array.slice helpers", ->
+suite "Art.Foundation.StandardLib.Array.slice helpers", ->
   {leftOf, rightOf, leftOfIndex, rightOfIndex, splitArray} = Foundation
   test "leftOfIndex null array",       -> assert.eq null,   leftOfIndex  null, 0
   test "rightOfIndex null array",      -> assert.eq null,   rightOfIndex null, 0
@@ -277,7 +277,7 @@ suite "Art.Foundation.Array.slice helpers", ->
 
   test "splitArray", -> assert.eq [[1,2], [4,5,6]], splitArray [1,2,3,4,5,6], 3
 
-suite "Art.Foundation.Array.findSortedFirst", ->
+suite "Art.Foundation.StandardLib.Array.findSortedFirst", ->
   test "empty or null/undefined array returns undefined", ->
     assert.eq undefined, findSortedFirst []
     assert.eq undefined, findSortedFirst null

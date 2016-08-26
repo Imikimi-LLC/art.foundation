@@ -2,7 +2,7 @@
 Foundation = require "art-foundation"
 Unique = Foundation.Unique
 
-suite "Art.Foundation.Unique", ->
+suite "Art.Foundation.StandardLib.Unique", ->
   test "objectId", ->
     o = {}
     id = Unique.objectId o

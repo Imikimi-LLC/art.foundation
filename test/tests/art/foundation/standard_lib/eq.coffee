@@ -42,7 +42,7 @@ sameComplexStructure =
   i: {}
   j: foo:1, bar:2
 
-suite "Art.Foundation.Eq", ->
+suite "Art.Foundation.StandardLib.Eq", ->
   suite "eq", ->
     test "numbers", ->
       assert.equal true,  eq 1, 1
