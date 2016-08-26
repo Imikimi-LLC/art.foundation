@@ -1,4 +1,4 @@
-Foundation = require 'art-foundation'
+Foundation = Neptune.Art.Foundation
 {WriteStream, Stream, binary, log, inspect, isString} = Foundation
 
 testWriting = (name, actions) ->

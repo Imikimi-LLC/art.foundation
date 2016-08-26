@@ -1,5 +1,5 @@
 
-{Utf8, log} = require 'art-foundation'
+{Utf8, log} = Neptune.Art.Foundation
 
 pairs = [
   {s:"✓",  a:[0xE2, 0x9C, 0x93]},

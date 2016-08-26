@@ -1,4 +1,4 @@
-Foundation = require 'art-foundation'
+Foundation = Neptune.Art.Foundation
 {log, inspectLean, inspect, isPlainArray, timeout} = Foundation
 if self.document
   suite "Art.DevTools.DomConsole", ->

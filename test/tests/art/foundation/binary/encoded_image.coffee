@@ -1,5 +1,5 @@
 
-{EncodedImage, binary, RestClient} = require 'art-foundation'
+{EncodedImage, binary, RestClient} = Neptune.Art.Foundation
 
 if self.Image
   suite "Art.Foundation.Binary.EncodedImage", ->

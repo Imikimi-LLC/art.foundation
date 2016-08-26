@@ -1,4 +1,4 @@
-Foundation = require 'art-foundation'
+Foundation = Neptune.Art.Foundation
 {createObjectTreeFactories, wordsArray, lowerCamelCase, log, BaseObject, mergeInto, isPlainObject, isString} = Foundation
 
 testNamesString = "Alice Bill John SallyMae"

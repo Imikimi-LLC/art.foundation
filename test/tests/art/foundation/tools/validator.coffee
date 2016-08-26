@@ -1,4 +1,4 @@
-Foundation = require 'art-foundation'
+Foundation = Neptune.Art.Foundation
 {Validator, isString, log} = Foundation
 
 suite "Art.Foundation.Tools.Validator", ->

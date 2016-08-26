@@ -1,5 +1,5 @@
 
-Foundation = require 'art-foundation'
+Foundation = Neptune.Art.Foundation
 
 {inspect, log, binary, BinaryString} = Foundation
 

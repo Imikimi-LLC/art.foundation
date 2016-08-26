@@ -1,5 +1,5 @@
 
-{binary, log, RestClient} = require 'art-foundation'
+{binary, log, RestClient} = Neptune.Art.Foundation
 
 if self.XMLHttpRequest
   suite "Art.Foundation.Tools.RestClient", ->

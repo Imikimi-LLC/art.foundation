@@ -1,5 +1,5 @@
 
-{Math} = require 'art-foundation'
+{Math} = Neptune.Art.Foundation
 
 {
   float64Precision, floatTrue0
