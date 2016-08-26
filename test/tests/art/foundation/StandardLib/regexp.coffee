@@ -1,4 +1,4 @@
-{assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
+
 Foundation = require "art-foundation"
 
 {emailRegexp, domainRegexp, urlProtocolRegexp, urlPathRegexp, urlQueryRegexp, urlRegexp} = Foundation

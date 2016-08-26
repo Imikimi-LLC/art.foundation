@@ -1,4 +1,4 @@
-{assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
+
 {Utf8, log} = require 'art-foundation'
 
 pairs = [

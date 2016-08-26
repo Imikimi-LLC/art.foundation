@@ -1,4 +1,4 @@
-{assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
+
 {EncodedImage, binary, RestClient} = require 'art-foundation'
 
 if self.Image
