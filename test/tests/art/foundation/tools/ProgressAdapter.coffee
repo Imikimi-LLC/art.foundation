@@ -2,7 +2,7 @@
 Foundation = require "art-foundation"
 {ProgressAdapter, eq, inspect, clone, timeout} = Foundation
 
-suite "Art.Foundation.Async.ProgressAdapter", ->
+suite "Art.Foundation.Tools.ProgressAdapter", ->
   test "checks parameters", ->
     assert.throws -> pa = new ProgressAdapter()
     assert.throws -> pa = new ProgressAdapter 4
@@ -11,7 +11,7 @@ suite "Art.Foundation.Async.ProgressAdapter", ->
     new ProgressAdapter 4, ->
     new ProgressAdapter [4, 4], ->
 
-suite "Art.Foundation.Async.ProgressAdapter.steps", ->
+suite "Art.Foundation.Tools.ProgressAdapter.steps", ->
   test "new ProgressAdapter 4", ->
     pa = new ProgressAdapter 4, ->
     assert.eq pa.steps, [0, .25, .5, .75]
@@ -24,7 +24,7 @@ suite "Art.Foundation.Async.ProgressAdapter.steps", ->
     pa = new ProgressAdapter [1, 2, 1], ->
     assert.eq pa.steps, [0, .25, .75]
 
-suite "Art.Foundation.Async.ProgressAdapter.makeProgress", ->
+suite "Art.Foundation.Tools.ProgressAdapter.makeProgress", ->
   test "new ProgressAdapter 2 basic", ->
     callbackValues = []
     pa = new ProgressAdapter 2, (v) -> callbackValues.push v
@@ -50,7 +50,7 @@ suite "Art.Foundation.Async.ProgressAdapter.makeProgress", ->
     pa.makeProgress()
     assert.eq callbackValues, [0, .25, .75, 1]
 
-suite "Art.Foundation.Async.ProgressAdapter.makeProgressCallback", ->
+suite "Art.Foundation.Tools.ProgressAdapter.makeProgressCallback", ->
   test "new ProgressAdapter 2", ->
     callbackValues = []
     pa = new ProgressAdapter 2, (v) -> callbackValues.push v
@@ -86,7 +86,7 @@ suite "Art.Foundation.Async.ProgressAdapter.makeProgressCallback", ->
     assert.eq pa.warningCount, 0
     assert.eq callbackValues, [0, .25, .25, .5, .75, 1]
 
-suite "Art.Foundation.Async.ProgressAdapter.executePromiseSequence", ->
+suite "Art.Foundation.Tools.ProgressAdapter.executePromiseSequence", ->
   test "new ProgressAdapter 2", ->
     callbackValues = []
     events = []

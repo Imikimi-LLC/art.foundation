@@ -2,7 +2,7 @@
 {binary, log, RestClient} = require 'art-foundation'
 
 if self.XMLHttpRequest
-  suite "Art.Foundation.RestClient", ->
+  suite "Art.Foundation.Tools.RestClient", ->
 
     test "get", ->
       RestClient.get "#{testAssetRoot}/array_buffer_rest_client_test/hello.txt"

@@ -3,4 +3,15 @@
 
 module.exports = require './namespace'
 .addModules
-  Validator: require './validator'
+  BatchLoader:             require './batch_loader'               
+  Epoch:                   require './epoch'                      
+  JsonStore:               require './json_store'                 
+  ObjectTreeFactory:       require './object_tree_factory'        
+  ProgressAdapter:         require './ProgressAdapter'            
+  RestClient:              require './rest_client'                
+  Stat:                    require './stat'                       
+  Transaction:             require './transaction'                
+  Validator:               require './validator'                  
+  WebWorker:               require './web_worker'                 
+  WorkerForWorkerRpcTests: require './worker_for_worker_rpc_tests'
+  WorkerRpc:               require './worker_rpc'                 

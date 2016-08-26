@@ -2,7 +2,7 @@
 Foundation = require "art-foundation"
 log = Foundation.log
 
-suite "Art.Foundation.BatchLoader", ->
+suite "Art.Foundation.Tools.BatchLoader", ->
   test "single immediate load", (done)->
     loader = new Foundation.BatchLoader (src, addAsset) ->
       addAsset src, true

@@ -2,7 +2,7 @@
 Foundation = require "art-foundation"
 {WorkerRpc, BaseObject, timeout, Promise, intRand, log, deepAll} = Foundation
 
-suite "Art.Foundation.Promise", ->
+suite "Art.Foundation.StandardLib.Promise", ->
 
   test "new Promise().resolve()", ->
     new Promise().resolve()
@@ -70,7 +70,7 @@ suite "Art.Foundation.Promise", ->
       assert.ok count >= 1
       assert.ok count <= 3
 
-suite "Art.Foundation.Promise.deepAll", ->
+suite "Art.Foundation.StandardLib.Promise.deepAll", ->
   test 'deepAll {}', ->
     deepAll
       a: Promise.resolve 123
@@ -105,7 +105,7 @@ suite "Art.Foundation.Promise.deepAll", ->
       ]
 
 
-suite "Art.Foundation.Promise.Serializer", ->
+suite "Art.Foundation.StandardLib.Promise.Serializer", ->
   test "Promise.serialize", ->
     count = 0
     delays = [100, 0, 10]

@@ -2,7 +2,6 @@
 DomElementFactories = require "./dom_element_factories"
 
 {isString} = require "../standard_lib"
-{createObjectTreeFactories} = require "../class_system/object_tree_factory"
 
 module.exports = class Dom
   @createElementFromHtml: (html) ->

@@ -4,7 +4,7 @@ Foundation = require "art-foundation"
 
 epoch = new Epoch
 
-suite "Art.Foundation.Epoch", ->
+suite "Art.Foundation.Tools.Epoch", ->
   test "queue function", (done)->
     epoch.queueItem ->
       done()

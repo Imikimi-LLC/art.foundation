@@ -1,7 +1,7 @@
 {assert} = require 'art-foundation/src/art/dev_tools/test/art_chai'
 Foundation = require "art-foundation"
 
-suite "Art.Foundation.Stat", ->
+suite "Art.Foundation.Tools.Stat", ->
   test "average, min, max, samples", ->
     s = new Foundation.Stat
     s.add 1

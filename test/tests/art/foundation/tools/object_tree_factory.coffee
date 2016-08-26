@@ -5,7 +5,7 @@ testNamesString = "Alice Bill John SallyMae"
 testNames = wordsArray testNamesString
 testNamesLowerCamelCased = (lowerCamelCase name for name in testNames)
 
-suite "Art.Foundation.ObjectTreeFactory.createObjectTreeFactories", ->
+suite "Art.Foundation.Tools.ObjectTreeFactory.createObjectTreeFactories", ->
   test "createObjectTreeFactories testNamesString", ->
     keys = Object.keys createObjectTreeFactories testNamesString, ->
     assert.eq keys, testNames
@@ -46,7 +46,7 @@ class MyObject extends BaseObject
           out.push child.plainObjects
       out
 
-suite "Art.Foundation.ObjectTreeFactory.using factories", ->
+suite "Art.Foundation.Tools.ObjectTreeFactory.using factories", ->
 
   {Alice, Bill, John, SallyMae} = createObjectTreeFactories testNamesLowerCamelCased, (name, props, children) ->
     new MyObject name, props, children
@@ -75,7 +75,7 @@ suite "Art.Foundation.ObjectTreeFactory.using factories", ->
     tree = Alice info:{a:123}, Bill(), info:{b:456}
     assert.eq tree.plainObjects, ["alice", info:{b:456}, ["bill"]]
 
-suite "Art.Foundation.ObjectTreeFactory.using factories with custom mergePropsInto and preprocessElement", ->
+suite "Art.Foundation.Tools.ObjectTreeFactory.using factories with custom mergePropsInto and preprocessElement", ->
 
   {Alice, Bill, John, SallyMae} = createObjectTreeFactories
     mergePropsInto: (into, source) ->

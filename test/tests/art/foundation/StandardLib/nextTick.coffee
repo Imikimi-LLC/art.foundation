@@ -2,7 +2,7 @@
 Foundation = require "art-foundation"
 {nextTick, eq, inspect, clone} = Foundation
 
-suite "Art.Foundation.Async.Basic", ->
+suite "Art.Foundation.StandardLib.nextTick", ->
   test "one nextTick", (done)->
     nextTick done
 

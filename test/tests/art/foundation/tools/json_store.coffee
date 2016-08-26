@@ -14,7 +14,7 @@ if self.sessionStorage
   jsonStore = new Foundation.JsonStore sessionStorage
   jsonStore.clear()
 
-  suite "Art.Foundation.JsonStore", ->
+  suite "Art.Foundation.Tools.JsonStore", ->
 
     test "clear, setItem, removeItem & length", ->
       jsonStore.clear()

@@ -129,11 +129,11 @@ suite "Art.Foundation.StandardLib.Types", ->
   test "objectName undefined == 'undefined'", ->
     assert.eq 'undefined', objectName undefined
 
-  test "objectName new Map == 'Art.Foundation.StandardLib.ClassSystem.Map'", ->
-    assert.eq 'Neptune.Art.Foundation.StandardLib.ClassSystem.Map', objectName new Map
+  test "objectName new Map == 'Art.Foundation.ClassSystem.Map'", ->
+    assert.eq 'Neptune.Art.Foundation.ClassSystem.Map', objectName new Map
 
-  test "objectName Map == 'Art.Foundation.StandardLib.ClassSystem.Map'", ->
-    assert.eq 'Neptune.Art.Foundation.StandardLib.ClassSystem.Map', objectName Map
+  test "objectName Map == 'Art.Foundation.ClassSystem.Map'", ->
+    assert.eq 'Neptune.Art.Foundation.ClassSystem.Map', objectName Map
 
 suite "Art.Foundation.StandardLib.Types.present", ->
 

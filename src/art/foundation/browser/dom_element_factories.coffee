@@ -1,7 +1,7 @@
 supportLibs = [
   require "../standard_lib/object_diff"
   require "../standard_lib/string_case"
-  require "../class_system/object_tree_factory"
+  require "../tools/object_tree_factory"
 ]
 ###
 DomElementFactories allows for Art.React-style creation of DOM elements.

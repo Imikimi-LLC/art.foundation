@@ -8,7 +8,7 @@ inspect = Foundation.Inspect.inspect
 {nextTick} = Foundation
 Transaction = Foundation.Transaction
 
-suite "Art.Foundation.Transaction", ->
+suite "Art.Foundation.Tools.Transaction", ->
   test "new Transaction", ()->
     ot = new Transaction a={}
     assert.eq ot.objects, [a]

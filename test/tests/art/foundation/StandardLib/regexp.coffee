@@ -3,7 +3,7 @@ Foundation = require "art-foundation"
 
 {emailRegexp, domainRegexp, urlProtocolRegexp, urlPathRegexp, urlQueryRegexp, urlRegexp} = Foundation
 
-suite "Art.Foundation.Regexp", ->
+suite "Art.Foundation.StandardLib.Regexp", ->
   test "emailRegexp", ->
     assert.eq "shanebdavis@gmail.com".match(emailRegexp), ["shanebdavis@gmail.com", "shanebdavis", "gmail.com"]
     assert.eq "shanebdavis@www.gmail.com".match(emailRegexp), ["shanebdavis@www.gmail.com", "shanebdavis", "www.gmail.com"]

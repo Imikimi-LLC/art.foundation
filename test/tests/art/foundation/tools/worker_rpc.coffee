@@ -16,7 +16,7 @@ if self.document
       pair.worker.otherThread = pair.browser
       pair
 
-  suite "Art.Foundation.WorkerRpc", ->
+  suite "Art.Foundation.Tools.WorkerRpc", ->
 
     suite "using mocks in main thread", ->
       test "one-way messaging with data", (done) ->

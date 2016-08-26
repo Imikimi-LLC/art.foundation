@@ -6,7 +6,7 @@ Foundation = require "art-foundation"
 } = Foundation
 
 if self.document
-  suite "Art.Foundation.Browser.WebWorker", ->
+  suite "Art.Foundation.Tools.Browser.WebWorker", ->
 
     test "startWorkerFromJsString WebWorker.echoWebWorker", (done)->
       worker = startWorkerFromJsString echoWebWorker

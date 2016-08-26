@@ -1,11 +1,11 @@
 Foundation = require 'art-foundation'
 {Validator, isString, log} = Foundation
 
-suite "Art.Foundation.Validator", ->
+suite "Art.Foundation.Tools.Validator", ->
   test "new Validator", ->
     new Validator
 
-suite "Art.Foundation.Validator.declaration types", ->
+suite "Art.Foundation.Tools.Validator.declaration types", ->
   test "type: 'id'", ->
     v = new Validator
       id: type: "id"

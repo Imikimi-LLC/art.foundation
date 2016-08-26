@@ -2,7 +2,7 @@
 Foundation = require "art-foundation"
 {deepEach, deepMap, log, inspect, toJsonStructure} = Foundation
 
-suite "Art.Foundation.PlainData", ->
+suite "Art.Foundation.StandardLib.PlainData", ->
 
   suite "deepEach", ->
     tester = (v, expectedCount, expectedSum) ->
