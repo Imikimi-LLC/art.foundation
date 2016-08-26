@@ -18,9 +18,7 @@ Arrays and Objects are assigned a unique id using the Foundation.Unique library.
 
 ###
 StandardLib = require '../standard_lib'
-ClassSystem = require "./namespace"
-BaseObject = require "./base_object"
-{Unique} = StandardLib
+{Unique, capitalize} = StandardLib
 
 class Node
   constructor: (key, value, prev, next) ->
@@ -43,7 +41,7 @@ class Node
 
 # this class exists because javascript hash keys must be strings
 # this simple and inefficient class allows us to use objects as keys
-module.exports = class Map extends BaseObject
+module.exports = class Map
   @inverseMap: (array) ->
     result = new Map
     result.set v, k for v, k in array
@@ -53,6 +51,17 @@ module.exports = class Map extends BaseObject
     @_length = 0
     @_map = {}
     @_first = @_last = null
+
+  propGetterName = (prop) -> "get" + capitalize prop
+
+  @_addGetter: (prop, getter) ->
+    @::[propGetterName prop] = getter
+    Object.defineProperty @::, prop, get: getter, configurable: yes
+    prop
+
+  @getter: (map) ->
+    @_addGetter prop, getter for prop, getter of map
+    map
 
   @getter
     length: -> @_length
@@ -130,7 +139,7 @@ module.exports = class Map extends BaseObject
   map: (f) -> f node.key, node.value for node in @nodes
 
   inspect: (inspector) ->
-    return ClassSystem.Inspect.inspect @ unless inspector
+    return Neptune.Art.Foundation.inspect @ unless inspector
     _inspect = (o) ->
       if typeof o is "string" && o.match /^[a-zA-Z_][a-zA-Z_0-9]*$/
         inspector.put o
@@ -148,7 +157,7 @@ module.exports = class Map extends BaseObject
 
   # verify nodes are correct
   verifyNodes: ->
-    inspect = ClassSystem.Inspect.inspect
+    {inspect} = Neptune.Art.Foundation
     return if !@_first? && !@_last? && @_length == 0 # empty - is OK
     throw new Error "length == #{@length} but @_first is not null" if @_length == 0 && @_first
     throw new Error "length == #{@length} but @_last is not null" if @_length == 0 && @_last
