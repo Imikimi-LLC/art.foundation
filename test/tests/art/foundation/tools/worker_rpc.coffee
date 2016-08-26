@@ -1,5 +1,5 @@
 
-Foundation = require "art-foundation"
+{Foundation} = Neptune.Art
 {WorkerRpc, BaseObject, timeout} = Foundation
 
 if self.document

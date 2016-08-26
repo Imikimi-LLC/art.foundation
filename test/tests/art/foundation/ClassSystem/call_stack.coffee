@@ -1,5 +1,5 @@
 
-Foundation = require "art-foundation"
+{Foundation} = Neptune.Art
 {log, inspectLean, rawLog, inspect, errorToString} = Foundation
 
 rawLog = ->

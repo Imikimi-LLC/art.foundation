@@ -1,5 +1,5 @@
 
-Foundation = require "art-foundation"
+{Foundation} = Neptune.Art
 {
   eq, clone, inspect, capitalize, upperCamelCase, lowerCamelCase
   snakeCase, pluralize, allIndexes, randomString

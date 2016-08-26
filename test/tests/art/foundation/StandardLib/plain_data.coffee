@@ -1,5 +1,5 @@
 
-Foundation = require "art-foundation"
+{Foundation} = Neptune.Art
 {deepEach, deepMap, log, inspect, toJsonStructure} = Foundation
 
 suite "Art.Foundation.StandardLib.PlainData", ->

@@ -1,5 +1,4 @@
-
-{Map, inspect} = require "art-foundation"
+{Map, inspect} = Neptune.Art.Foundation
 
 suite "Art.Foundation.Map.inspect", ->
   test "inspect just string keys", ->

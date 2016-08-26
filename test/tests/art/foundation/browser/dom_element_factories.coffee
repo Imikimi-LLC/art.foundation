@@ -1,4 +1,4 @@
-Foundation = require "art-foundation"
+{Foundation} = Neptune.Art
 
 {Div, Span, B, Em} = Foundation.Browser.DomElementFactories
 

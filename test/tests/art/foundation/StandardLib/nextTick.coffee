@@ -1,5 +1,5 @@
 
-Foundation = require "art-foundation"
+{Foundation} = Neptune.Art
 {nextTick, eq, inspect, clone} = Foundation
 
 suite "Art.Foundation.StandardLib.nextTick", ->

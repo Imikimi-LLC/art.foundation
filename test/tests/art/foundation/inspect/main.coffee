@@ -1,5 +1,5 @@
 
-Foundation = require "art-foundation"
+{Foundation} = Neptune.Art
 clone = Foundation.Clone.clone
 {inspect, inspectLean} = Foundation.Inspect
 

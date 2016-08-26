@@ -1,5 +1,5 @@
 
-Foundation = require "art-foundation"
+{Foundation} = Neptune.Art
 {log, BaseObject, clone, eq, inspect, nextTick} = Foundation
 
 suite "Art.Foundation.BaseObject.tap", ->

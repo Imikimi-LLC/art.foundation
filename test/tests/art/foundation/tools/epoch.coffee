@@ -1,5 +1,5 @@
 
-Foundation = require "art-foundation"
+{Foundation} = Neptune.Art
 {inspect, Epoch} = Foundation
 
 epoch = new Epoch

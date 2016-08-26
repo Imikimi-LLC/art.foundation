@@ -1,5 +1,5 @@
 
-Foundation = require "art-foundation"
+{Foundation} = Neptune.Art
 {ProgressAdapter, eq, inspect, clone, timeout} = Foundation
 
 suite "Art.Foundation.Tools.ProgressAdapter", ->

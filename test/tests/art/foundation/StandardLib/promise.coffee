@@ -1,5 +1,5 @@
 
-Foundation = require "art-foundation"
+{Foundation} = Neptune.Art
 {WorkerRpc, BaseObject, timeout, Promise, intRand, log, deepAll} = Foundation
 
 suite "Art.Foundation.StandardLib.Promise", ->

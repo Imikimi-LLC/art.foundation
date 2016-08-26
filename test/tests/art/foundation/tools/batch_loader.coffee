@@ -1,5 +1,5 @@
 
-Foundation = require "art-foundation"
+{Foundation} = Neptune.Art
 log = Foundation.log
 
 suite "Art.Foundation.Tools.BatchLoader", ->

@@ -1,5 +1,5 @@
 
-Foundation = require "art-foundation"
+{Foundation} = Neptune.Art
 
 suite "Art.Foundation.Tools.Stat", ->
   test "average, min, max, samples", ->

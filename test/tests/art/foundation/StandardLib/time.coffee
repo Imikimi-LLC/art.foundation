@@ -1,5 +1,5 @@
 
-Foundation = require "art-foundation"
+{Foundation} = Neptune.Art
 {stackTime, log, currentSecond} = Foundation
 
 suite "Art.Foundation.StandardLib.Time", ->

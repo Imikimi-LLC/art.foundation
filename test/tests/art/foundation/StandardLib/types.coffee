@@ -1,7 +1,6 @@
-
-{Map, inspect} = require "art-foundation"
-
 {
+  Map
+  inspect
   isArray
   isString
   isFunction
@@ -13,7 +12,7 @@
   present
   isPromise
   Map
-} = require "art-foundation"
+} = Neptune.Art.Foundation
 
 suite "Art.Foundation.StandardLib.Types", ->
   test "isPromise Promise.resolve()", -> assert.eq true, isPromise Promise.resolve()

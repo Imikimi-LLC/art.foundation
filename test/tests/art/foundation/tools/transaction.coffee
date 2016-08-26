@@ -1,5 +1,5 @@
 
-Foundation = require "art-foundation"
+{Foundation} = Neptune.Art
   # 'lib/art/atomic'
   # point = Atomic.point
 clone = Foundation.Clone.clone

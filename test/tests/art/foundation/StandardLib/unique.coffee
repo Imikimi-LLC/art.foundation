@@ -1,5 +1,5 @@
 
-Foundation = require "art-foundation"
+{Foundation} = Neptune.Art
 Unique = Foundation.Unique
 
 suite "Art.Foundation.StandardLib.Unique", ->

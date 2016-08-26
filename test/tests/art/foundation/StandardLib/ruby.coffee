@@ -1,5 +1,5 @@
 
-Foundation = require "art-foundation"
+{Foundation} = Neptune.Art
 {rubyTrue, rubyFalse, rubyOr, rubyAnd, inspect} = Foundation
 
 suite "Art.Foundation.StandardLib.Ruby.rubyTrue and rubyFalse", ->

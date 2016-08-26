@@ -1,5 +1,5 @@
 
-Foundation = require "art-foundation"
+{Foundation} = Neptune.Art
 {toInspectedObjects, inspectedObjectLiteral, log} = Foundation
 
 suite "Art.Foundation.Inspect.toInspectedObjects", ->
