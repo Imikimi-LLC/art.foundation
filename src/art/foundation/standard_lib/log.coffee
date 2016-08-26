@@ -1,6 +1,6 @@
 Inspect = require './inspect/namespace'
 {callStack} = require './call_stack'
-{isString} = require "../standard_lib"
+{isString} = require "./types"
 
 module.exports = class Log
   # autodetect context from

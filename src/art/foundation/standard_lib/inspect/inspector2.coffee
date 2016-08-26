@@ -1,12 +1,11 @@
-StandardLib = require '../../standard_lib'
-BaseObject =       require "../base_object"
+MinimalBaseObject =       require "../MinimalBaseObject"
 Map =              require "../map"
 Inspected =        require "./inspected"
 
+{escapeJavascriptString} = require '../string'
 {
-  escapeJavascriptString,
   isString, isArray, isFunction, isObject, isPlainObject, isClass, isDate, isRegExp, objectName, isBrowserObject
-} = StandardLib
+} = require '../types'
 
 isHTMLImageElement = if self.HTMLImageElement
   (obj) -> obj instanceof HTMLImageElement
@@ -20,7 +19,7 @@ parentString = (distance) =>
     when 2 then "great grandparent"
     else "great^#{distance-1} grandparent"
 
-module.exports = class Inspector2 extends BaseObject
+module.exports = class Inspector2 extends MinimalBaseObject
 
   constructor: (options = {})->
     @withImages = options.withImages

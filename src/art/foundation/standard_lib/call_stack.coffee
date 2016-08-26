@@ -1,4 +1,5 @@
-{isString, parseUrl} = require '../standard_lib'
+{isString} = require './types'
+{parseUrl} = require './parse_url'
 {inspect} = require './inspect'
 
 # TODO: switch to using https://github.com/stacktracejs/stacktrace.js

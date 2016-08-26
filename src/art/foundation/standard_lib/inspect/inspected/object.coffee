@@ -1,5 +1,5 @@
-BaseObject = require "../../base_object"
-module.exports = class Object extends BaseObject
+MinimalBaseObject = require "../../MinimalBaseObject"
+module.exports = class Object extends MinimalBaseObject
   constructor: (@properties, @instanceOf, @originalObject) ->
     super
     @length = if @properties then self.Object.keys(@properties).length else 0

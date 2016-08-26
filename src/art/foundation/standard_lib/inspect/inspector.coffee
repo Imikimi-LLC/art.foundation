@@ -1,12 +1,11 @@
-StandardLib = require '../../standard_lib'
 Map = require "../map"
 
+{escapeJavascriptString} = require '../string'
 {
-  escapeJavascriptString
   objectName
   isString, isArray, isFunction, isObject, isClass, isBrowserObject
   isPlainObject, isPlainArray
-} = StandardLib
+} = require '../types'
 
 module.exports = class Inspector
   @unquotablePropertyRegex: /^([0-9]+|[_a-zA-Z][_0-9a-zA-Z]*)$/

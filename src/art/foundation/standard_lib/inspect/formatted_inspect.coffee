@@ -1,4 +1,6 @@
-{isString, isPlainObject, isPlainArray, max, pad, isFunction} = require '../../standard_lib'
+{isString, isPlainObject, isPlainArray, isFunction} = require '../types'
+{max} = Math
+{pad} = require '../string'
 {inspect} = require './inspector'
 {toInspectedObjects} = require './to_inspected_objects'
 

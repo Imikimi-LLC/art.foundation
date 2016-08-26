@@ -1,14 +1,13 @@
 StandardLib = require '../standard_lib'
 WebpackHotLoader = require './webpack_hot_loader'
-{callStack} = require './call_stack'
-Log = require './log'
-
-{inspectedObjectLiteral} = require './inspect/inspected_object_literal'
 
 {
   capitalize, decapitalize, log, extendClone
   isFunction, objectName, isPlainObject, functionName, isString
   Unique
+  callStack
+  Log
+  inspectedObjectLiteral
 } = StandardLib
 
 {nextUniqueObjectId} = Unique

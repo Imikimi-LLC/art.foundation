@@ -1,6 +1,6 @@
-BaseObject = require '../../base_object'
+MinimalBaseObject = require '../../MinimalBaseObject'
 
-module.exports = class Array extends BaseObject
+module.exports = class Array extends MinimalBaseObject
   constructor: (inspectedArray) ->
     super
     @array = inspectedArray

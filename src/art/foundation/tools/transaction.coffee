@@ -61,8 +61,8 @@ StandardLib = require '../standard_lib'
 ClassSystem = require '../class_system'
 SingleObjectTransaction = require './single_object_transaction'
 
-{rubyTrue, eq, inspect} = StandardLib
-{BaseObject, Map, cloneByStructure} = ClassSystem
+{rubyTrue, eq, inspect, Map, cloneByStructure} = StandardLib
+{BaseObject} = ClassSystem
 
 module.exports = class Transaction extends BaseObject
   @SingleObjectTransaction: SingleObjectTransaction

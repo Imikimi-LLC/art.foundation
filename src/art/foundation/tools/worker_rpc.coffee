@@ -2,8 +2,8 @@ StandardLib = require '../standard_lib'
 ClassSystem = require '../class_system'
 WebWorker = require './web_worker'
 
-{Promise, isPlainArray, isFunction, isString, mergeInto} = StandardLib
-{BaseObject, log} = ClassSystem
+{Promise, log, isPlainArray, isFunction, isString, mergeInto} = StandardLib
+{BaseObject} = ClassSystem
 {isWebWorker} = WebWorker
 
 ###

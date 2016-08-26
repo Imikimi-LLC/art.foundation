@@ -1,8 +1,8 @@
 StandardLib = require '../standard_lib'
 ClassSystem = require '../class_system'
 
-{removeFirstMatch, eq, inspect, rubyTrue}  = StandardLib
-{BaseObject, Map, cloneByStructure} = ClassSystem
+{Map, cloneByStructure, removeFirstMatch, eq, inspect, rubyTrue}  = StandardLib
+{BaseObject} = ClassSystem
 
 module.exports = class SingleObjectTransaction extends BaseObject
 

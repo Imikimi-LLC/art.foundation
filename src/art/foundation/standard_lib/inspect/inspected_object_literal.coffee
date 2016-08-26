@@ -1,5 +1,4 @@
-StandardLib = require '../../standard_lib'
-{compare} = StandardLib
+{compare} = require '../eq'
 
 module.exports = class InspectedObjectLiteral
   @inspectedObjectLiteral: (literal) -> new InspectedObjectLiteral literal

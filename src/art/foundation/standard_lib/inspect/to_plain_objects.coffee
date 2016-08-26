@@ -1,11 +1,4 @@
-Inspector = require  "./inspector"
-{inspect} = Inspector
-StandardLib = require '../../standard_lib'
-{
-  deepMap, isPlainArray, isPlainObject, isClass, isString, isFunction, pluralize, compare
-  escapeJavascriptString
-  compactFlatten
-} = StandardLib
+{deepMap, isPlainArray, isPlainObject, isFunction} = require '../types'
 {inspectedObjectLiteral} = require './inspected_object_literal'
 
 module.exports = class PlainObjects

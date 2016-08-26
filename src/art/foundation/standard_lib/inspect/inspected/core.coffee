@@ -1,5 +1,5 @@
-BaseObject = require '../../base_object'
-module.exports = class Core extends BaseObject
+MinimalBaseObject = require '../../MinimalBaseObject'
+module.exports = class Core extends MinimalBaseObject
   constructor: (value) ->
     super
     @value = value

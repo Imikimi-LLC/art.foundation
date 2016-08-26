@@ -13,8 +13,8 @@ populateClone would need to take an additional argument - the clone function to 
 Foundation = require "./namespace"
 Map = require "./map"
 
-StandardLib = require '../standard_lib'
-{Unique, inspect} = StandardLib
+Unique  = require './unique'
+{inspect} = require './inspect'
 
 uniquePropertyName = Unique.PropertyName
 

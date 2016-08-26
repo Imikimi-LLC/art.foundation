@@ -17,8 +17,8 @@ Arrays and Objects are assigned a unique id using the Foundation.Unique library.
 "0", "", null, undefined and 0 are all different unique keys and can each have unique values.
 
 ###
-StandardLib = require '../standard_lib'
-{Unique, capitalize} = StandardLib
+Unique  = require './unique'
+MinimalBaseObject = require './MinimalBaseObject'
 
 class Node
   constructor: (key, value, prev, next) ->
@@ -41,7 +41,7 @@ class Node
 
 # this class exists because javascript hash keys must be strings
 # this simple and inefficient class allows us to use objects as keys
-module.exports = class Map
+module.exports = class Map extends MinimalBaseObject
   @inverseMap: (array) ->
     result = new Map
     result.set v, k for v, k in array
@@ -51,17 +51,6 @@ module.exports = class Map
     @_length = 0
     @_map = {}
     @_first = @_last = null
-
-  propGetterName = (prop) -> "get" + capitalize prop
-
-  @_addGetter: (prop, getter) ->
-    @::[propGetterName prop] = getter
-    Object.defineProperty @::, prop, get: getter, configurable: yes
-    prop
-
-  @getter: (map) ->
-    @_addGetter prop, getter for prop, getter of map
-    map
 
   @getter
     length: -> @_length
