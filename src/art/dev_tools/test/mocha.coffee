@@ -1,4 +1,4 @@
-{log} = require 'art-foundation'
+{log, isFunction, isPlainObject, merge} = require 'art-foundation'
 chai = require 'art-foundation/src/art/dev_tools/test/art_chai'
 self.assert = chai.assert
 
@@ -60,12 +60,39 @@ class NestedSuites
     self.suite = (name, f) =>
       @addSuite name, f
 
-    defineAllTests chai
+    defineSuitesByNamespaces defineAllTests chai
 
     self.suite = oldSuite
     mocha?.setup 'tdd'
 
     @_createMochaSuites()
+
+###
+IN: rootNamespace
+EFFECT:
+  Traverses all of rootNamespace looking for modules with a 'suite' function.
+  When found, creates a suite with the namespacePath of that module and evalutest
+  the module's suite function in that suite.
+###
+defineSuitesByNamespaces = (namespace, rootNamespacePath) ->
+  {namespacePath, namespaces, moduleNames} = namespace
+  rootNamespacePath ||= namespacePath + "."
+  [..., relativeNamespacePath] = namespacePath.split rootNamespacePath
+  for ns in namespaces
+    defineSuitesByNamespaces ns, rootNamespacePath
+  for modName in moduleNames
+    mod = namespace[modName]
+    if isFunction mod.suite
+      suite "#{relativeNamespacePath}.#{modName}", mod.suite
+    else if isPlainObject mod.suite
+      defineSuitesByObjectStructure mod.suite, "#{relativeNamespacePath}.#{modName}"
+
+defineSuitesByObjectStructure = (object, namespacePath) ->
+  for k, v of object
+    if isFunction v
+      suite "#{namespacePath}.#{k}", v
+    else if isPlainObject v
+      defineSuitesByObjectStructure v, "#{namespacePath}.#{k}"
 
 module.exports = class MyMocha
   @assert: chai.assert
