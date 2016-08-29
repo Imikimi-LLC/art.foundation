@@ -223,6 +223,7 @@ module.exports = class Validator extends BaseObject
       throw
         invalidFields: @invalidFields fields
         missingFields: @missingFields fields
+        fields: fields
 
   preUpdateSync: (fields) ->
     if @presentFieldsValid fields
