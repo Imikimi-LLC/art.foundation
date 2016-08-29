@@ -35,14 +35,14 @@ format = (val) ->
   formattedInspect val, maxLength
 
 failWithExpectedMessage = (context, a, verb, b, verb2, c) ->
-  assert.fail a, b, compactFlattenJoin "\n\n", [
+  assert.fail a, b, compactFlattenJoin("\n\n", [
     "expected"
     indent format a
     verb
     indent format b
     [verb2, indent format c] if verb2
-    "Context: #{context}\n" if context
-  ]
+    "Context: #{context}" if context
+  ]) + "\n"
 
 # generalize this if we have more assert functions with TWO binary tests
 assert.within = (a, b, c, context) ->
