@@ -6,10 +6,23 @@ module.exports = suite:
     test "new Validator", ->
       new Validator
 
+  exclusive: ->
+    test "exclusive", ->
+      v = new Validator {id: 'trimmedString'}, exclusive: true
+      v.preCreate id: "hi"
+      .then -> assert.rejects v.preCreate id: "id", foo: "bar"
+
+    test "inclusive", ->
+      v = new Validator id: 'trimmedString'
+      v.preCreate id: "hi"
+      .then -> v.preCreate id: "id", foo: "bar"
+
   trimmedString: ->
     test "id: 'trimmedString'", ->
       v = new Validator id: 'trimmedString'
-      assert.rejects v.preCreate id: 123
+      v.preCreate id: "ok"
+      .then -> v.preCreate {}
+      .then -> assert.rejects v.preCreate id: 123
 
     test "required: 'trimmedString'", ->
       v = new Validator id: required: 'trimmedString'

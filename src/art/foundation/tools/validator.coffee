@@ -9,6 +9,8 @@ StandardLib = require '../standard_lib'
   present
 } = StandardLib
 
+{validStatus} = require './communication_status'
+
 ###
 NOTES:
 
@@ -19,15 +21,19 @@ NOTES:
   TODO?: We could add postValidators to allow you to validate AFTER the preprocessor...
 
 USAGE:
-  new Validator validatorFieldsProps
+  new Validator validatorFieldsProps, options
+
     IN:
       validatorFieldsProps:
         plain object with zero or more field-validations defined:
-          fieldName: validatorFieldProps
+          fieldName: fieldProps
+      options:
+        exclusive: true/false
+          if true, only fields listed in validatorFieldsProps are allowed.
 
-    validatorFieldProps:
+    fieldProps:
       string or plainObject
-      string: selects validatorFieldProps from one of the standard @fieldTypes (see below)
+      string: selects fieldProps from one of the standard @fieldTypes (see below)
       plainObject: (all fields are optional)
 
         validate: (v) -> true/false
@@ -40,17 +46,31 @@ USAGE:
             after validation succeeds,
             value = preprocess value
 
-        required: true/false
-          when creating records, this field must be included
+        required: true/false/string
+          if true/string
+            when creating records, this field must be included
+          if string
+            fieldProps = merge fieldProps, fieldTypes[string]
 
-        requiredPresent: true/false
-          when creating records, this field must be include and 'present' (see Art.Foundation.present)
+        requiredPresent: true/false/string
+          if true/string
+            when creating records, this field must be include and 'present' (see Art.Foundation.present)
+          if string
+            fieldProps = merge fieldProps, fieldTypes[string]
 
-        type:
+        fieldType: string
+          fieldProps = merge fieldTypes[string], fieldProps
+
+        type: string
           sepecify which of the standard Json data-types this field contains
           This is not used by Validator itself, but is available for clients to reflect on field-types.
           Must be one of the values in: @dataTypes
           default: 'string'
+          NOTE: the properties from 'type'
+
+        instanceof: class
+          in addition to passing validate(), if present, the value must also be an instance of the
+          specified class
 
 EXAMPLES:
   new
@@ -130,10 +150,11 @@ module.exports = class Validator extends BaseObject
       validate: (v) -> isString(v) && v.match urlRegexp
       preprocess: (v) -> normalizeUrl v # downcase protocol and domain name
 
+    communicationStatus:
+      validate: (v) -> validStatus v
+
     trimmedString:
-      validate: (v) ->
-        log trimmedString:validate: v
-        isString v
+      validate: (v) -> isString v
       preprocess: (v) -> v.trim()
 
   # apply defaults
@@ -143,14 +164,25 @@ module.exports = class Validator extends BaseObject
 
   @normalizeFieldType: normalizeFieldType = (ft) ->
     if isPlainObject ft
-      if isString ft.required
+      if isString ft.fieldType
+        ft = merge normalizeFieldType(ft.fieldType), ft
+
+      if ft.required && ft.required != true
         ft = merge ft,
           normalizeFieldType ft.required
           required: true
-      if isString ft.requiredPresent
+
+      if ft.requiredPresent && ft.requiredPresent != true
         ft = merge ft,
           normalizeFieldType ft.requiredPresent
           requiredPresent: true
+
+      if _instanceof = ft.instanceof
+        {validate} = ft
+        ft = merge ft,
+          validate: (v) ->
+            (v instanceof _instanceof) &&
+            (!validate || validate v)
       ft
     else if isString ft
       throw new Error "invalid named fieldType: #{string}" unless ft = fieldTypes[ft]
@@ -158,9 +190,13 @@ module.exports = class Validator extends BaseObject
     else
       throw new Error "fieldType must be a string or plainObject: #{formattedInspect ft}"
 
-  constructor: (fieldDeclarationMap) ->
+  constructor: (fieldDeclarationMap, options) ->
     @_fieldProps = {}
     @addFields fieldDeclarationMap
+    if options
+      {@exclusive} = options
+
+  @property "exclusive"
 
   addFields: (fieldDeclarationMap) ->
     for field, fieldOptions of fieldDeclarationMap
@@ -199,17 +235,21 @@ module.exports = class Validator extends BaseObject
   # VALIDATION CORE
   ####################
   presentFieldValid: (fields, fieldName) ->
-    {validate} = @_fieldProps[fieldName]
-    !validate || !(value = fields[fieldName])? || validate value
+    if fieldProps = @_fieldProps[fieldName]
+      {validate} = fieldProps
+      !validate || !(value = fields[fieldName])? || validate value
+    else
+      !@exclusive
 
   requiredFieldPresent: (fields, fieldName) ->
-    {required, requiredPresent} = @_fieldProps[fieldName]
+    return true unless fieldProps = @_fieldProps[fieldName]
+    {required, requiredPresent} = fieldProps
     return false if required && !(fields[fieldName]? || fields[required]?)
     return false if requiredPresent && !present fields[fieldName]
     true
 
   presentFieldsValid: (fields) ->
-    for fieldName, _ of @_fieldProps
+    for fieldName, _ of fields
       return false unless @presentFieldValid fields, fieldName
     true
 
@@ -235,7 +275,6 @@ module.exports = class Validator extends BaseObject
   missingFields: (fields) -> name for name, _ of @_fieldProps when !@requiredFieldPresent fields, name
   invalidFields: (fields) -> name for name, _ of @_fieldProps when !@presentFieldValid fields, name
 
-
   ###################
   # PRIVATE
   ###################
@@ -244,8 +283,3 @@ module.exports = class Validator extends BaseObject
     @_fieldProps[field] = merge null,
       fieldTypes[options.type]
       options
-      if _instanceof = options.instanceof
-        {validate} = options
-        validate: (v) ->
-          (v instanceof _instanceof) &&
-          (!validate || validate v)
