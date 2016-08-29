@@ -132,6 +132,9 @@ suite "Art.Foundation.StandardLib.Types.present", ->
 
   test "present strings", ->
     assert.eq false, present ''
+    assert.eq false, present '   \t    \n   \n'
+    assert.eq ' j', present ' j'
+    assert.eq "j\n", present "j\n"
     assert.eq 'jh', present 'jh'
 
   test "present null, undefined, false", ->

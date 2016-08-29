@@ -90,8 +90,10 @@ module.exports = class Types
   @present: (obj, returnIfNotPresent = false) ->
     present = if isFunction obj?.present
       obj.present()
+    else if isString obj
+      !obj.match /^\s*$/
     else
-      obj != "" && obj != undefined && obj != null && obj != false
+      obj != undefined && obj != null && obj != false
     if present then obj else returnIfNotPresent
 
   @isObject: isObject = (obj) =>
