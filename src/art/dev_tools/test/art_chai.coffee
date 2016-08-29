@@ -32,18 +32,16 @@ addTester = (name, tester) ->
 
 maxLength = 30
 format = (val) ->
-  val = formattedInspect val, maxLength
-  if val.length >= maxLength || val.match /\n/
-    "\n\n#{indent val}\n"
-  else
-    val
+  formattedInspect val, maxLength
 
 failWithExpectedMessage = (context, a, verb, b, verb2, c) ->
-  assert.fail a, b,compactFlattenJoin " ", [
-    "expected #{format a}"
-    "#{verb} #{format b}"
-    "and #{verb} #{format c}" if verb2
-    "\nContext: #{context}\n" if context
+  assert.fail a, b, compactFlattenJoin "\n\n", [
+    "expected"
+    indent format a
+    verb
+    indent format b
+    [verb2, indent format c] if verb2
+    "Context: #{context}\n" if context
   ]
 
 # generalize this if we have more assert functions with TWO binary tests
@@ -56,10 +54,16 @@ assert.within = (a, b, c, context) ->
 # returns promise
 # Either use as last line of test, or follow with .then ->
 assert.rejects = (promise, context) ->
-  context || = "The promise"
-  str = "#{context} should be rejected."
-  promise.then -> Promise.reject str
-  .catch (v) -> throw v if v == str
+  uniqueObject = {}
+  promise.then (v) ->
+    uniqueObject.value = v
+    Promise.reject uniqueObject
+  .catch (v) ->
+    if v == uniqueObject
+      failWithExpectedMessage context,
+        promise
+        "to be rejected. Instead, it succeeded with:"
+        v.value
 
 addTester name, tester for name, tester of Types when name.match /^is/
 addTester name, Foundation[name] for name in wordsArray "gt gte lte lt eq neq floatEq"
