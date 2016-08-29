@@ -5,7 +5,57 @@ StandardLib = require '../standard_lib'
   isNumber, isString, isPlainObject, isPlainArray
   Promise
   isBoolean
+  formattedInspect
+  present
 } = StandardLib
+
+###
+NOTES:
+
+  validators are evaluated before preprocessors
+
+  preprocessors should NOT throw validation-related errors
+
+  TODO?: We could add postValidators to allow you to validate AFTER the preprocessor...
+
+USAGE:
+  new Validator validatorFieldsProps
+    IN:
+      validatorFieldsProps:
+        plain object with zero or more field-validations defined:
+          fieldName: validatorFieldProps
+
+    validatorFieldProps:
+      string or plainObject
+      string: selects validatorFieldProps from one of the standard @fieldTypes (see below)
+      plainObject: (all fields are optional)
+
+        validate: (v) -> true/false
+          whenever this field is included in an update OR create operation,
+            validate() must return true
+          NOTE: is evaluated BEFORE preprocess
+
+        preprocess: (v1) -> v2
+          whenever this field is included in an update OR create operation,
+            after validation succeeds,
+            value = preprocess value
+
+        required: true/false
+          when creating records, this field must be included
+
+        requiredPresent: true/false
+          when creating records, this field must be include and 'present' (see Art.Foundation.present)
+
+        type:
+          sepecify which of the standard Json data-types this field contains
+          This is not used by Validator itself, but is available for clients to reflect on field-types.
+          Must be one of the values in: @dataTypes
+          default: 'string'
+
+EXAMPLES:
+  new
+
+###
 
 {BaseObject} = require '../class_system'
 
@@ -81,12 +131,32 @@ module.exports = class Validator extends BaseObject
       preprocess: (v) -> normalizeUrl v # downcase protocol and domain name
 
     trimmedString:
+      validate: (v) ->
+        log trimmedString:validate: v
+        isString v
       preprocess: (v) -> v.trim()
 
   # apply defaults
   for k, v of fieldTypes
     v.type ||= stringDataType
     v.validate ||= dataTypes[v.type].validate
+
+  @normalizeFieldType: normalizeFieldType = (ft) ->
+    if isPlainObject ft
+      if isString ft.required
+        ft = merge ft,
+          normalizeFieldType ft.required
+          required: true
+      if isString ft.requiredPresent
+        ft = merge ft,
+          normalizeFieldType ft.requiredPresent
+          requiredPresent: true
+      ft
+    else if isString ft
+      throw new Error "invalid named fieldType: #{string}" unless ft = fieldTypes[ft]
+      ft
+    else
+      throw new Error "fieldType must be a string or plainObject: #{formattedInspect ft}"
 
   constructor: (fieldDeclarationMap) ->
     @_fieldProps = {}
@@ -128,14 +198,24 @@ module.exports = class Validator extends BaseObject
   ####################
   # VALIDATION CORE
   ####################
+  presentFieldValid: (fields, fieldName) ->
+    {validate} = @_fieldProps[fieldName]
+    !validate || !(value = fields[fieldName])? || validate value
+
+  requiredFieldPresent: (fields, fieldName) ->
+    {required, requiredPresent} = @_fieldProps[fieldName]
+    return false if required && !(fields[fieldName]? || fields[required]?)
+    return false if requiredPresent && !present fields[fieldName]
+    true
+
   presentFieldsValid: (fields) ->
-    for fieldName, {validate} of @_fieldProps when validate && (value = fields[fieldName])? && !validate value
-      return false
+    for fieldName, _ of @_fieldProps
+      return false unless @presentFieldValid fields, fieldName
     true
 
   requiredFieldsPresent: (fields) ->
-    for fieldName, {required} of @_fieldProps when required && !(fields[fieldName]? || fields[required]?)
-      return false
+    for fieldName, _ of @_fieldProps
+      return false unless @requiredFieldPresent fields, fieldName
     true
 
   ####################
@@ -152,18 +232,15 @@ module.exports = class Validator extends BaseObject
   ####################
   # VALIDATION INFO CORE
   ####################
-  missingFields: (fields) ->
-    for fieldName, {required} of @_fieldProps when required && !(fields[fieldName]? || fields[required]?)
-      fieldName
+  missingFields: (fields) -> name for name, _ of @_fieldProps when !@requiredFieldPresent fields, name
+  invalidFields: (fields) -> name for name, _ of @_fieldProps when !@presentFieldValid fields, name
 
-  invalidFields: (fields) ->
-    for fieldName, {validate} of @_fieldProps when validate && (value = fields[fieldName])? && !validate value
-      fieldName
 
   ###################
   # PRIVATE
   ###################
   _addField: (field, options) ->
+    options = normalizeFieldType options
     @_fieldProps[field] = merge null,
       fieldTypes[options.type]
       options
