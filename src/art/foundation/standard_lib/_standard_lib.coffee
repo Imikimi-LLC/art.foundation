@@ -17,6 +17,7 @@ module.exports = [
   require "./string_case"
   require "./time"
   require "./types"
+  require "./CommonJs"
 
   require "./inspect"
   require "./clone"

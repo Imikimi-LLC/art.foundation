@@ -9,6 +9,7 @@ WebpackHotLoader = require './webpack_hot_loader'
   Log
   inspectedObjectLiteral
   MinimalBaseObject
+  getModuleBeingDefined
 } = StandardLib
 
 {nextUniqueObjectId} = Unique
@@ -20,6 +21,10 @@ module.exports = class BaseObject extends MinimalBaseObject
   @resetStats: =>
     @objectsCreated = 0
     @objectsCreatedByType = {}
+
+  # override to dynamically set a class's name (useful for programmatically generated classes)
+  # NOTE: must use klass.getName() and not klass.name if you want to "see" dynamically assigned class-names
+  @_name: null
 
   ###
   NOTE: only hasOwnProperties are considered! Inherited properties are not touched.
@@ -81,19 +86,18 @@ module.exports = class BaseObject extends MinimalBaseObject
   ###
   @imprintFromClass: (updatedKlass) ->
     unless updatedKlass == @
-      oldNamespace = @namespace
+      {namespace, namespacePath, _name} = @
       oldConstructor = @::constructor
 
       imprintObject @, updatedKlass, true
       imprintObject @::, updatedKlass::, false
 
       @::constructor = oldConstructor
-      @namespace = oldNamespace
-    @
+      @namespace = namespace
+      @namespacePath = namespacePath
+      @_name = _name
 
-  # @name is not settable, so we have @_name as an override for use with dynamically generated classes
-  @getName: ->
-    @_name || @name
+    @
 
   ###
   TODO: consolidated on one inspector system
@@ -101,46 +105,79 @@ module.exports = class BaseObject extends MinimalBaseObject
     The purpose was to resolve recurson on recursive structures.
     But it ended up being ungainly most the time.
   ###
-  @createWithPostCreate: (klass) -> klass?.postCreate() || klass
+  @createWithPostCreate: (klass) ->
+    createHotWithPostCreate null, klass
 
   ###
   IN:
     _module should be the CommonJS 'module'
     klass: class object which extends BaseObject
 
-  OUT: liveClass.postCreate(
-    hotReloaded
-    classModuleState: {liveClass, hotUpdatedFromClass}
-    _module
-  )
+  liveClass:
+    On the first load, liveClass gets set.
+    Each subsequent hot-load UPDATES liveClass,
+    but liveClass always points to the initially created class object.
+
+  OUT: the result of the call to liveClass.postCreate()
+
+  postCreate is passed:
+    hotReloaded:            # true if this is anything but the initial load
+    classModuleState:
+      liveClass:            # the original liveClass
+      hotUpdatedFromClass:  # the most recently hot-loaded class
+      hotReloadVersion:     # number starting at 0 and incremented with each hot reload
+    _module:                # the CommonJs module
 
   EFFECTS:
-    liveClass.imprintFromClass newKlass
-    liveClass.postCreate hotReloaded, classModuleState, hotUpdatedFromClass, _module
+    The following two methods are invoked on liveClass:
+
+      if hot-reloading
+        liveClass.imprintFromClass klass
+
+      # always:
+      liveClass.postCreate hotReloaded, classModuleState, _module
 
   ###
-  @createHotWithPostCreate: (_module, hotUpdatedFromClass) ->
+  @createHotWithPostCreate: createHotWithPostCreate = (_module = getModuleBeingDefined(), klass) ->
+    # if hot reloading is not supported:
+    return klass unless klass?.postCreate
+    return klass.postCreate(false, {}, _module) || klass unless _module?.hot
+
+    # hot reloading supported:
     WebpackHotLoader.runHot _module, (moduleState) ->
-      classModuleState = moduleState[hotUpdatedFromClass.getName()] ||=
-        liveClass: null
-        hotUpdatedFromClass: null
-        hotReloadVersion: 0
-      classModuleState.hotReloadVersion++
-      liveClass = classModuleState.liveClass ||= hotUpdatedFromClass
-      classModuleState.hotUpdatedFromClass = hotUpdatedFromClass
+      if classModuleState = moduleState[klass.getName()]
+        # hot reloaded!
+        {liveClass} = classModuleState
+        hotReloaded = true
 
-      hotReloaded = liveClass != hotUpdatedFromClass
-      hotReloaded && Log.log "Foundation.BaseObject: subClass hot-reload":
-        subClass: liveClass.getNamespacePath()
-        version: classModuleState.hotReloadVersion
+        classModuleState.hotReloadVersion++
+        classModuleState.hotUpdatedFromClass = klass
 
-      liveClass.imprintFromClass hotUpdatedFromClass
-      liveClass._hotClassModuleState = classModuleState
-      liveClass.postCreate(
-        hotReloaded
-        classModuleState
-        _module
-      )
+        # set namespaceProps in case it uses them internally
+        # NOTE: everyone else will access these props through liveClass, which is already correct
+        liveClass.namespace._setChildNamespaceProps liveClass.getName(), klass
+
+        klass._name = liveClass._name
+        liveClass.imprintFromClass klass
+
+        Log.log "Foundation.BaseObject: class hot-reload":
+          class: liveClass.getNamespacePath()
+          version: classModuleState.hotReloadVersion
+      else
+        # initial load
+        hotReloaded = false
+
+        klass._hotClassModuleState =
+        moduleState[klass.getName()] = classModuleState =
+          liveClass: liveClass = klass
+          hotUpdatedFromClass: null
+          hotReloadVersion: 0
+
+      liveClass.postCreate
+        hotReloadEnabled: true
+        hotReloaded:      hotReloaded
+        classModuleState: classModuleState
+        module:           _module
 
   ###
   called every load
