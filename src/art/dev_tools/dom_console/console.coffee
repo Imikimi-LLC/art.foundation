@@ -164,7 +164,7 @@ module.exports = createWithPostCreate class Console extends BaseObject
     # domEl = wrapDomElement domEl, "<#{options.tag}/>" if options && options.tag
     if label
       domEl = Div null,
-        Div label, style: color: labelColor
+        Div label, style: color: labelColor, fontWeight: "bold"
         Div
           style: paddingLeft: "10px"
           domEl
@@ -340,9 +340,19 @@ module.exports = createWithPostCreate class Console extends BaseObject
   logSerializer = new Promise.Serializer
   logCount = 1
   logCore: (m, callStack, name, options = {}) ->
+    formatSystemMessage = (params) ->
+      {success, failure, pending} = params
+      labelColor:
+        if success then "green"
+        else if failure then "#a00"
+        else if pending then "blue"
+
+      label: "#{success || failure || pending}: (log ##{localLogCount})"
+
     localLogCount = logCount
     if hasPromises = containsPromises m
-      options = merge options, label: "log #{localLogCount}: RESOLVING PROMISES", labelColor: "#444"
+      options = merge options, formatSystemMessage pending: "RESOLVING PROMISES"
+
     ret = logSerializer.then => new Promise (resolve) =>
       console.log m
       options.treeView = true
@@ -361,8 +371,8 @@ module.exports = createWithPostCreate class Console extends BaseObject
     if hasPromises
       deepAll m, (promiseResult) -> 'promise.then': promiseResult
       .then (resolvedM) =>
-        @logCore resolvedM, callStack, name, merge options, label: "log #{localLogCount}: ALL PROMISES RESOLVED", labelColor: "green"
+        @logCore resolvedM, callStack, name, merge options, formatSystemMessage success: "ALL PROMISES RESOLVED"
       .catch (rejected) =>
-        @logCore rejected, callStack, name, merge options, label: "log #{localLogCount}: ONE OR MORE PROMISES WERE REJECTED", labelColor: "#a00"
+        @logCore rejected, callStack, name, merge options, formatSystemMessage failure: "ONE OR MORE PROMISES WERE REJECTED"
     logCount++
     ret
