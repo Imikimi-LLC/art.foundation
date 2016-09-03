@@ -51,7 +51,8 @@ module.exports = class Types
       typeof obj is "function" && (
         # any CoffeeScript class which inherits from another has __super__
         (typeof obj.__super__ is "object") ||
-        # We can't detect CoffeeScript classes which don't inherit since they are just Functions
+        # We can't easily detect CoffeeScript classes which don't inherit since they are just Functions
+        # so we do this surrogate test:
         (obj.prototype && hasKeys obj.prototype)
       )
     )
