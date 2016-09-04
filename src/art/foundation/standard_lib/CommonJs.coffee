@@ -17,6 +17,5 @@ module.exports = class CommonJs
     else
       a
 
-    console.log "defineModule mod: #{mod?.getName?() || mod}, #{mod?.createWithPostCreate}"
     _module.exports = mod?.createWithPostCreate?(mod) || mod
     definingModule = lastModule
