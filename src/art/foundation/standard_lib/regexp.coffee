@@ -3,12 +3,14 @@ module.exports = class Regexp
   @escapeRegExp: (string) -> string.replace /[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"
 
   @findUrlProtocolRegexp: /([\w-]+)(:\/\/)/
-  @findDomainRegexp:      /[\w]+(?:-[\w]+)*(?:\.[\w]+(?:-[\w]+)*)*(?:\.[a-z]{2,20})?/
+  @findDomainRegexp:      /localhost|[\w]+(?:-[\w]+)*(?:\.[\w]+(?:-[\w]+)*)*(?:\.[a-z]{2,20})/
   @urlQueryParamsRegexp:  /(?:[-+=&*._\w]|%[a-f\d]{2})+/i
   @findUrlPathRegexp:     /(?:\/~?(?:[-+*._\w]|%[a-f\d]{2})*)*/
   @findUrlPortRegexp:     /(\:)(\d+)/
 
-  @emailRegexp: ///^([_\w-]+(?:\.[_\w]+)*)@(#{@findDomainRegexp.source})$///i
+  @findEmailRegexp: ///([_\w-]+(?:\.[_\w]+)*)@(#{@findDomainRegexp.source})///i
+
+  @emailRegexp: ///^#{@findEmailRegexp.source}$///i
 
   @numberRegexp: /([-]?\.[0-9]+)|([-]?[0-9]+(\.[0-9]+)?)/
 
