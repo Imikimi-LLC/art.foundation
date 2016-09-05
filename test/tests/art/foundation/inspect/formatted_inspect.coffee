@@ -1,7 +1,7 @@
 
 {Foundation} = Neptune.Art
 {log} = Foundation
-{formattedInspect, inspect, toInspectedObjects, inspectedObjectLiteral, BaseObject} = Foundation
+{formattedInspect, inspect, toInspectedObjects, inspectedObjectLiteral, BaseObject, stripTrailingWhitespace} = Foundation
 
 suite "Art.Foundation.Inspect.formattedInspect.singleLine", ->
   class Foo extends BaseObject
@@ -39,9 +39,6 @@ suite "Art.Foundation.Inspect.formattedInspect.singleLine", ->
   testFI (new Foo), "<#{Foo.namespacePath}>"
 
 suite "Art.Foundation.Inspect.formattedInspect.multiLine", ->
-
-  stripTrailingWhitespace = (a) ->
-    a.split(/[ ]*\n/).join("\n").split(/[ ]*$/)[0]
 
   testFIMultiLine = (input, out) ->
     test str = "formattedInspect #{inspect input}, 0", ->

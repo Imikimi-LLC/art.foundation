@@ -1,6 +1,6 @@
 {isString, isPlainObject, isPlainArray, isFunction} = require '../types'
 {max} = Math
-{pad} = require '../string'
+{pad, stripTrailingWhitespace} = require '../string'
 {inspect} = require './inspector'
 {toInspectedObjects} = require './to_inspected_objects'
 
@@ -133,4 +133,4 @@ alignTabStopsByBlocks = (linesString) ->
 
 module.exports = class FormattedInspect
   @formattedInspect: (m, maxLineLength = 80) ->
-    alignTabStopsByBlocks formattedInspectRecursive toInspectedObjects(m), maxLineLength
+    stripTrailingWhitespace alignTabStopsByBlocks formattedInspectRecursive toInspectedObjects(m), maxLineLength
