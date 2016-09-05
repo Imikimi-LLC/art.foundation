@@ -40,9 +40,12 @@ suite "Art.Foundation.Inspect.formattedInspect.singleLine", ->
 
 suite "Art.Foundation.Inspect.formattedInspect.multiLine", ->
 
+  stripTrailingWhitespace = (a) ->
+    a.split(/[ ]*\n/).join("\n").split(/[ ]*$/)[0]
+
   testFIMultiLine = (input, out) ->
     test str = "formattedInspect #{inspect input}, 0", ->
-      o = formattedInspect input, 0
+      o = stripTrailingWhitespace formattedInspect input, 0
       log inspect: -> str
       log input
       log o
@@ -51,11 +54,15 @@ suite "Art.Foundation.Inspect.formattedInspect.multiLine", ->
   testFIMultiLine [1, 2], "1\n2"
   testFIMultiLine [[1, 2], [3,4]], """
     []
+
       1
       2
+
     []
+
       3
       4
+
     """
 
   testFIMultiLine ['string', foo: 'bar'], """
@@ -68,8 +75,26 @@ suite "Art.Foundation.Inspect.formattedInspect.multiLine", ->
     """
   testFIMultiLine a:1, b:2, "a: 1\nb: 2"
   testFIMultiLine a:1, wxyz:4, "a:    1\nwxyz: 4"
-  testFIMultiLine a:[1,2], b:2, "a: []\n  1\n  2\nb: 2"
-  testFIMultiLine a:{a1:1, a2:2}, b:{b1:1, b2:2}, "a: \n  a1: 1\n  a2: 2\nb: \n  b1: 1\n  b2: 2"
+  testFIMultiLine a:[1,2], b:2, """
+    a: []
+
+      1
+      2
+
+    b: 2
+    """
+  testFIMultiLine a:{a1:1, a2:2}, b:{b1:1, b2:2}, """
+    a:
+
+      a1: 1
+      a2: 2
+
+    b:
+
+      b1: 1
+      b2: 2
+
+    """
   testFIMultiLine (getInspectedObjects:-> [
       "A"
       foo: "B"
