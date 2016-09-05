@@ -1,5 +1,5 @@
 Foundation = Neptune.Art.Foundation
-{Validator, isString, log} = Foundation
+{Validator, isString, log, findEmailRegexp} = Foundation
 
 module.exports = suite:
   new: ->
@@ -94,3 +94,18 @@ module.exports = suite:
       .then -> v.preCreate foo: new Bar
       .then -> v.preCreate foo: null
       .then -> assert.rejects v.preCreate foo: {}
+
+  compoundTests:->
+    test "require: validate: ->", ->
+      v = new Validator
+        foo: required: validate: (v) -> v.match ///^email\:#{findEmailRegexp.source}$///
+
+      assert.rejects v.preCreate id: 123
+      .then -> assert.rejects v.preCreate foo: "test@test.com"
+      .then -> assert.rejects v.preCreate foo: "email:me@test"
+      .then -> assert.rejects v.preCreate foo: "email:me"
+      .then -> assert.rejects v.preUpdate foo: "email:me"
+      .then -> v.preUpdate()
+      .then -> v.preCreate foo: "email:me@test.com"
+      .then -> v.preUpdate foo: "email:me@test.com"
+

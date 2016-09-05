@@ -250,12 +250,12 @@ module.exports = class Validator extends BaseObject
     true
 
   presentFieldsValid: (fields) ->
-    for fieldName, _ of fields
+    for fieldName, __ of fields
       return false unless @presentFieldValid fields, fieldName
     true
 
   requiredFieldsPresent: (fields) ->
-    for fieldName, _ of @_fieldProps
+    for fieldName, __ of @_fieldProps
       return false unless @requiredFieldPresent fields, fieldName
     true
 
@@ -273,8 +273,8 @@ module.exports = class Validator extends BaseObject
   ####################
   # VALIDATION INFO CORE
   ####################
-  missingFields: (fields) -> name for name, _ of @_fieldProps when !@requiredFieldPresent fields, name
-  invalidFields: (fields) -> name for name, _ of @_fieldProps when !@presentFieldValid fields, name
+  missingFields: (fields) -> name for name, __ of @_fieldProps when !@requiredFieldPresent fields, name
+  invalidFields: (fields) -> name for name, __ of @_fieldProps when !@presentFieldValid fields, name
 
   ###################
   # PRIVATE
