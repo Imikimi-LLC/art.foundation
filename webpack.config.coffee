@@ -5,3 +5,4 @@ module.exports = (require "art-foundation/configure_webpack")
     dependencies:
       atob: '^2.0.3'
       'promise-polyfill': '^5.2.1'
+      "commander": '^2.9.0'
