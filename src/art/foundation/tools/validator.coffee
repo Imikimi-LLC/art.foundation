@@ -61,12 +61,10 @@ USAGE:
         fieldType: string
           fieldProps = merge fieldTypes[string], fieldProps
 
-        type: string
+        dataType: string
           sepecify which of the standard Json data-types this field contains
           This is not used by Validator itself, but is available for clients to reflect on field-types.
           Must be one of the values in: @dataTypes
-          default: 'string'
-          NOTE: the properties from 'type'
 
         instanceof: class
           in addition to passing validate(), if present, the value must also be an instance of the
@@ -108,7 +106,7 @@ module.exports = class Validator extends BaseObject
     validate: (v) -> true/false
     preprocess: (v1) -> v2
     required: true/false
-    type: one of @dataTypes, default: 'string'
+    dataType: one of @dataTypes, default: 'string'
 
   You can add your own, too, but they are ignored by this class.
   ###
@@ -116,15 +114,15 @@ module.exports = class Validator extends BaseObject
   # Usage:
   #   This:           @fields webPage: @fieldTypes.id
   #   is the same as: @fields webPage: validate: (v) -> isId v
-  #   and this:       @fields webPage: type: "id"
+  #   and this:       @fields webPage: fieldType: "id"
   @fieldTypes: fieldTypes =
-    boolean:  type: booleanDataType
-    number:   type: numberDataType
+    boolean:  dataType: booleanDataType
+    number:   dataType: numberDataType
     string:   {}
-    object:   type: objectDataType
-    array:    type: arrayDataType
+    object:   dataType: objectDataType
+    array:    dataType: arrayDataType
 
-    count:    type: numberDataType
+    count:    dataType: numberDataType
 
     id:
       required: true
@@ -135,7 +133,7 @@ module.exports = class Validator extends BaseObject
       preprocess: (v) -> if isString(v) then new Date v else v
 
     timestamp: # milliseconds since 1970; to get the current timestamp: Date.now()
-      type: numberDataType
+      dataType: numberDataType
       validate:   (v) -> isNumber(v) || (v instanceof Date)
       preprocess: (v) -> if v instanceof Date then v - 0 else v
 
@@ -159,11 +157,11 @@ module.exports = class Validator extends BaseObject
 
   # apply defaults
   for k, v of fieldTypes
-    v.type ||= stringDataType
-    v.validate ||= dataTypes[v.type].validate
+    v.dataType ||= stringDataType
+    v.validate ||= dataTypes[v.dataType].validate
 
   @normalizeFieldType: normalizeFieldType = (ft) ->
-    if isPlainObject ft
+    ft = if isPlainObject ft
       if isString ft.fieldType
         ft = merge normalizeFieldType(ft.fieldType), ft
 
@@ -189,6 +187,8 @@ module.exports = class Validator extends BaseObject
       ft
     else
       throw new Error "fieldType must be a string or plainObject: #{formattedInspect ft}"
+
+    merge fieldTypes[ft.fieldType], ft
 
   constructor: (fieldDeclarationMap, options) ->
     @_fieldProps = {}
@@ -280,7 +280,4 @@ module.exports = class Validator extends BaseObject
   # PRIVATE
   ###################
   _addField: (field, options) ->
-    options = normalizeFieldType options
-    @_fieldProps[field] = merge null,
-      fieldTypes[options.type]
-      options
+    @_fieldProps[field] = normalizeFieldType options
