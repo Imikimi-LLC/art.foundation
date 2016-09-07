@@ -75,12 +75,12 @@ EFFECT:
   the module's suite function in that suite.
 ###
 defineSuitesByNamespaces = (namespace, rootNamespacePath) ->
-  {namespacePath, namespaces, moduleNames} = namespace
+  {namespacePath, namespaces, modules} = namespace
   rootNamespacePath ||= namespacePath + "."
   [..., relativeNamespacePath] = namespacePath.split rootNamespacePath
-  for ns in namespaces
+  for nsName, ns of namespaces
     defineSuitesByNamespaces ns, rootNamespacePath
-  for modName in moduleNames
+  for modName, mod of modules
     mod = namespace[modName]
     if isFunction mod.suite
       suite "#{relativeNamespacePath}.#{modName}", mod.suite

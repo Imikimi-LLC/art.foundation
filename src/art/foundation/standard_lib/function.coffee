@@ -1,5 +1,3 @@
-global.Function.prototype.getName = -> @_name || @name || "anonymousFunction"
-
 module.exports = class Function
   @fastBind: (fn, _this) ->
     switch fn.length

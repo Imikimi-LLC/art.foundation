@@ -16,11 +16,8 @@ suite "Art.Foundation.StandardLib.Regexp", ->
     assert.eq "g.mail.com".match(domainRegexp), ["g.mail.com"]
     assert.eq "g.m-ail.com".match(domainRegexp), ["g.m-ail.com"]
 
-  test "domainRegexp successes without valid root domains", ->
+  test "localhost valid", ->
     assert.eq !!"localhost".match(domainRegexp), true
-    assert.eq !!"gmail.c".match(domainRegexp), true
-    assert.eq !!"gmail.c0m".match(domainRegexp), true
-    assert.eq !!"com".match(domainRegexp), true
 
   test "domainRegexp failures", ->
     assert.eq !!".com".match(domainRegexp), false
