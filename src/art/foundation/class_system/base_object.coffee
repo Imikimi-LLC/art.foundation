@@ -141,7 +141,13 @@ module.exports = class BaseObject extends MinimalBaseObject
   @createHotWithPostCreate: createHotWithPostCreate = (_module = getModuleBeingDefined(), klass) ->
     # if hot reloading is not supported:
     return klass unless klass?.postCreate
-    return klass.postCreate(false, {}, _module) || klass unless _module?.hot
+    unless _module?.hot
+      return klass.postCreate(
+          hotReloadEnabled: false
+          hotReloaded:      false
+          classModuleState: {}
+          module:           _module
+      ) || klass
 
     # hot reloading supported:
     WebpackHotLoader.runHot _module, (moduleState) ->
@@ -181,12 +187,14 @@ module.exports = class BaseObject extends MinimalBaseObject
 
   ###
   called every load
-  IN:
+  IN: options:
     NOTE: hot-loading inputs are only set if this class created as follows:
       createHotWithPostCreate module, class Foo extends BaseObject
 
     hotReload: true/false
       true if this class was hot-reloaded
+
+    hotReloadEnabled: true/false
 
     classModuleState:
       liveClass:            the first-loaded version of the class.
@@ -203,12 +211,10 @@ module.exports = class BaseObject extends MinimalBaseObject
       just as well, and is cleaner, if any state is stored in the actual class objects and
       persisted via postCreate.
 
-    hotUpdatedFromClass: the newly loaded class object
-
-    _module: the CommonJs module object.
+    module: the CommonJs module object.
 
   ###
-  @postCreate: (hotReloaded, classModuleState, _module) -> @
+  @postCreate: ({hotReloadEnabled, hotReloaded, classModuleState, module}) -> @
 
   excludedKeys = ["__super__", "namespace", "namespacePath"].concat Object.keys Neptune.Base
   @mixInto = mixInto = (intoClass, klass, keys...)->
