@@ -70,5 +70,7 @@ addTester name, Foundation[name] for name in wordsArray "gt gte lte lt eq neq fl
 addTester "instanceof", (klass, obj) -> obj instanceof klass
 addTester "match",    (a) -> a.match if isString a then escapeRegExp a else a
 addTester "notMatch", (a) -> !a.match if isString a then escapeRegExp a else a
+addTester "same",     (a, b) -> a == b
+addTester "notSame",  (a, b) -> a != b
 
 module.exports = Chai

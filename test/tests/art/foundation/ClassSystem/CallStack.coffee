@@ -4,7 +4,7 @@
 
 rawLog = ->
 
-suite "Art.Foundation.CallStackLine", ->
+module.exports = suite: ->
   test "errorToString", ->
     assert.eq "hi", errorToString new Error "hi"
     assert.eq "hi", errorToString "hi"

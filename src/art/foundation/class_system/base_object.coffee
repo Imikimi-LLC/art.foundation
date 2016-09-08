@@ -2,14 +2,19 @@ StandardLib = require '../standard_lib'
 WebpackHotLoader = require './webpack_hot_loader'
 
 {
-  capitalize, decapitalize, log, extendClone
-  isFunction, objectName, isPlainObject, functionName, isString
+  capitalize, decapitalize, log, extendClone, clone
+  isFunction, objectName,
+  isPlainObject, functionName, isString
+  isPlainArray
   Unique
   callStack
   Log
   inspectedObjectLiteral
   MinimalBaseObject
   getModuleBeingDefined
+  concatInto
+  mergeInto
+  isString
 } = StandardLib
 
 {nextUniqueObjectId} = Unique
@@ -100,15 +105,6 @@ module.exports = class BaseObject extends MinimalBaseObject
     @
 
   ###
-  TODO: consolidated on one inspector system
-  NOTE: "inspector" parameter is part of the old inspect system
-    The purpose was to resolve recurson on recursive structures.
-    But it ended up being ungainly most the time.
-  ###
-  @createWithPostCreate: (klass) ->
-    createHotWithPostCreate null, klass
-
-  ###
   IN:
     _module should be the CommonJS 'module'
     klass: class object which extends BaseObject
@@ -138,7 +134,13 @@ module.exports = class BaseObject extends MinimalBaseObject
       liveClass.postCreate hotReloaded, classModuleState, _module
 
   ###
-  @createHotWithPostCreate: createHotWithPostCreate = (_module = getModuleBeingDefined(), klass) ->
+  @createWithPostCreate: createWithPostCreate = (a, b) ->
+    klass = if b
+      _module = a
+      b
+    else a
+    _module ||= getModuleBeingDefined()
+
     # if hot reloading is not supported:
     return klass unless klass?.postCreate
     unless _module?.hot
@@ -184,6 +186,11 @@ module.exports = class BaseObject extends MinimalBaseObject
         hotReloaded:      hotReloaded
         classModuleState: classModuleState
         module:           _module
+
+  # depricated alias
+  @createHotWithPostCreate: (a, b) ->
+    console.error "createHotWithPostCreate is DEPRICATED"
+    createWithPostCreate a, b
 
   ###
   called every load
@@ -277,20 +284,112 @@ module.exports = class BaseObject extends MinimalBaseObject
     obj.included? @
     this
 
-  # Allows you to define properties on the prototype that inherit their data from
-  # their super-classes prototype.
-  # NOTE: Object properties actually create a parallel inheritance structure such that
-  #   later-changes on the super-object are reflected in the inheriting object.
-  # NOTE: Array properties inherit the values in the super-class array at declaration time,
-  #   but they are not updated with any later-changes.
-  #   If we ever need that functionality, we'll need to make a special Object-type
-  #   that extendClone recognizes that handles the logic of "ExtendableArray".
-  @getPrototypePropertyExtendedByInheritance: (propertyName, defaultStructure, _clone = extendClone) ->
-    if @::hasOwnProperty propertyName
-      @::[propertyName]
-    else
-      @::[propertyName] = _clone @__super__[propertyName] || defaultStructure
+  ###
+  Allows you to define properties on the prototype that inherit their data from
+  their super-classes prototype.
 
+  By default, uses extendClone to init. extendClone has these semantics:
+    Object properties actually create a parallel inheritance structure such that
+      later-changes on the super-object are reflected in the inheriting object.
+      They ARE updated with later parent-changes
+    Array properties inherit the values in the super-class array at declaration time,
+      They ARE NOT updated with any later parent-changes!
+      If we ever need that functionality, we'll need to make a special Object-type
+      that extendClone recognizes that handles the logic of "ExtendableArray".
+  ###
+  @getPrototypePropertyExtendedByInheritance: (propertyName, defaultStructure, _clone = extendClone) ->
+    console.error "DEPRICATED: getPrototypePropertyExtendedByInheritance"
+    getOwnProperty @prototype, propertyName, (object) -> _clone object[propertyName] || defaultStructure
+
+  ###
+  IN
+    object: any object
+    property: string, property name
+    init:
+      (object) -> returning initial value for object
+      OR
+        initial value is computed by:
+        clone object[property] || init
+
+  EFFECT:
+    if object.hasOwnProperty property, return its current value
+    otherwise, initialize and return it with init()
+  ###
+  @getOwnProperty: getOwnProperty = (object, property, init) ->
+    if object.hasOwnProperty property
+      object[property]
+    else
+      object[property] = if isFunction init
+        init object
+      else
+        clone object[property] || init
+
+  ###
+  for each foo: defaultValue in map
+    defines standard getters:
+      @class.getFoo()
+      @prototype.getFoo()
+      @prototype.foo # getter
+
+    defines extender functions:
+      # both have the same basic function:
+        IN: value
+          if foo is an object, value should be an object
+          otherwise, value can be anything
+        OUT:
+          @class
+
+        EFFECT:
+          if foo is object, mergeInto foo, value
+          if foo is array
+            if value is array, concatInto foo, value
+            else foo.push array
+
+      @class.extendFoo value
+        # extends the property on the PROTOTYPE object
+      @prototype.extendFoo value
+        # extends the property on the INSTANCE object (which inherits from the prototype)
+
+    NOTE: the prototype getters call the class getter for extension purposes.
+      The result is each instance won't get its own version of the property.
+      E.G. Interitance is done at the Class level, not the Instance level.
+  ###
+  @extendProperty: extendProperty = (propValue, a, b) ->
+    if isPlainObject propValue
+      if isString a
+        propValue[a] = b
+      else if isPlainObject a
+        mergeInto propValue, a
+      else
+        throw new Error "first value argument must be a plain object or string"
+
+    else if isPlainArray propValue
+      if isPlainArray a
+        concatInto propValue, a
+      else
+        propValue.push a
+    b || a
+
+  @extendableProperty: (map) ->
+    for prop, defaultValue of map
+      throw new Error "only plain objects or plain arrays supported for defaultValue" unless isPlainArray(defaultValue) || isPlainObject(defaultValue)
+      do (prop, defaultValue) =>
+        internalName = @propInternalName prop
+        ucProp = capitalize prop
+        getterName = "get#{ucProp}"
+        extenderName = "extend#{ucProp}"
+        @[getterName] = -> @prototype[internalName] || defaultValue
+        @_addGetter @prototype, prop, -> @[internalName] || defaultValue
+
+        @[extenderName] = (a, b) ->
+          propValue = getOwnProperty @prototype, internalName, defaultValue
+          extendProperty propValue, a, b
+          @
+
+        @prototype[extenderName] = (a, b) ->
+          propValue = getOwnProperty @, internalName, defaultValue
+          extendProperty propValue, a, b
+          @
 
   ######################################################
   # Class Info

@@ -1,3 +1,3 @@
 module.exports = [
-  [require("./base_object"), "createWithPostCreate mixInto createAllClass createHotWithPostCreate"]
+  [require("./base_object"), "mixInto createAllClass createWithPostCreate createHotWithPostCreate"]
 ]

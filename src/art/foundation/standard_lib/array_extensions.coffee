@@ -26,6 +26,8 @@ module.exports = class ArrayExtensions
       res[a] = false
     res
 
+  @concatInto: (array, b) -> array.push.apply array, b
+
   @uniqueValues: (sortedArray, eqF = ((a, b) -> a == b)) ->
     v for v, i in sortedArray when i == 0 || !eqF v, sortedArray[i-1]
 

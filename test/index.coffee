@@ -1,6 +1,6 @@
 require '../src/art/foundation'
-{Mocha} = require "art-foundation/dev_tools/test"
+ArtMocha = require "art-foundation/src/art/dev_tools/test/mocha"
 
-Mocha.run ({assert})->
+ArtMocha.run ({assert})->
   self.testAssetRoot = "/test/assets"
   require './tests'
