@@ -53,7 +53,8 @@ module.exports = class Types
         (typeof obj.__super__ is "object") ||
         # We can't easily detect CoffeeScript classes which don't inherit since they are just Functions
         # so we do this surrogate test:
-        (obj.prototype && hasKeys obj.prototype)
+        (hasOwnProperties obj) ||
+        (obj.prototype && hasProperties obj.prototype)
       )
     )
 
@@ -125,8 +126,12 @@ module.exports = class Types
   @isPlainArray:  isPlainArray  = (v) -> if v then v.constructor == Array  else false
   @isPlainObject: isPlainObject = (v) -> if v then v.constructor == Object else false
 
-  @hasKeys: hasKeys = (o) ->
+  @hasProperties: hasProperties = (o) ->
     return true for k of o
+    false
+
+  @hasOwnProperties: hasOwnProperties = (o) ->
+    return true for k of o when o.hasOwnProperty k
     false
 
   ###

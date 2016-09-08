@@ -114,7 +114,7 @@ suite "Art.Foundation.Inspect.basic", ->
       @bar: 1
       @baz: 2
 
-    assert.eq (inspect Foo), "{Foo bar: 1, baz: 2}"
+    assert.eq (inspect Foo), "Foo"
 
   test "inspected twice", ->
     foo = a:1, b:1

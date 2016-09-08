@@ -38,9 +38,9 @@ module.exports = suite:
       .then -> v.preCreate id: "hi"
 
   declarationTypes: ->
-    test "type: 'id'", ->
+    test "fieldType: 'id'", ->
       v = new Validator
-        id: type: "id"
+        id: fieldType: "id"
 
       assert.rejects v.preCreate {}
       .then -> v.preUpdate {}
