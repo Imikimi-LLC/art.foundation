@@ -12,8 +12,8 @@ Foundation = require 'art-foundation'
 
 indent = (str) -> '  ' + str.replace /\n/g, "\n  "
 
-addTester = (name, tester) ->
-  assert[name] = switch tester.length
+getTesterFor = (name, tester) ->
+  switch tester.length
     when 1
       (testValue, context) ->
         unless tester testValue
@@ -26,9 +26,12 @@ addTester = (name, tester) ->
         unless tester value1, value2
           failWithExpectedMessage context,
             value1
-            "to be #{name}"
+            name
             value2
     else throw new Error "unsupported tester - expecting 1 or 2 args. name: #{name}, tester #{tester}"
+
+addTester = (name, tester) ->
+  assert[name] = getTesterFor name, tester
 
 maxLength = 30
 format = (val) ->
@@ -64,6 +67,20 @@ assert.rejects = (promise, context) ->
         promise
         "to be rejected. Instead, it succeeded with:"
         v.value
+
+assert.rejectsWith = (promise, rejectValue, context) ->
+  uniqueObject = {}
+  promise.then (v) ->
+    uniqueObject.value = v
+    Promise.reject uniqueObject
+  .catch (v) ->
+    if v == uniqueObject
+      failWithExpectedMessage context,
+        promise
+        "to be rejected. Instead, it succeeded with:"
+        v.value
+    else
+      getTesterFor("to eq this promise-rejection-value:", Foundation.eq) v, rejectValue, context
 
 addTester name, tester for name, tester of Types when name.match /^is/
 addTester name, Foundation[name] for name in wordsArray "gt gte lte lt eq neq floatEq"
