@@ -1,5 +1,5 @@
 {compactFlatten, deepArrayEach, isArrayOrArguments} = require './array_compact_flatten'
-{isPlainObject} = require './types'
+{isPlainObject, isFunction} = require './types'
 
 module.exports = class Hash
   # http://jsperf.com/counting-object-properties/3
@@ -71,6 +71,71 @@ module.exports = class Hash
     outputMap
 
   ###
+  IN:
+    input: array or object
+    memo: [optional] initial value; if not set, the first element is used, if no elements, null is used and returned
+    block: (memo, value) -> newMemo OR
+    block: (memo, key, value) -> newMemo
+      key is the index for arrays
+
+      Why value or key, value? Mostly consistent with CoffeeScripts:
+        for...in and for...of signatures
+      Different from CoffeeScript?
+        for arrays, if block has two arguments, the signature is the SAME as
+        objects where indexes in arrays are equivelent to keys in objects: (memo, index, value) ->
+      Why different from CoffeeScript?
+        So two-input blocks work the same regardless of if an array or object is input.
+
+  ###
+  @inject: inject = (input, a, b) ->
+    {log} = Neptune.Art.Foundation
+    block = if arguments.length == 2
+      memoSet = false
+      memo = null
+      a
+    else
+      memo = a
+      memoSet = true
+      b
+
+    twoInputBlock = block.length >= 3
+
+    # log inject: input: input, block: block, memo: memo, memoSet: memoSet, twoInputBlock: twoInputBlock
+    if isPlainObject input
+      for k, v of input
+        unless memoSet
+          # log setInitialMemo: v
+          memo = v
+          memoSet = true
+        else
+          memo = if twoInputBlock then block memo, k, v else block memo, v
+    else
+      for v, k in input
+        unless memoSet
+          # log setInitialMemoArray: v
+          memo = v
+          memoSet = true
+        else
+          memo = if twoInputBlock then block memo, k, v else block memo, v
+    memo
+
+  ###
+  IN:
+    input: array or object
+    block: (map, k, v) -> OR
+    block: (map, v) ->
+      for arrays, k is the index
+  ###
+  @newMapFromEach: (input, block = (map, k, v) -> map[k] = v) ->
+    twoInputBlock = block.length >= 2
+    inject input, {}, (memo, v, k) ->
+      if twoInputBlock
+        block memo, k, v
+      else
+        block memo, v
+      memo
+
+  ###
 
   merge "flattens" its arguments and then adds all keys from all objects in
   the list into a new object which is returned.
@@ -132,10 +197,26 @@ module.exports = class Hash
       return @merge sources unless @hasAllProps source, last
     last
 
-  @select: (obj, properties...) ->
+  ###
+  IN:
+    obj: the object to select fields from
+
+    2nd argument can be:
+      selectFunction: (value, key) -> true / false
+
+    OR obj can be followed by any number of strings or arrays in any nesting, possibly with null fields
+  ###
+  @select: (obj, a) ->
     return {} unless obj
     result = {}
-    result[prop] = v for prop in compactFlatten properties when v = obj[prop] || obj.hasOwnProperty prop
+    if isFunction a
+      if a.length == 1
+        result[k] = v for k, v of obj when a v
+      else
+        result[k] = v for k, v of obj when a k, v
+    else
+      properties = compactFlatten Array.prototype.slice.call arguments, 1
+      result[prop] = v for prop in properties when v = obj[prop] || obj.hasOwnProperty prop
     result
 
   # same as select, but ignore hasOwnProperty test
