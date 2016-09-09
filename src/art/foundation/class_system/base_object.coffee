@@ -383,13 +383,13 @@ module.exports = class BaseObject extends MinimalBaseObject
 
         @[extenderName] = (a, b) ->
           propValue = getOwnProperty @prototype, internalName, defaultValue
-          extendProperty propValue, a, b
-          @
+          extendProperty propValue, a, b if arguments.length > 0
+          propValue
 
         @prototype[extenderName] = (a, b) ->
           propValue = getOwnProperty @, internalName, defaultValue
-          extendProperty propValue, a, b
-          @
+          extendProperty propValue, a, b if arguments.length > 0
+          propValue
 
   ######################################################
   # Class Info
