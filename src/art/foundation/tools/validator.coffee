@@ -7,6 +7,7 @@ StandardLib = require '../standard_lib'
   isBoolean
   formattedInspect
   present
+  select
 } = StandardLib
 
 {validStatus} = require './communication_status'
@@ -192,14 +193,17 @@ module.exports = class Validator extends BaseObject
 
   constructor: (fieldDeclarationMap, options) ->
     @_fieldProps = {}
+    @_requiredFieldsMap = {}
     @addFields fieldDeclarationMap
     if options
-      {@exclusive} = options
+      {@exclusive, @context} = options
 
   @property "exclusive"
 
   addFields: (fieldDeclarationMap) ->
     for field, fieldOptions of fieldDeclarationMap
+      if fieldOptions.required
+        @_requiredFieldsMap[field] = undefined
       @_addField field, fieldOptions
 
   ###
@@ -207,29 +211,38 @@ module.exports = class Validator extends BaseObject
     promise.then (validatedPreprocessedFields) ->
     .catch (validationFailureInfoObject) ->
   ###
-  preCreate: (fields) -> Promise.resolve().then => @preCreateSync fields
+  preCreate: (fields, options) -> Promise.resolve().then => @preCreateSync fields, options
 
   ###
   OUT:
     promise.then (validatedPreprocessedFields) ->
     .catch (validationFailureInfoObject) ->
   ###
-  preUpdate: (fields) -> Promise.resolve().then => @preUpdateSync fields
+  preUpdate: (fields, options) -> Promise.resolve().then => @preUpdateSync fields, options
 
-  preCreateSync: (fields) ->
-    if @requiredFieldsPresent(fields) && @presentFieldsValid fields
+  preCreateSync: (fields, options) ->
+    requiredFieldsPresent = @requiredFieldsPresent fields
+    presentFieldsValid = @presentFieldsValid fields
+    if requiredFieldsPresent && presentFieldsValid
       @preprocessFields fields
     else
-      throw
-        invalidFields: @invalidFields fields
-        missingFields: @missingFields fields
-        fields: fields
+      status = if !presentFieldsValid
+        if !requiredFieldsPresent
+          "invalid and missing"
+        else "invalid"
+      else "missing"
+      info =
+        context: "preCreate: #{options?.context || @context || "fields"} #{status}"
+      info.invalidFields = @invalidFields fields unless presentFieldsValid
+      info.missingFields = @missingFields fields unless requiredFieldsPresent
+      throw info
 
-  preUpdateSync: (fields) ->
+  preUpdateSync: (fields, options) ->
     if @presentFieldsValid fields
       @preprocessFields fields
     else
       throw
+        context: "preUpdate: #{options?.context || @context || "fields"} invalid"
         invalidFields: @invalidFields fields
 
   ####################
@@ -238,7 +251,7 @@ module.exports = class Validator extends BaseObject
   presentFieldValid: (fields, fieldName) ->
     if fieldProps = @_fieldProps[fieldName]
       {validate} = fieldProps
-      !validate || !(value = fields[fieldName])? || validate value
+      !validate || !(value = fields[fieldName])? || value == null || value == undefined || validate value
     else
       !@exclusive
 
@@ -273,8 +286,10 @@ module.exports = class Validator extends BaseObject
   ####################
   # VALIDATION INFO CORE
   ####################
-  missingFields: (fields) -> name for name, __ of @_fieldProps when !@requiredFieldPresent fields, name
-  invalidFields: (fields) -> name for name, __ of @_fieldProps when !@presentFieldValid fields, name
+  invalidFields: (fields) -> select fields, (key, value) => !@presentFieldValid fields, key
+  missingFields: (fields) ->
+    fields = merge @_requiredFieldsMap, fields
+    select fields, (key, value) => !@requiredFieldPresent fields, key
 
   ###################
   # PRIVATE

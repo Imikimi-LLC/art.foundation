@@ -45,7 +45,10 @@ module.exports = suite:
       assert.rejects v.preCreate {}
       .then -> v.preUpdate {}
       .then -> v.preCreate id: "123"
-      .then -> assert.rejects v.preCreate id: 123
+      .then ->
+        assert.rejectsWith v.preCreate(id: 123),
+          context:       "preCreate: fields invalid"
+          invalidFields: id: 123
 
     test "validate: ->", ->
       v = new Validator
@@ -54,7 +57,10 @@ module.exports = suite:
       v.preCreate {}
       .then -> v.preUpdate {}
       .then -> v.preCreate id: "123"
-      .then -> assert.rejects v.preCreate id: 123
+      .then ->
+        assert.rejectsWith v.preCreate(id: 123),
+          context:       "preCreate: fields invalid"
+          invalidFields: id: 123
 
     test "preprocess: ->", ->
       v = new Validator
@@ -74,9 +80,18 @@ module.exports = suite:
         id: required: true
 
       v.preCreate id: 123
-      .then -> assert.rejects v.preCreate id: null
-      .then -> assert.rejects v.preCreate id: undefined
-      .then -> assert.rejects v.preCreate()
+      .then -> assert.rejectsWith v.preCreate(id: null),
+        context:       "preCreate: fields missing"
+        missingFields: id: null
+
+      .then -> assert.rejectsWith v.preCreate(id: undefined),
+        context:       "preCreate: fields missing"
+        missingFields: id: undefined
+
+      .then -> assert.rejectsWith v.preCreate({}),
+        context:       "preCreate: fields missing"
+        missingFields: id: undefined
+
       .then -> v.preCreate id: false
       .then -> v.preUpdate id: null
       .then -> v.preUpdate id: 123
@@ -93,7 +108,10 @@ module.exports = suite:
       .then -> v.preCreate foo: new Foo
       .then -> v.preCreate foo: new Bar
       .then -> v.preCreate foo: null
-      .then -> assert.rejects v.preCreate foo: {}
+      .then ->
+        assert.rejectsWith v.preCreate(foo: {}),
+          context:       "preCreate: fields invalid"
+          invalidFields: foo: {}
 
   compoundTests:->
     test "require: validate: ->", ->
@@ -103,8 +121,16 @@ module.exports = suite:
       assert.rejects v.preCreate id: 123
       .then -> assert.rejects v.preCreate foo: "test@test.com"
       .then -> assert.rejects v.preCreate foo: "email:me@test"
-      .then -> assert.rejects v.preCreate foo: "email:me"
-      .then -> assert.rejects v.preUpdate foo: "email:me"
+      .then ->
+        assert.rejectsWith v.preCreate(foo: "email:me"),
+          context:       "preCreate: fields invalid"
+          invalidFields: foo: "email:me"
+
+      .then ->
+        assert.rejectsWith v.preUpdate(foo: "email:me"),
+          context:       "preUpdate: fields invalid"
+          invalidFields: foo: "email:me"
+
       .then -> v.preUpdate()
       .then -> v.preCreate foo: "email:me@test.com"
       .then -> v.preUpdate foo: "email:me@test.com"
