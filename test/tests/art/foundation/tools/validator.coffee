@@ -47,7 +47,7 @@ module.exports = suite:
       .then -> v.preCreate id: "123"
       .then ->
         assert.rejectsWith v.preCreate(id: 123),
-          context:       "preCreate: fields invalid"
+          validationFailure:       "preCreate: fields invalid"
           invalidFields: id: 123
 
     test "validate: ->", ->
@@ -59,7 +59,7 @@ module.exports = suite:
       .then -> v.preCreate id: "123"
       .then ->
         assert.rejectsWith v.preCreate(id: 123),
-          context:       "preCreate: fields invalid"
+          validationFailure:       "preCreate: fields invalid"
           invalidFields: id: 123
 
     test "preprocess: ->", ->
@@ -81,15 +81,15 @@ module.exports = suite:
 
       v.preCreate id: 123
       .then -> assert.rejectsWith v.preCreate(id: null),
-        context:       "preCreate: fields missing"
+        validationFailure: "preCreate: fields missing"
         missingFields: id: null
 
       .then -> assert.rejectsWith v.preCreate(id: undefined),
-        context:       "preCreate: fields missing"
+        validationFailure: "preCreate: fields missing"
         missingFields: id: undefined
 
       .then -> assert.rejectsWith v.preCreate({}),
-        context:       "preCreate: fields missing"
+        validationFailure: "preCreate: fields missing"
         missingFields: id: undefined
 
       .then -> v.preCreate id: false
@@ -110,7 +110,7 @@ module.exports = suite:
       .then -> v.preCreate foo: null
       .then ->
         assert.rejectsWith v.preCreate(foo: {}),
-          context:       "preCreate: fields invalid"
+          validationFailure:       "preCreate: fields invalid"
           invalidFields: foo: {}
 
   compoundTests:->
@@ -123,12 +123,12 @@ module.exports = suite:
       .then -> assert.rejects v.preCreate foo: "email:me@test"
       .then ->
         assert.rejectsWith v.preCreate(foo: "email:me"),
-          context:       "preCreate: fields invalid"
+          validationFailure:       "preCreate: fields invalid"
           invalidFields: foo: "email:me"
 
       .then ->
         assert.rejectsWith v.preUpdate(foo: "email:me"),
-          context:       "preUpdate: fields invalid"
+          validationFailure:       "preUpdate: fields invalid"
           invalidFields: foo: "email:me"
 
       .then -> v.preUpdate()

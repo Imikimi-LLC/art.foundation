@@ -232,7 +232,7 @@ module.exports = class Validator extends BaseObject
         else "invalid"
       else "missing"
       info =
-        context: "preCreate: #{options?.context || @context || "fields"} #{status}"
+        validationFailure: "preCreate: #{options?.context || @context || "fields"} #{status}"
       info.invalidFields = @invalidFields fields unless presentFieldsValid
       info.missingFields = @missingFields fields unless requiredFieldsPresent
       throw info
@@ -242,7 +242,7 @@ module.exports = class Validator extends BaseObject
       @preprocessFields fields
     else
       throw
-        context: "preUpdate: #{options?.context || @context || "fields"} invalid"
+        validationFailure: "preUpdate: #{options?.context || @context || "fields"} invalid"
         invalidFields: @invalidFields fields
 
   ####################
