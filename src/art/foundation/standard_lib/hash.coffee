@@ -128,7 +128,7 @@ module.exports = class Hash
   ###
   @newMapFromEach: (input, block = (map, k, v) -> map[k] = v) ->
     twoInputBlock = block.length >= 2
-    inject input, {}, (memo, v, k) ->
+    inject input, {}, (memo, k, v) ->
       if twoInputBlock
         block memo, k, v
       else
