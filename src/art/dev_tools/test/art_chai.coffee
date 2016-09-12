@@ -67,6 +67,7 @@ assert.rejects = (promise, context) ->
         promise
         "to be rejected. Instead, it succeeded with:"
         v.value
+    v
 
 assert.rejectsWith = (promise, rejectValue, context) ->
   uniqueObject = {}
