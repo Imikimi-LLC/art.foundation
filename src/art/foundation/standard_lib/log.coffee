@@ -75,13 +75,32 @@ module.exports = class Log
     @logCore m, stack
     peek args
 
-  # same output as log, but returns the last value of the objects key-value pair
-  @log.labeled = (obj) =>
-    ret = null
-    for k, v of obj
-      ret = v
-    @log obj
-    ret
+  ###
+
+  IN:
+    labelString, value
+    OR object with one or more properties (usually just one)
+      returns the last value of the objects last key-value pair
+
+  EX:
+    log.withLabel foo: myObject
+    # out: myObject
+
+    log.withLabel "foo", myObject
+    # out: myObject
+
+  ###
+  @log.withLabel = (a, b) =>
+    if isString a
+      obj = {}
+      obj[a] = b
+      @log obj
+      b
+    else
+      ret = null
+      ret = v for k, v of a
+      @log obj
+      ret
 
   @log.error = (args...) =>
     m = if args.length == 1
