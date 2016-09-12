@@ -70,6 +70,7 @@ assert.rejects = (promise, context) ->
     v
 
 assert.rejectsWith = (promise, rejectValue, context) ->
+  log.error "DEPRICATED: assert.rejectsWith. Use: assert.rejects().then (rejectValue) -> assert.eq rejectValue, expectedRejectValue"
   uniqueObject = {}
   promise.then (v) ->
     uniqueObject.value = v
