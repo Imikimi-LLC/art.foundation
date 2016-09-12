@@ -160,10 +160,11 @@ module.exports = createWithPostCreate class Console extends BaseObject
     options.log
 
   format: (domEl, options) ->
-    {label, labelColor} = options
+    {label, labelColor, backgroundColor} = options
     # domEl = wrapDomElement domEl, "<#{options.tag}/>" if options && options.tag
     if label
-      domEl = Div null,
+      domEl = Div
+        style: backgroundColor: backgroundColor || "yellow"
         Div label, style: color: labelColor, fontWeight: "bold"
         Div
           style: paddingLeft: "10px"
@@ -339,9 +340,12 @@ module.exports = createWithPostCreate class Console extends BaseObject
 
   logSerializer = new Promise.Serializer
   logCount = 1
-  logCore: (m, callStack, name, options = {}) ->
+  noOptions = {}
+  logCore: (m, callStack, options = noOptions) ->
     formatSystemMessage = (params) ->
       {success, failure, pending} = params
+
+      backgroundColor: if failure then "#fff0f0" else "white"
       labelColor:
         if success then "green"
         else if failure then "#a00"
@@ -353,8 +357,10 @@ module.exports = createWithPostCreate class Console extends BaseObject
     if hasPromises = containsPromises m
       options = merge options, formatSystemMessage pending: "RESOLVING PROMISES"
 
+    if options.isError
+      options = merge options, formatSystemMessage failure: "ERROR"
+
     ret = logSerializer.then => new Promise (resolve) =>
-      console.log m
       options.treeView = true
       {maxDepth} = options
       maxDepth = 20 unless isNumber maxDepth

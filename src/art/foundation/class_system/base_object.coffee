@@ -561,7 +561,7 @@ module.exports = class BaseObject extends MinimalBaseObject
     toLog = if arguments.length > 1
       a for a in arguments
     else arguments[0]
-    Log.logCore toLog, stack, @className
+    Log.logCore toLog, stack, className: @className
     arguments[arguments.length-1]
 
   log: @log

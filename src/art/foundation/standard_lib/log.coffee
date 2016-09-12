@@ -1,6 +1,7 @@
 Inspect = require './inspect/namespace'
 {callStack} = require './call_stack'
 {isString} = require "./types"
+{peek} = require './array_extensions'
 
 module.exports = class Log
   # autodetect context from
@@ -46,16 +47,21 @@ module.exports = class Log
   @rawErrorLog: =>
     console.error arguments... unless @loggingHidden
 
-  @logCore: (m, stack, className) =>
+  noOptions = {}
+  @logCore: (m, stack, options = noOptions) =>
+    {className, isError} = options
+
     if @alternativeLogger
-      @alternativeLogger.logCore m, stack, className
-    else if Neptune.isNode
-      @rawLog if isString m
+      @alternativeLogger.logCore m, stack, options
+
+    logger = if isError then @rawErrorLog else @rawLog
+    if Neptune.isNode
+      logger if isString m
         m
       else
         Inspect.formattedInspect m
     else
-      @rawLog m, "\n# Foundation.log called " + @contextString stack, className
+      logger m, "\n# Foundation.log called " + @contextString stack, className
 
   # always returned the last argument passed in. That way you can:
   #     bar = foo # log foo's value in the middle of an expression, along with other values, without altering the rest of the expression
@@ -66,12 +72,31 @@ module.exports = class Log
     else
       args
     stack = callStack()
-    @logCore m, stack, @name
-    args[args.length-1]
+    @logCore m, stack
+    peek args
+
+  # same output as log, but returns the last value of the objects key-value pair
+  @log.labeled = (obj) =>
+    ret = null
+    for k, v of obj
+      ret = v
+    @log obj
+    ret
+
+  @log.error = (args...) =>
+    m = if args.length == 1
+      args[0]
+    else
+      args
+    stack = callStack()
+    @logCore m, stack, isError: true
+    peek args
+
 
   # same output as log, but returns the last value of the objects key-value pair
   # logL: labeled Log
   @logL: (obj) =>
+    console.warn "DEPRICATED: logL. USE log.labeled"
     ret = null
     for k, v of obj
       ret = v
