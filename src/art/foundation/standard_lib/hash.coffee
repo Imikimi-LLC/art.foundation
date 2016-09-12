@@ -123,17 +123,18 @@ module.exports = class Hash
   IN:
     input: array or object
     block: (map, k, v) -> OR
-    block: (map, v) ->
+    block: (k, v) -> OR
+    block: (v) -> newV
       for arrays, k is the index
   ###
   @newMapFromEach: (input, block = (map, k, v) -> map[k] = v) ->
     twoInputBlock = block.length >= 2
-    inject input, {}, (memo, k, v) ->
-      if twoInputBlock
-        block memo, k, v
+    inject input, {}, switch block.length
+      when 0, 1 then (memo, k, v) -> memo[k] = block v;     memo
+      when 2    then (memo, k, v) -> memo[k] = block k, v;  memo
+      when 3    then (memo, k, v) -> block memo, k, v;      memo
       else
-        block memo, v
-      memo
+        throw new Error "expecting block-function with 0, 1, 2 or 3 arguments"
 
   ###
 
