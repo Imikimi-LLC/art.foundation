@@ -15,34 +15,6 @@ module.exports = suite:
       assert.eq bar, foo
       assert.eq foo.a, 125
 
-  helpers: ->
-    test "include", ->
-      class ToInclude
-        @f: -> 10
-        f: -> 1
-
-      class IncludeInto extends BaseObject
-        @g: -> 20
-        g: -> 2
-        @include ToInclude
-
-      v = new IncludeInto
-      assert.equal v.g(), 2
-      assert.equal v.f(), 1
-      assert.equal IncludeInto.g(), 20
-      assert.equal IncludeInto.f(), 10
-
-    test "include shadowing", ->
-      class ToInclude
-        f: -> 1
-
-      class IncludeInto extends BaseObject
-        f: -> 2
-        @include ToInclude
-
-      v = new IncludeInto
-      assert.equal v.f(), 2
-
   properties: ->
     test "@getter 'bar' defines propGetter", ->
       class Foo extends BaseObject

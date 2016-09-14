@@ -60,9 +60,11 @@ module.exports = suite:
       .then -> v.preUpdate {}
       .then -> v.preCreate id: "123"
       .then ->
-        assert.rejectsWith v.preCreate(id: 123),
-          validationFailure:       "preCreate: fields invalid"
-          invalidFields: id: 123
+        assert.rejects v.preCreate id: 123
+        .then (rejection) ->
+          assert.eq rejection,
+            validationFailure:       "preCreate: fields invalid"
+            invalidFields: id: 123
 
     test "preprocess: ->", ->
       v = new Validator
@@ -82,15 +84,21 @@ module.exports = suite:
         id: required: true
 
       v.preCreate id: 123
-      .then -> assert.rejectsWith v.preCreate(id: null),
-        validationFailure: "preCreate: fields missing"
-        missingFields: id: null
+      .then -> assert.rejects v.preCreate id: null
+      .then (rejection) ->
+        assert.eq rejection,
+          validationFailure: "preCreate: fields missing"
+          missingFields: id: null
 
-      .then -> assert.rejectsWith v.preCreate(id: undefined),
-        validationFailure: "preCreate: fields missing"
-        missingFields: id: undefined
+      .then -> assert.rejects v.preCreate id: undefined
+      .then (rejection) ->
+        assert.eq rejection,
+          validationFailure: "preCreate: fields missing"
+          missingFields: id: undefined
 
-      .then -> assert.rejectsWith v.preCreate({}),
+      .then -> assert.rejects v.preCreate {}
+      .then (rejection) ->
+        assert.eq rejection,
         validationFailure: "preCreate: fields missing"
         missingFields: id: undefined
 
@@ -111,7 +119,9 @@ module.exports = suite:
       .then -> v.preCreate foo: new Bar
       .then -> v.preCreate foo: null
       .then ->
-        assert.rejectsWith v.preCreate(foo: {}),
+        assert.rejects v.preCreate foo: {}
+      .then (rejection) ->
+        assert.eq rejection,
           validationFailure:       "preCreate: fields invalid"
           invalidFields: foo: {}
 
@@ -124,12 +134,16 @@ module.exports = suite:
       .then -> assert.rejects v.preCreate foo: "test@test.com"
       .then -> assert.rejects v.preCreate foo: "email:me@test"
       .then ->
-        assert.rejectsWith v.preCreate(foo: "email:me"),
+        assert.rejects v.preCreate foo: "email:me"
+      .then (rejection) ->
+        assert.eq rejection,
           validationFailure:       "preCreate: fields invalid"
           invalidFields: foo: "email:me"
 
       .then ->
-        assert.rejectsWith v.preUpdate(foo: "email:me"),
+        assert.rejects v.preUpdate foo: "email:me"
+      .then (rejection) ->
+        assert.eq rejection,
           validationFailure:       "preUpdate: fields invalid"
           invalidFields: foo: "email:me"
 
