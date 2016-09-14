@@ -1,4 +1,4 @@
-{defineModule, Promise} = require '../standard_lib'
+{defineModule, Promise, log} = require '../standard_lib'
 {isWebWorker} = require './web_worker'
 {workerRpc} = require './worker_rpc'
 
@@ -14,7 +14,7 @@ API:
 ###
 
 defineModule module, ->
-  if isWebWorker
+  log "AsyncLocalStorage", if isWebWorker
     workerRpc.bindWithPromises localStorage: ["getItem", "setItem", "removeItem", "clear", "key"]
   else
     workerRpc.register localStorage: localStorage
@@ -24,3 +24,4 @@ defineModule module, ->
       @removeItem: (path)        -> Promise.then -> localStorage.removeItem path
       @clear:                    -> Promise.then -> localStorage.clear()
       @key:        (index)       -> Promise.then -> localStorage.key index
+      @getLength:                -> Promise.then -> localStorage.length

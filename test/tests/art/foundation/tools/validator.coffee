@@ -46,9 +46,11 @@ module.exports = suite:
       .then -> v.preUpdate {}
       .then -> v.preCreate id: "123"
       .then ->
-        assert.rejectsWith v.preCreate(id: 123),
-          validationFailure:       "preCreate: fields invalid"
-          invalidFields: id: 123
+        assert.rejects v.preCreate(id: 123)
+        .then (v) ->
+          assert.eq v,
+            validationFailure:       "preCreate: fields invalid"
+            invalidFields: id: 123
 
     test "validate: ->", ->
       v = new Validator

@@ -4,6 +4,5 @@
 module.exports = require './namespace'
 .includeInNamespace require './_class_system'
 .addModules
-  BaseModule:       require './base_module'       
   BaseObject:       require './base_object'       
   WebpackHotLoader: require './webpack_hot_loader'

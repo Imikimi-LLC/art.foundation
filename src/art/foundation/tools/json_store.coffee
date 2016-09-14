@@ -1,3 +1,4 @@
+{log, Promise, isNumber} = require '../standard_lib'
 ClassSystem = require '../class_system'
 AsyncLocalStorage = require './AsyncLocalStorage'
 {BaseObject} = ClassSystem
@@ -11,12 +12,13 @@ module.exports = class JsonStore extends BaseObject
   #     removeItem(key)
   #     clear()
   constructor: (store = AsyncLocalStorage) ->
+    log JsonStore: store: store
     @store = store
 
-  setItem:    (k, v) -> @store.setItem k, JSON.stringify v
-  getItem:    (k)    -> Promise.resolve(@store.getItem k).then (v) -> JSON.parse v
-  removeItem: (k)    -> @store.removeItem k
-  clear:             -> @store.clear()
-  key:        (i)    -> @store.key i
+  setItem:    (k, v) -> Promise.then => @store.setItem k, JSON.stringify v
+  getItem:    (k)    -> Promise.resolve(@store.getItem k).then (v) => JSON.parse v
+  removeItem: (k)    -> Promise.then => @store.removeItem k
+  clear:             -> Promise.then => @store.clear()
+  key:        (i)    -> Promise.then => @store.key i
 
-  @getter length: -> @store.length
+  getLength:         -> Promise.then => if isNumber @store.length then @store.length else @store.getLength()

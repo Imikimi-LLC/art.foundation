@@ -6,6 +6,7 @@ Foundation = require 'art-foundation'
   inspectedObjectLiteral
   wordsArray
   compactFlattenJoin
+  isFunction
 } = Foundation
 
 {assert} = Chai
@@ -91,5 +92,12 @@ addTester "match",    (a) -> a.match if isString a then escapeRegExp a else a
 addTester "notMatch", (a) -> !a.match if isString a then escapeRegExp a else a
 addTester "same",     (a, b) -> a == b
 addTester "notSame",  (a, b) -> a != b
+
+# create a version of all tests functions that resolves all inputs first
+assert.resolved = {}
+for k, v of assert when isFunction v
+  assert.resolved[k] = ->
+    Promise.all arguments
+    .then (args) -> v args
 
 module.exports = Chai
