@@ -273,8 +273,50 @@ module.exports = class BaseObject extends MinimalBaseObject
     This somewhat mirrors Ruby's include where the included-into-class's methods take precidence.
     However, if you include two modules in a row, the first module gets priority here.
     In ruby the second module gets priority (I believe).
+
+  DEPRICATED!!!
+  Time to do it "right" - and it's just a simple pattern:
+    Justin Fagnani figured this out. Thanks!
+    Read More:
+      http://justinfagnani.com/2015/12/21/real-mixins-with-javascript-classes/
+
+  To define a mixin:
+
+    MyMixin = (superClass) ->
+      class MyMixin extends superClass
+        ... write your mixin as-if it were part of the normal inheritance hierachy
+
+  To use a mixin:
+
+    class MyClass extends MyMixin MySuperClass
+
+  To use two mixins:
+
+    class MyClass extends MyMixin1 MyMixin2 MySuperClass
   ###
+  warnedAboutIncludeOnce = false
   @include: (obj) ->
+    console.error "DEPRICATED: BaseObject.include. Use pattern."
+    unless warnedAboutIncludeOnce
+      warnedAboutIncludeOnce = true
+      console.warn """
+        Mixin pattern:
+
+          To define a mixin:
+
+            MyMixin = (superClass) ->
+              class MyMixin extends superClass
+                ... write your mixin as-if it were part of the normal inheritance hierachy
+
+          To use a mixin:
+
+            class MyClass extends MyMixin MySuperClass
+
+          To use two mixins:
+
+            class MyClass extends MyMixin1 MyMixin2 MySuperClass
+        """
+
     for key, value of obj when key != 'included'
       @[key] = value unless @[key]
 

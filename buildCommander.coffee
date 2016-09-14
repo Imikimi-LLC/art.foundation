@@ -1,5 +1,4 @@
 module.exports = buildCommander = (options) ->
-  {log} = require 'art-foundation'
   {actions, beforeActions} = options
   commander = require "commander"
   {version, name} = options.package
@@ -19,12 +18,13 @@ module.exports = buildCommander = (options) ->
       commander
       .command command
       .action (a...)->
+        {log} = require 'art-foundation'
         [args..., __] = a
         log action: k, arguments: args
         # console.log a
         actionTaken = true
 
-        Promise.resolve beforeActions()
+        Promise.resolve beforeActions?()
         .then -> action a...
         .then  (out) -> log success: out
         .catch (err) ->

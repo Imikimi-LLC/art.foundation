@@ -5,6 +5,7 @@ module.exports = require './namespace'
 .includeInNamespace require './_tools'
 .addModules
   Analytics:                    require './analytics'                   
+  AsyncLocalStorage:            require './AsyncLocalStorage'           
   BatchLoader:                  require './batch_loader'                
   CommunicationStatus:          require './communication_status'        
   Epoch:                        require './epoch'                       

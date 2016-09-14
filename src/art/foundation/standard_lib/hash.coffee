@@ -1,5 +1,5 @@
 {compactFlatten, deepArrayEach, isArrayOrArguments} = require './array_compact_flatten'
-{isPlainObject, isFunction} = require './types'
+{isPlainObject, isFunction, isPlainArray} = require './types'
 
 module.exports = class Hash
   # http://jsperf.com/counting-object-properties/3
@@ -128,13 +128,20 @@ module.exports = class Hash
       for arrays, k is the index
   ###
   @newMapFromEach: (input, block = (map, k, v) -> map[k] = v) ->
-    twoInputBlock = block.length >= 2
-    inject input, {}, switch block.length
-      when 0, 1 then (memo, k, v) -> memo[k] = block v;     memo
-      when 2    then (memo, k, v) -> memo[k] = block k, v;  memo
-      when 3    then (memo, k, v) -> block memo, k, v;      memo
-      else
-        throw new Error "expecting block-function with 0, 1, 2 or 3 arguments"
+    inject input, {}, if isPlainArray input
+      switch block.length
+        when 0, 1 then (memo, k, v) -> memo[v] = block v;     memo
+        when 2    then (memo, k, v) -> memo[v] = block k, v;  memo
+        when 3    then (memo, k, v) -> block memo, k, v;      memo
+        else
+          throw new Error "expecting block-function with 0, 1, 2 or 3 arguments"
+    else
+      switch block.length
+        when 0, 1 then (memo, k, v) -> memo[k] = block v;     memo
+        when 2    then (memo, k, v) -> memo[k] = block k, v;  memo
+        when 3    then (memo, k, v) -> block memo, k, v;      memo
+        else
+          throw new Error "expecting block-function with 0, 1, 2 or 3 arguments"
 
   ###
 

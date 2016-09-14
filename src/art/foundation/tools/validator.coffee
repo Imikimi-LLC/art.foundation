@@ -8,6 +8,7 @@ StandardLib = require '../standard_lib'
   formattedInspect
   present
   select
+  emailRegexp
 } = StandardLib
 
 {validStatus} = require './communication_status'
@@ -163,18 +164,19 @@ module.exports = class Validator extends BaseObject
 
   @normalizeFieldType: normalizeFieldType = (ft) ->
     ft = if isPlainObject ft
-      if isString ft.fieldType
-        ft = merge normalizeFieldType(ft.fieldType), ft
-
       if ft.required && ft.required != true
         ft = merge ft,
           normalizeFieldType ft.required
           required: true
 
+      if isString ft.fieldType
+        ft = merge normalizeFieldType(ft.fieldType), ft
+
       if ft.requiredPresent && ft.requiredPresent != true
         ft = merge ft,
           normalizeFieldType ft.requiredPresent
           requiredPresent: true
+          required: true
 
       if _instanceof = ft.instanceof
         {validate} = ft
@@ -202,9 +204,10 @@ module.exports = class Validator extends BaseObject
 
   addFields: (fieldDeclarationMap) ->
     for field, fieldOptions of fieldDeclarationMap
-      if fieldOptions.required
-        @_requiredFieldsMap[field] = undefined
-      @_addField field, fieldOptions
+      fieldOptions = @_addField field, fieldOptions
+      @_requiredFieldsMap[field] = undefined if fieldOptions.required
+    null
+
 
   ###
   OUT:
@@ -288,6 +291,7 @@ module.exports = class Validator extends BaseObject
   ####################
   invalidFields: (fields) -> select fields, (key, value) => !@presentFieldValid fields, key
   missingFields: (fields) ->
+    # log missingFields: fields, _requiredFieldsMap:@_requiredFieldsMap, _fieldProps: @_fieldProps
     fields = merge @_requiredFieldsMap, fields
     select fields, (key, value) => !@requiredFieldPresent fields, key
 

@@ -204,9 +204,11 @@ module.exports = class WorkerRpc extends BaseObject
   #######################
   # PRIVATE
   #######################
+  # returns the last namespace-object bound
   _bind: (toBind, withPromises)->
     throw new Error "@_thread.postMessage required for remote requests" unless isFunction @_thread?.postMessage
     return unless toBind
+    namespace = null
     for namespaceName, functionNames of toBind
       @[namespaceName] = {} unless @hasOwnProperty namespaceName
       namespace = @[namespaceName]
@@ -215,7 +217,7 @@ module.exports = class WorkerRpc extends BaseObject
             @_newRemoteRequestFunctionWithPromise namespaceName, functionName
           else
             @_newRemoteRequestFunction namespaceName, functionName
-    null
+    namespace
 
   _reset: ->
     @_registry =
