@@ -7,9 +7,6 @@ module.exports = class File
   @_readWithPromise: (readFunction) ->
     (file) -> new Promise (resolve, reject) ->
       fr = new FileReader
-      console.log
-        readFunction: readFunction
-        fr_readFunction: fr[readFunction]
       fr[readFunction] file
       fr.onerror = reject
       fr.onload  = (event) => resolve event.target.result

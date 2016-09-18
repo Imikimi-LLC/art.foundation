@@ -45,11 +45,6 @@ packageLogArgs = (args) ->
     args[0]
   else args
 
-wrapDomElement = (a, withB) ->
-  bElement = $ withB
-  bElement.append a
-  bElement
-
 module.exports = createWithPostCreate class Console extends BaseObject
   @singletonClass()
 
@@ -204,7 +199,7 @@ module.exports = createWithPostCreate class Console extends BaseObject
 
   addCommasAndBrackets: (kids, leftBracket, rightBracket, typeName) ->
     for kid, i in kids when i + 1 < kids.length
-      kid.append ", "
+      kid.appendChild Span ", "
     flatten leftBracket, typeName, kids, rightBracket
 
   mapKidsToDomArray: (inspectedObject, Factory, options, addCommasAndBrackets) ->
