@@ -14,7 +14,8 @@ API:
 ###
 
 defineModule module, ->
-  log "AsyncLocalStorage", if isWebWorker
+  {localStorage} = global
+  if isWebWorker
     workerRpc.bindWithPromises localStorage: ["getItem", "setItem", "removeItem", "clear", "key"]
   else
     workerRpc.register localStorage: localStorage

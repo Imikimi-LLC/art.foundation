@@ -412,7 +412,7 @@ module.exports = class BaseObject extends MinimalBaseObject
         propValue.push a
     b || a
 
-  @extendableProperty: (map) ->
+  @extendableProperty: (map, extendPropertyFunction = extendProperty) ->
     for prop, defaultValue of map
       throw new Error "only plain objects or plain arrays supported for defaultValue" unless isPlainArray(defaultValue) || isPlainObject(defaultValue)
       do (prop, defaultValue) =>
@@ -425,12 +425,12 @@ module.exports = class BaseObject extends MinimalBaseObject
 
         @[extenderName] = (a, b) ->
           propValue = getOwnProperty @prototype, internalName, defaultValue
-          extendProperty propValue, a, b if arguments.length > 0
+          extendPropertyFunction propValue, a, b if arguments.length > 0
           propValue
 
         @prototype[extenderName] = (a, b) ->
           propValue = getOwnProperty @, internalName, defaultValue
-          extendProperty propValue, a, b if arguments.length > 0
+          extendPropertyFunction propValue, a, b if arguments.length > 0
           propValue
 
   ######################################################
