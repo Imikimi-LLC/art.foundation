@@ -210,18 +210,24 @@ module.exports = class Validator extends BaseObject
 
 
   ###
+  IN:
+    fields: object with fields to validate OR Promise returning said object
+
   OUT:
     promise.then (validatedPreprocessedFields) ->
     .catch (validationFailureInfoObject) ->
   ###
-  preCreate: (fields, options) -> Promise.resolve().then => @preCreateSync fields, options
+  preCreate: (fields, options) -> Promise.resolve(fields).then (fields) => @preCreateSync fields, options
 
   ###
+  IN:
+    fields: object with fields to validate OR Promise returning said object
+
   OUT:
     promise.then (validatedPreprocessedFields) ->
     .catch (validationFailureInfoObject) ->
   ###
-  preUpdate: (fields, options) -> Promise.resolve().then => @preUpdateSync fields, options
+  preUpdate: (fields, options) -> Promise.resolve(fields).then (fields) => @preUpdateSync fields, options
 
   preCreateSync: (fields, options) ->
     requiredFieldsPresent = @requiredFieldsPresent fields
