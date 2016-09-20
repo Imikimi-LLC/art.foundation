@@ -1,5 +1,6 @@
 {bound, max, intRand, modulo} = require "./math"
-{isNumber} = require './types'
+{isNumber, isString} = require './types'
+{wordsRegex} = require './regexp'
 
 module.exports = class ArrayExtensions
 
@@ -397,5 +398,21 @@ module.exports = class ArrayExtensions
   # SSNNSNSSNSN
   # SSSSSS
 
+  # trying out various aliases to see which one I like
+  @wordsArray: w = ->
+    out = []
+    for arg in arguments
+      if isString arg
+        out = out.concat arg.match wordsRegex
+      else
+        out.push arg
+    out
 
+  @wordArray: @wordsArray
+  @w: @wordsArray # this one makes it feel a lot like ruby's %w{a b c}. Instead, we have: w "a b c"
+
+  @a: a = ->
+    out = []
+    out.push arg for arg in arguments
+    out
 
