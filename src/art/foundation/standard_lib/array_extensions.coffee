@@ -1,6 +1,6 @@
 {bound, max, intRand, modulo} = require "./math"
 {isNumber, isString} = require './types'
-{wordsRegex} = require './regexp'
+{wordsRegex, exactlyOneWordRegex} = require './regexp'
 
 module.exports = class ArrayExtensions
 
@@ -402,7 +402,7 @@ module.exports = class ArrayExtensions
   @wordsArray: w = ->
     out = []
     for arg in arguments
-      if isString arg
+      if isString(arg) && !arg.match exactlyOneWordRegex
         out = out.concat arg.match wordsRegex
       else
         out.push arg

@@ -29,6 +29,7 @@ module.exports = class Regexp
   @colorRegex:  new RegExp "(#{@hex16ColorRegex.source})|(#{@hex256ColorRegex.source})|(#{@rgbColorRegex.source})|(#{@rgbaColorRegex.source})"
 
   @wordsRegex: /[^\s]+/g
+  @exactlyOneWordRegex: /^[^\s]+$/
 
   ###
   match OUTPUT: [url, protocol, '://', domain, ':', port, path, '?', query]
