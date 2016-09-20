@@ -174,14 +174,18 @@ module.exports = suite:
       assert.eq "j\n", present "j\n"
       assert.eq 'jh', present 'jh'
 
-    test "present null, undefined, false", ->
+    test "present null, undefined", ->
       assert.eq true, present true
-      assert.eq false, present false
       assert.eq false, present null
       assert.eq false, present undefined
 
+    test "present 0 is true", ->
+      assert.eq true, present 0
+
+    test "present false is true", ->
+      assert.eq true, present false
+
     test "present numbers", ->
-      assert.eq 0, present 0
       assert.eq 0.5, present 0.5
       assert.eq 1, present 1
       assert.eq -1, present -1
@@ -193,6 +197,9 @@ module.exports = suite:
       assert.eq false, present o2
 
     test "returnIfNotPresent value", ->
-      assert.eq "hi", present false, "hi"
+      assert.eq "hi", present undefined, "hi"
+      assert.eq "hi", present null, "hi"
+      assert.eq true, present 0, "hi"
+      assert.eq true, present false, "hi"
       assert.eq "hi", present "", "hi"
 

@@ -71,6 +71,20 @@ module.exports = class Types
   like RubyOnRails#present:
     "An object is present if it's not blank."
 
+  basic:
+    present null, undefined or "" returns false (or whatever returnIfNotPresent is set to)
+    all other values return something truish - generally themselves
+
+  custom:
+    for bar where isFunction bar.present
+      present bar returns bar.present()
+
+  special-case truish results:
+    present 0 or false returns true
+
+  for any other value foo,
+    present foo returns foo
+
   IN:
     obj:
       object tested for presence
@@ -78,16 +92,9 @@ module.exports = class Types
       what to return if not present
 
   OUT:
-    if obj is "present"
-      obj
-    else
-      returnIfNotPresent
+    returnIfNotPresent, true, or the value passed in
 
-  Examples:
-    "", undefined, null => false
-    0 => true
-
-  If 'obj' has method: obj.present() => !!obj.present()
+  If 'obj' has method: obj.present() => obj.present()
   ###
   @present: (obj, returnIfNotPresent = false) ->
     present = if isFunction obj?.present
@@ -95,8 +102,8 @@ module.exports = class Types
     else if isString obj
       !obj.match /^\s*$/
     else
-      obj != undefined && obj != null && obj != false
-    if present then obj else returnIfNotPresent
+      obj != undefined && obj != null
+    if present then obj || true else returnIfNotPresent
 
   @isObject: isObject = (obj) =>
     !!obj && typeof obj == "object" && !isPlainArray obj
