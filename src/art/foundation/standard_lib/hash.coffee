@@ -17,6 +17,10 @@ module.exports = class Hash
     count++ for k, v of o
     count
 
+  @hasKeys: hasKeys = (o) ->
+    return true for k, v of o
+    false
+
   @objectLength: objectKeyCount
 
   ###
