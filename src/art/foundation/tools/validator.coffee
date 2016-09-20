@@ -9,6 +9,7 @@ StandardLib = require '../standard_lib'
   present
   select
   emailRegexp
+  mergeIntoUnless
 } = StandardLib
 
 {validStatus} = require './communication_status'
@@ -54,11 +55,9 @@ USAGE:
           if string
             fieldProps = merge fieldProps, fieldTypes[string]
 
-        requiredPresent: true/false/string
-          if true/string
+        present: true/false
+          if true
             when creating records, this field must be include and 'present' (see Art.Foundation.present)
-          if string
-            fieldProps = merge fieldProps, fieldTypes[string]
 
         fieldType: string
           fieldProps = merge fieldTypes[string], fieldProps
@@ -162,32 +161,52 @@ module.exports = class Validator extends BaseObject
     v.dataType ||= stringDataType
     v.validate ||= dataTypes[v.dataType].validate
 
-  @normalizeFieldType: normalizeFieldType = (ft) ->
+  normalizeInstanceOfProp = (ft) ->
+    if _instanceof = ft.instanceof
+      {validate} = ft
+      merge ft,
+        validate: (v) ->
+          (v instanceof _instanceof) &&
+          (!validate || validate v)
+    else
+      ft
+
+  normalizePlainObjectProps = (ft) ->
+    out = null
+    for k, v of ft
+      if isPlainObject subObject = v
+        out = shallowClone ft unless out
+        out[k] = true
+        mergeIntoUnless out, normalizePlainObjectProps subObject
+    out || ft
+
+  normalizeRequiredPresentProp = (ft) ->
+    if ft.requiredPresent
+      throw new Error "DEPRICATED: requiredPresent. Use: present: true"
+    ft
+
+  normalizeFieldTypeProp = (ft) ->
+    if ft.fieldType
+      merge normalizeFieldProps(ft.fieldType), ft
+    else
+      ft
+
+  @normalizeFieldProps: normalizeFieldProps = (ft) ->
     ft = if isPlainObject ft
-      if ft.required && ft.required != true
-        ft = merge ft,
-          normalizeFieldType ft.required
-          required: true
 
-      if isString ft.fieldType
-        ft = merge normalizeFieldType(ft.fieldType), ft
+      normalizeFieldTypeProp normalizeInstanceOfProp normalizeRequiredPresentProp normalizePlainObjectProps ft
 
-      if ft.requiredPresent && ft.requiredPresent != true
-        ft = merge ft,
-          normalizeFieldType ft.requiredPresent
-          requiredPresent: true
-          required: true
+    else if isPlainArray array = ft
+      processed = for ft in array
+        normalizeFieldProps ft
+      merge processed...
 
-      if _instanceof = ft.instanceof
-        {validate} = ft
-        ft = merge ft,
-          validate: (v) ->
-            (v instanceof _instanceof) &&
-            (!validate || validate v)
+    else if isString string = ft
+      unless ft = fieldTypes[string]
+        ft = {}
+        ft[string] = true
       ft
-    else if isString ft
-      throw new Error "invalid named fieldType: #{string}" unless ft = fieldTypes[ft]
-      ft
+
     else
       throw new Error "fieldType must be a string or plainObject: #{formattedInspect ft}"
 
@@ -266,9 +285,8 @@ module.exports = class Validator extends BaseObject
 
   requiredFieldPresent: (fields, fieldName) ->
     return true unless fieldProps = @_fieldProps[fieldName]
-    {required, requiredPresent} = fieldProps
-    return false if required && !(fields[fieldName]? || fields[required]?)
-    return false if requiredPresent && !present fields[fieldName]
+    return false if fieldProps.required && !fields[fieldName]?
+    return false if fieldProps.present  && !present fields[fieldName]
     true
 
   presentFieldsValid: (fields) ->
@@ -305,4 +323,4 @@ module.exports = class Validator extends BaseObject
   # PRIVATE
   ###################
   _addField: (field, options) ->
-    @_fieldProps[field] = normalizeFieldType options
+    @_fieldProps[field] = normalizeFieldProps options

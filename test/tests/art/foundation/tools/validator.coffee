@@ -1,7 +1,47 @@
 Foundation = Neptune.Art.Foundation
-{Validator, isString, log, findEmailRegexp} = Foundation
+{Validator, isString, log, findEmailRegexp, w} = Foundation
+{normalizeFieldProps} = Validator
+
+assertIsTrimmedString = (ft) ->
+  assert.eq ft.dataType, "string"
+  assert.isFunction ft.validate
+  assert.isFunction ft.preprocess
 
 module.exports = suite:
+  normalizeFieldProps:
+    basic: ->
+      assert.test.eq normalizeFieldProps, {required: true}, required: true
+      assert.test.eq normalizeFieldProps, {required: 'trimmedString'}, required: 'trimmedString'
+      assert.test.eq normalizeFieldProps, {required: ['trimmedString']}, required: ['trimmedString']
+
+    depricated: ->
+      test "requiredPresent: true", ->
+        assert.throws -> normalizeFieldProps requiredPresent: true
+
+    objectValues: ->
+      assert.test.eq normalizeFieldProps, {required: foobar: true}, required: true, foobar: true
+      assert.test.eq normalizeFieldProps, {foobar: required: true}, required: true, foobar: true
+
+    topLevelArrayValues: ->
+      assert.test.eq normalizeFieldProps, [w 'foobar'                   ], foobar: true
+      assert.test.eq normalizeFieldProps, [w 'required foobar'          ], required: true, foobar: true
+      assert.test.eq normalizeFieldProps, [w 'required foobar', fad: 123], required: true, foobar: true, fad: 123
+
+    topLevelStringValues: ->
+      assert.test.eq normalizeFieldProps, 'foobar', foobar: true
+
+      test "'trimmedString'", ->
+        assertIsTrimmedString normalizeFieldProps 'trimmedString'
+
+    specialFields: ->
+      test "fieldType: 'trimmedString'", ->
+        assertIsTrimmedString normalizeFieldProps fieldType: 'trimmedString'
+
+      test "instanceof: Validator", ->
+        ft = normalizeFieldProps instanceof: Validator
+        assert.eq true, ft.validate new Validator
+        assert.eq false, ft.validate {}
+
   new: ->
     test "new Validator", ->
       new Validator
@@ -25,12 +65,12 @@ module.exports = suite:
       .then -> assert.rejects v.preCreate id: 123
 
     test "required: 'trimmedString'", ->
-      v = new Validator id: required: 'trimmedString'
+      v = new Validator id: required: fieldType: 'trimmedString'
       assert.rejects v.preCreate id: 123
       .then -> assert.rejects v.preCreate()
 
     test "requiredPresent: 'trimmedString'", ->
-      v = new Validator id: requiredPresent: 'trimmedString'
+      v = new Validator id: required: present: fieldType: 'trimmedString'
       assert.rejects v.preCreate(id: 123), "with number"
       .then -> assert.rejects v.preCreate(), "missing"
       .then -> assert.rejects v.preCreate(id: ""), "id:''"
@@ -79,6 +119,17 @@ module.exports = suite:
         v.preUpdate id: 456
         .then ({id}) -> assert.eq id, "456a"
 
+    test "present: true", ->
+      v = new Validator
+        id: present: true
+
+      v.preCreate id: "123"
+      .then -> assert.rejects v.preCreate id: ""
+      .then -> assert.rejects v.preCreate id: null
+      .then -> assert.rejects v.preCreate id: undefined
+      .then -> v.preCreate id: false
+      .then -> v.preCreate id: 123
+
     test "required: true", ->
       v = new Validator
         id: required: true
@@ -102,7 +153,7 @@ module.exports = suite:
         validationFailure: "preCreate: fields missing"
         missingFields: id: undefined
 
-      .then -> v.preCreate id: false
+      .then -> v.preCreate id: false # is OK since it's not null nor undefined
       .then -> v.preUpdate id: null
       .then -> v.preUpdate id: 123
 
