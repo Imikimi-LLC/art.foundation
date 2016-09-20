@@ -173,6 +173,27 @@ module.exports = class Hash
       result[k] = v for k, v of source
     result
 
+  ###
+  Just like mergeInfo except only merge into the result object UNLESs result.hasOwnProperty
+
+  if
+    mergeInfo a, b is just like merge a, b except it modifies and returns a instead of returning a new object
+  then
+    mergeIntoUnless b, a is just like merge a, b except it modifies and returns b instead of returning a new object
+
+  Note: mergeIntoUnless a, b, c, d, e, f is like merge f, e, d, c, b, a
+  ###
+  @mergeIntoUnless: ->
+    sources = compactFlatten arguments
+    return null if sources.length == 0
+    result = sources[0] || {}
+    for i in [1...sources.length] by 1
+      source = sources[i]
+      for k, v of source
+        result[k] = v unless result.hasOwnProperty k
+    result
+
+
   @deepMerge: deepMerge = ->
     list = compactFlatten arguments
     out = merge list
