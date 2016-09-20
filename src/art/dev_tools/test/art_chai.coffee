@@ -7,6 +7,8 @@ Foundation = require 'art-foundation'
   wordsArray
   compactFlattenJoin
   isFunction
+  inspectLean
+  isPlainArray
 } = Foundation
 
 {assert} = Chai
@@ -31,8 +33,24 @@ getTesterFor = (name, tester) ->
             value2
     else throw new Error "unsupported tester - expecting 1 or 2 args. name: #{name}, tester #{tester}"
 
+assert.test = {}
+
 addTester = (name, tester) ->
-  assert[name] = getTesterFor name, tester
+  assert[name] = testerFor = getTesterFor name, tester
+  assert.test[name] = if tester.length == 1
+    (func, args, context) ->
+      args = [] unless args?
+      invoke = if args.length == 0 then "#{func.getName()}()" else "#{func.getName()} #{inspectLean(args, forArgs:true)}"
+      args = [args] unless isPlainArray args
+      test "#{name} #{invoke}", ->
+        testerFor func(args...), context
+  else
+    (func, args, testValue, context) ->
+      args = [] unless args?
+      invoke = if args.length == 0 then "#{func.getName()}()" else "(#{func.getName()} #{inspectLean(args, forArgs:true)})"
+      args = [args] unless isPlainArray args
+      test "#{name} #{invoke}, #{inspect testValue}", ->
+        testerFor func(args...), testValue, context
 
 maxLength = 30
 format = (val) ->
