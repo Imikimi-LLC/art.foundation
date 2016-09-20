@@ -11,12 +11,13 @@ module.exports = suite:
   normalizeFieldProps:
     basic: ->
       assert.test.eq normalizeFieldProps, {required: true}, required: true
-      assert.test.eq normalizeFieldProps, {required: 'trimmedString'}, required: 'trimmedString'
+      assert.test.eq normalizeFieldProps, {dood: 'trimmedString'}, dood: 'trimmedString'
       assert.test.eq normalizeFieldProps, {required: ['trimmedString']}, required: ['trimmedString']
 
     depricated: ->
-      test "requiredPresent: true", ->
-        assert.throws -> normalizeFieldProps requiredPresent: true
+      test "requiredPresent: true", -> assert.throws -> normalizeFieldProps requiredPresent: true
+      test "required: 'foo'", -> assert.throws -> normalizeFieldProps required: 'foo'
+      test "present: 'foo'", -> assert.throws -> normalizeFieldProps present: 'foo'
 
     objectValues: ->
       assert.test.eq normalizeFieldProps, {required: foobar: true}, required: true, foobar: true
@@ -29,9 +30,16 @@ module.exports = suite:
 
     topLevelStringValues: ->
       assert.test.eq normalizeFieldProps, 'foobar', foobar: true
+      assert.test.eq normalizeFieldProps, 'foo bar', foo: true, bar: true
 
       test "'trimmedString'", ->
         assertIsTrimmedString normalizeFieldProps 'trimmedString'
+
+      test "'trimmedString foo bar'", ->
+        ft = normalizeFieldProps 'trimmedString foo bar'
+        assertIsTrimmedString ft
+        assert.eq true, ft.foo
+        assert.eq true, ft.bar
 
     specialFields: ->
       test "fieldType: 'trimmedString'", ->

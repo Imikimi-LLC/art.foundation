@@ -10,6 +10,7 @@ StandardLib = require '../standard_lib'
   select
   emailRegexp
   mergeIntoUnless
+  w
 } = StandardLib
 
 {validStatus} = require './communication_status'
@@ -180,9 +181,13 @@ module.exports = class Validator extends BaseObject
         mergeIntoUnless out, normalizePlainObjectProps subObject
     out || ft
 
-  normalizeRequiredPresentProp = (ft) ->
+  normalizeDepricatedProps = (ft) ->
     if ft.requiredPresent
       throw new Error "DEPRICATED: requiredPresent. Use: present: true"
+    if isString ft.required
+      throw new Error "DEPRICATED: required can no longer specifiy the file-type. Use: required: fieldType: myFieldTypeString"
+    if isString ft.present
+      throw new Error "DEPRICATED: present can no longer specifiy the file-type. Use: present: fieldType: myFieldTypeString"
     ft
 
   normalizeFieldTypeProp = (ft) ->
@@ -194,17 +199,20 @@ module.exports = class Validator extends BaseObject
   @normalizeFieldProps: normalizeFieldProps = (ft) ->
     ft = if isPlainObject ft
 
-      normalizeFieldTypeProp normalizeInstanceOfProp normalizeRequiredPresentProp normalizePlainObjectProps ft
+      normalizeFieldTypeProp normalizeInstanceOfProp normalizeDepricatedProps normalizePlainObjectProps ft
 
     else if isPlainArray array = ft
       processed = for ft in array
         normalizeFieldProps ft
       merge processed...
 
-    else if isString string = ft
-      unless ft = fieldTypes[string]
-        ft = {}
-        ft[string] = true
+    else if isString strings = ft
+      ft = {}
+      for string in w strings
+        if subFt = fieldTypes[string]
+          mergeIntoUnless ft, subFt
+        else
+          ft[string] = true
       ft
 
     else
