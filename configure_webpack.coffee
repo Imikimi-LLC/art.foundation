@@ -60,6 +60,13 @@ class ArtWebpackConfigurator
       entryConfig[entry] = ["./#{entry}"]
     @_selectEnties entryConfig
 
+createPackageJson = (npmPackage) ->
+  npmPackage = deepMerge standardNpmPackageProps, npmPackage
+  contents = consistentJsonStringify npmPackage, "  "
+  console.log "writing: ".gray + "package.json".green
+  # console.log "contents:", contents
+  fs.writeFileSync "package.json", contents + "\n"
+
 module.exports = (options, rest...) ->
   {entries, outputPath, dirname} = options
   dirname ||= process.cwd()
@@ -71,11 +78,7 @@ module.exports = (options, rest...) ->
   entry = ArtWebpackConfigurator._transformEntries entries
   console.log ""
   if npmPackage = options.package
-    npmPackage = deepMerge standardNpmPackageProps, npmPackage
-    contents = consistentJsonStringify npmPackage, "  "
-    console.log "writing: ".gray + "package.json".green
-    # console.log "contents:", contents
-    fs.writeFileSync "package.json", contents
+    createPackageJson npmPackage
 
   console.log "NeptuneNamespaces generation...".grey
   runNeptuneNamespaces dirname
