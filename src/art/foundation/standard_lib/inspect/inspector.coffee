@@ -46,9 +46,12 @@ module.exports = class Inspector
     else                                         "<<#{typeof obj}: #{obj.name || obj}>>"
 
   # strips enclosing '{}' or '[]' from plainObjects and plainArrays
+  # options:
+  #    anything @inspect accepts
+  #    forArgs: true # never include [] around the top-level array
   @inspectLean: (object, options) =>
     fullInspect = @inspect object, options
-    if !isFunction(object?.inspect) && (isPlainObject(object) || (isPlainArray(object) && object.length > 1))
+    if !isFunction(object?.inspect) && (isPlainObject(object) || (isPlainArray(object) && (object.length > 1 || options?.forArgs)))
       match = fullInspect.match /^\[(.+)\]$|^\{(.+)\}$/
       if match then match[1] || match[2] || match[3] else fullInspect
     else
