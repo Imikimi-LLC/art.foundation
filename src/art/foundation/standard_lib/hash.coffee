@@ -219,7 +219,7 @@ module.exports = class Hash
   # the name "pureMerge" comes from pure-functional-merge - as in this is how you'd implement
   # merge if you were asuming o1, o2 and the result of pureMerge were never modified.
   # TODO: a better name may be leanMerge - since it is ligher weight than "merge".
-  @pureMerge: =>
+  @pureMerge: pureMerge = =>
     sources = compactFlatten arguments
     return null if sources.length == 0
     return sources[0] if sources.length == 1
@@ -229,6 +229,8 @@ module.exports = class Hash
     for source in sources when source != last
       return @merge sources unless @hasAllProps source, last
     last
+
+  @m: pureMerge
 
   ###
   IN:
