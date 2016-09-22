@@ -16,6 +16,9 @@ if self.document
     atoms: ->
       testLog "a string"
       testLog 123
+      testLog 0
+      testLog true
+      testLog false
       testLog null
       testLog undefined
 
