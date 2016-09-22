@@ -81,6 +81,7 @@ module.exports = class BinaryString extends BaseObject
     arrayBuffer: -> @bytes.buffer
     blob: -> new Blob [@bytes]
     plainArray: -> b for b in @bytes
+    byteLength: -> @length
     inspectedString: (stride = 8, maxBytes = 64)->
       count = 0
       characters = []
