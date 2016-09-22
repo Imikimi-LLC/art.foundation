@@ -306,7 +306,7 @@ module.exports = createWithPostCreate class Console extends BaseObject
     Factory class: classes, literalString
 
   literalToDom: (inspectedObject) ->
-    literalToDomHelper "literal", inspectedObject.toString()
+    literalToDomHelper "literal", "#{inspectedObject}"
 
   errorLiteralToDom: (inspectedObject) ->
     literalToDomHelper "errorLiteral", inspectedObject.toString()

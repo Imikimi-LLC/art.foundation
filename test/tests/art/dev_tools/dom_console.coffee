@@ -15,6 +15,9 @@ if self.document
   module.exports = suite:
     atoms: ->
       testLog "a string"
+      testLog 123
+      testLog null
+      testLog undefined
 
     arrays: ->
       testLog []
@@ -33,6 +36,7 @@ if self.document
       testLog {}
       testLog {a:1}
       testLog {a:1,b:2,c:3}
+      testLog undefinedValue: undefined
 
     colors: ->
       testLog "#ffff00"
