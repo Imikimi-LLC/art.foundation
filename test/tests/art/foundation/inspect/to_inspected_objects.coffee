@@ -27,6 +27,19 @@ suite "Art.Foundation.Inspect.toInspectedObjects", ->
       ),
       a: inspectedObjectLiteral "abc"
 
+  test "toInspectedObjects on JSON structure doesn't change anything", ->
+    testStuff =
+      string: "my string"
+      number: 123
+      nullProp: null
+      trueProp: true
+      falseProp: false
+      nestedObject: a: 1, b: 2
+      nestedArray: [1, 2]
+    assert.eq testStuff, toInspectedObjects testStuff
+    for atom in ["foo", null, 123, true, false, [], {}]
+      assert.eq atom, toInspectedObjects atom
+
   test "toInspectedObjects twice doesn't change result", ->
     testStuff =
       string: "my string"
