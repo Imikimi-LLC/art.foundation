@@ -1,3 +1,5 @@
+{lowerCamelCase} = require 'neptune-namespaces/NeptuneLib'
+
 module.exports = buildCommander = (options) ->
   {actions, beforeActions} = options
   commander = require "commander"
@@ -7,12 +9,13 @@ module.exports = buildCommander = (options) ->
   actionTaken = false
   for k, v of actions
     do (k, v) ->
+      commandName = lowerCamelCase k
       action = if v.constructor == Object
         {params, action} = v
-        command = "#{k} #{params}" if params
+        command = "#{commandName} #{params}" if params
         action
       else
-        command = k
+        command = commandName
         v
 
       commander
