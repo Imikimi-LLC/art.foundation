@@ -133,6 +133,7 @@ module.exports = class Types
   @isPlainArray:  isPlainArray  = (v) -> if v then v.constructor == Array  else false
   @isPlainObject: isPlainObject = (v) -> if v then v.constructor == Object else false
 
+  # hasKeys
   @hasProperties: hasProperties = (o) ->
     return true for k of o
     false
