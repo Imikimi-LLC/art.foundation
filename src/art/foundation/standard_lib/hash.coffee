@@ -1,4 +1,4 @@
-{compactFlatten, deepArrayEach, isArrayOrArguments} = require './array_compact_flatten'
+{compactFlatten, deepArrayEach, isArrayOrArguments} = Neptune.NeptuneLib
 {isPlainObject, isFunction, isPlainArray} = require './types'
 
 module.exports = class Hash
@@ -16,10 +16,6 @@ module.exports = class Hash
     count = 0
     count++ for k, v of o
     count
-
-  @hasKeys: hasKeys = (o) ->
-    return true for k, v of o
-    false
 
   @objectLength: objectKeyCount
 
@@ -230,6 +226,23 @@ module.exports = class Hash
       return @merge sources unless @hasAllProps source, last
     last
 
+  ###
+  I might consider adding "o" - which works like Object-Tree constructors:
+    First, it compact-flattens args
+    Second, it gathers up and merges all plain-objects in its arguments list
+    Last, all remaining items get added to the "children" list
+  The question is, what does it return? Options:
+
+    OPTION: If only plain-objects after compact-flatten, just return the merged object ELSE:
+
+  Options if both objects and non-object values are present:
+    a. return compactFlatten [plainObject, nonObjectValues]
+    b. return merge plainObject, children: nonObjectValues
+    c. return new MClass plainObject, nonObjectValues
+      class MClass extends BaseObject
+        @properties "props children"
+        constructor: (@props, @children) ->
+  ###
   @m: pureMerge
 
   ###
