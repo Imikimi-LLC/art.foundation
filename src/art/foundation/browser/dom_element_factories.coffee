@@ -1,6 +1,6 @@
 supportLibs = [
+  Neptune.NeptuneLib
   require "../standard_lib/object_diff"
-  require "../standard_lib/string_case"
   require "../tools/object_tree_factory"
 ]
 ###

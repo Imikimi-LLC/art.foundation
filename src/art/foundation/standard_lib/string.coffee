@@ -3,7 +3,7 @@ Types          = require './types'
 {wordsRegex} = require './regexp'
 {intRand} = FoundationMath
 {isString, isNumber, isPlainObject, isArray} = Types
-{compactFlatten} = require './array_compact_flatten'
+{compactFlatten} = Neptune.NeptuneLib
 
 escapedQuoteRegex    = /[\\]["]/
 escapedNonQuoteRegex = /[\\][^"]/

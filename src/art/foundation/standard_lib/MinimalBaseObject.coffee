@@ -1,4 +1,4 @@
-{capitalize} = require './string_case'
+{capitalize} =  Neptune.NeptuneLib
 {isFunction, isString, isPlainObject} = require './types'
 
 module.exports = class MinimalBaseObject

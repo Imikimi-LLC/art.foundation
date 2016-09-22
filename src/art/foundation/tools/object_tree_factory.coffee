@@ -1,5 +1,4 @@
-{compactFlatten} = require '../standard_lib/array_compact_flatten'
-{upperCamelCase} = require '../standard_lib/string_case'
+{compactFlatten, upperCamelCase} = require 'neptune-namespaces/NeptuneLib'
 
 mergeIntoBasic = (into, source) ->
   into[k] = v for k, v of source

@@ -1,8 +1,8 @@
 module.exports = [
   [require("./promise"), "testPromise", "containsPromises", "deepAll"]
+  require 'neptune-namespaces/NeptuneLib'
   require "./array_extensions"
   require "./async_extensions"
-  require "./array_compact_flatten"
   require "./eq"
   require "./function"
   require "./object_diff"
@@ -14,7 +14,6 @@ module.exports = [
   require "./ruby"
   require "./shallow_clone"
   require "./string"
-  require "./string_case"
   require "./time"
   require "./types"
   require "./CommonJs"
