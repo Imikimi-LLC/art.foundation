@@ -11,9 +11,7 @@ module.exports = class JsonStore extends BaseObject
   #     setItem(key, value)
   #     removeItem(key)
   #     clear()
-  constructor: (store = AsyncLocalStorage) ->
-    log JsonStore: store: store
-    @store = store
+  constructor: (store = AsyncLocalStorage) -> @store = store
 
   setItem:    (k, v) -> Promise.then => @store.setItem k, JSON.stringify v
   getItem:    (k)    -> Promise.resolve(@store.getItem k).then (v) => JSON.parse v

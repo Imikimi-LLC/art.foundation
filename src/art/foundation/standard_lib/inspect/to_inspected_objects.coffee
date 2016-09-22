@@ -1,4 +1,4 @@
-{deepMap, isPlainArray, isPlainObject, isString, isFunction} = require '../types'
+{deepMap, isPlainArray, isPlainObject, isString, isFunction, isPromise} = require '../types'
 {escapeJavascriptString} = require '../string'
 {inspectedObjectLiteral} = require './inspected_object_literal'
 
@@ -8,19 +8,21 @@ module.exports = class InspectedObjects
     oldm = m
     if out = m.getInspectedObjects?()
       out
+    else if isPromise m
+      inspectedObjectLiteral "Promise"
     else if isPlainObject(m) || isPlainArray(m)
       deepMap m, (v) -> toInspectedObjects v
     else if m instanceof Error
-      inspectedObjectLiteral m.stack || m.toString()
-    else if isString m
-      inspectedObjectLiteral if m.match /\n/
-        [
-          '"""'
-          m.replace /"""/, '""\\"'
-          '"""'
-        ].join '\n'
-      else
-        escapeJavascriptString m
+      inspectedObjectLiteral m.stack || m.toString(), true
+    # else if isString m
+    #   inspectedObjectLiteral if m.match /\n/
+    #     [
+    #       '"""'
+    #       m.replace /"""/, '""\\"'
+    #       '"""'
+    #     ].join '\n'
+    #   else
+    #     escapeJavascriptString m
     else if isFunction m
       functionString = "#{m}"
       reducedFunctionString = functionString

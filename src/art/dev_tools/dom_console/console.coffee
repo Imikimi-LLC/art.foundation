@@ -10,7 +10,7 @@ Foundation = require 'art-foundation'
 Atomic = require 'art-atomic'
 ToolBar = require './tool_bar'
 
-{color, Color, point} = Atomic
+{color, Color, point, point0} = Atomic
 {
   BaseObject, inspect, clone, merge, Map, nextTick, timeout, flatten,
   isArray, isString, isFunction
@@ -20,7 +20,45 @@ ToolBar = require './tool_bar'
   Promise
   containsPromises
   deepAll
+  toInspectedObjects
+  isPlainArray
+  isPlainObject
+  hasProperties
+  objectKeyCount
+  InspectedObjectLiteral
+  deepEach
+  deepMap
 } = Foundation
+
+isHTMLImageElement = if global.HTMLImageElement
+  (obj) -> obj instanceof HTMLImageElement
+else
+  -> false
+
+isImage = (o) ->
+  isHTMLImageElement(o) || isFunction o.toImage
+
+containsImages = (plainStructure)->
+  foundImages = false
+  deepEach plainStructure, (v) -> foundImages ||= isImage v
+  foundImages
+
+resolveImages = (plainStructure) -> 
+  # plainStructure
+  deepAll deepMap plainStructure, (element) ->
+    return element unless isImage element
+    Promise.then ->
+      if isHTMLImageElement element
+        element
+      else
+        element.toImage()
+    .then (htmlImageElement) ->
+      htmlImageElement
+      if htmlImageElement.complete
+        htmlImageElement
+      else
+        new Promise (resolve) ->
+          htmlImageElement.onload = -> resolve htmlImageElement
 
 {Div, Pre, Span, Img, Li, Ul} = Foundation.Browser.DomElementFactories
 
@@ -75,7 +113,6 @@ module.exports = createWithPostCreate class Console extends BaseObject
   @setter
     width: (w) ->
       @_width = w
-      console.log width: w
       @domConsoleParent.style.width = "#{w}px"
   @getter "width"
 
@@ -204,30 +241,22 @@ module.exports = createWithPostCreate class Console extends BaseObject
 
   mapKidsToDomArray: (inspectedObject, Factory, options, addCommasAndBrackets) ->
     options.maxDepth--
-    kids = for k, v of inspectedObject.children
+    kids = for k, v of inspectedObject
       Factory null,
         Span class:"key", k + ": "
         Span class:"value", @toDom v, options
 
     options.maxDepth++
     if addCommasAndBrackets
-      if inspectedObject.instanceOf
-        @addCommasAndBrackets kids, "&lt;", "&gt;", inspectedObject.instanceOf + " "
-      else
-        @addCommasAndBrackets kids, "{", "}"
+      @addCommasAndBrackets kids, "{", "}"
     else
-      if inspectedObject.instanceOf
-        flatten inspectedObject.instanceOf + " ", kids
-      else
-        kids
+      kids
 
   objectToDomBasic: (inspectedObject, options) ->
     if options.maxDepth == 0
-      inside = if inspectedObject.length == 0 then "" else "... #{inspectedObject.length}"
-      return if inspectedObject.instanceOf
-        @instanceOfDomElement inspectedObject, inside
-      else
-        Span class:"object maxdepth #{options.class}", "{#{inside}}"
+      length = objectKeyCount inspectedObject
+      inside = if length == 0 then "" else "... #{length}"
+      Span class:"object maxdepth #{options.class}", "{#{inside}}"
 
     Span
       class:"object"
@@ -237,8 +266,8 @@ module.exports = createWithPostCreate class Console extends BaseObject
     collapsablePair[if options.collapsed then 0 else 1].style.display = "none"
     collapsablePair
 
-  instanceOfDomElement: (inspectedObject, inside) ->
-    Span class:"object maxdepth", "<#{inspectedObject.instanceOf}#{inside || ""}>"
+  # instanceOfDomElement: (inspectedObject, inside) ->
+  #   Span class:"object maxdepth", "<#{inspectedObject.instanceOf}#{inside || ""}>"
 
   arrayToDomTreeView: (arrayOfInspectedObjects, options) ->
 
@@ -251,11 +280,11 @@ module.exports = createWithPostCreate class Console extends BaseObject
     ], options
 
   objectToDomTreeView: (inspectedObject, options) ->
-    if inspectedObject.length == 0
-      return if inspectedObject.instanceOf
-        @instanceOfDomElement inspectedObject
-      else
-        Span class: "object", "{}"
+    unless hasProperties inspectedObject
+      # return if inspectedObject.instanceOf
+      #   @instanceOfDomElement inspectedObject
+      # else
+      return Span class: "object", "{}"
 
     @treeViewCollapsable [
       Ul class:"object open collapsable", @mapKidsToDomArray inspectedObject, Li, options
@@ -274,13 +303,16 @@ module.exports = createWithPostCreate class Console extends BaseObject
       Pre
     else
       Span
-    Factory class:classes, literalString
+    Factory class: classes, literalString
 
   literalToDom: (inspectedObject) ->
     literalToDomHelper "literal", inspectedObject.toString()
 
-  literalWithInspectedToDom: (inspectedObject) ->
-    literalToDomHelper "inspected literal", inspectedObject.inspected
+  errorLiteralToDom: (inspectedObject) ->
+    literalToDomHelper "errorLiteral", inspectedObject.toString()
+
+  # literalWithInspectedToDom: (inspectedObject) ->
+  #   literalToDomHelper "inspected literal", inspectedObject.inspected
 
   colorToDom: (clr) ->
     displayString = if isString clrString = clr
@@ -312,26 +344,31 @@ module.exports = createWithPostCreate class Console extends BaseObject
 
     Img
       src: image.src
-      style:
-        width:  "#{image.naturalWidth  * scale | 0}px"
-        height: "#{image.naturalHeight * scale | 0}px"
+      if size.gt point0
+        style:
+          width:  "#{image.naturalWidth  * scale | 0}px"
+          height: "#{image.naturalHeight * scale | 0}px"
+
+  isColor = (obj) ->
+    (obj instanceof Color) || (isString(obj) && obj.match colorRegex)
 
   toDom: (inspectedObject, options={}) ->
-    if image = inspectedObject.image
-      @imgToDom image
-
-    else if inspectedObject.inspected
-      if inspectedObject.originalObject instanceof Color
-        @colorToDom inspectedObject.originalObject
+    unless inspectedObject? then @literalToDom inspectedObject
+    else if inspectedObject instanceof InspectedObjectLiteral
+      if isColor inspectedObject.literal then @colorToDom inspectedObject.literal
+      else if inspectedObject.isError
+        @errorLiteralToDom inspectedObject.literal
       else
-        @literalWithInspectedToDom inspectedObject
-    else if children = inspectedObject.children
-      if isArray children then @arrayToDom children, options
-      else                     @objectToDom inspectedObject, options
-    else if isString(inspectedString = inspectedObject.string) && inspectedString.match colorRegex
-      @colorToDom inspectedString
+        @literalToDom inspectedObject.literal
+    else if isHTMLImageElement inspectedObject then @imgToDom inspectedObject
+    else if isColor inspectedObject then @colorToDom inspectedObject
+    else if isPlainArray  inspectedObject then @arrayToDom inspectedObject, options
+    else if isPlainObject inspectedObject then @objectToDom inspectedObject, options
     else
       @literalToDom inspectedObject
+
+      # else
+      #   @literalWithInspectedToDom inspectedObject
 
   logSerializer = new Promise.Serializer
   logCount = 1
@@ -355,25 +392,31 @@ module.exports = createWithPostCreate class Console extends BaseObject
     if options.isError
       options = merge options, formatSystemMessage failure: "ERROR"
 
-    ret = logSerializer.then => new Promise (resolve) =>
+    ret = logSerializer.then => 
+
       options.treeView = true
       {maxDepth} = options
       maxDepth = 20 unless isNumber maxDepth
 
-      inspector = new Foundation.Inspect.Inspector2 withImages: true, maxDepth: maxDepth
-
       if typeof m is "string" && !m.match colorRegex
-        resolve @appendLog @format Pre(m), options
-      else
-        inspector.inspect m, (inspected) =>
+        @appendLog @format Pre(m), options
+      else        
+        Promise.then =>
+          if containsImages inspected = toInspectedObjects m
+            resolveImages inspected
+          else inspected
+        .then (inspected) =>
           domEl = @toDom inspected, options
-          resolve @appendLog @format domEl, options
+          @appendLog @format domEl, options
+
+    logSerializer.catch (e) ->
+      console.error "Error in DomConsole.Console", e
 
     if hasPromises
       deepAll m, (promiseResult) -> 'promise.then': promiseResult
       .then (resolvedM) =>
-        @logCore resolvedM, callStack, name, merge options, formatSystemMessage success: "ALL PROMISES RESOLVED"
+        @logCore resolvedM, callStack, merge options, formatSystemMessage success: "ALL PROMISES RESOLVED"
       .catch (rejected) =>
-        @logCore rejected, callStack, name, merge options, formatSystemMessage failure: "ONE OR MORE PROMISES WERE REJECTED"
+        @logCore rejected, callStack, merge options, formatSystemMessage failure: "ONE OR MORE PROMISES WERE REJECTED"
     logCount++
     ret

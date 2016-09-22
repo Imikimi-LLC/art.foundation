@@ -1,6 +1,6 @@
 {isString, isPlainObject, isPlainArray, isFunction} = require '../types'
 {max} = Math
-{pad, stripTrailingWhitespace} = require '../string'
+{pad, stripTrailingWhitespace, escapeJavascriptString} = require '../string'
 {inspect} = require './inspector'
 {toInspectedObjects} = require './to_inspected_objects'
 
@@ -81,7 +81,14 @@ formattedInspectRecursive = (m, maxLineLength) ->
       #{indentedInspectedArray.join "\n"}
       """
   else if isString m
-    m
+    if m.match /\n/
+      [
+        '"""'
+        m.replace /"""/, '""\\"'
+        '"""'
+      ].join '\n'
+    else
+      escapeJavascriptString m
   else
     inspect m
 

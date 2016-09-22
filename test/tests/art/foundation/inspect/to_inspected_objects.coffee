@@ -4,7 +4,7 @@
 
 suite "Art.Foundation.Inspect.toInspectedObjects", ->
   test "toInspectedObjects 'hi'", ->
-    assert.eq toInspectedObjects('hi'), inspectedObjectLiteral '"hi"'
+    assert.eq toInspectedObjects('hi'), "hi" # inspectedObjectLiteral '"hi"'
 
   test "toInspectedObjects function", ->
     assert.eq toInspectedObjects((a)->), inspectedObjectLiteral '(a) -> {}'
@@ -39,7 +39,7 @@ suite "Art.Foundation.Inspect.toInspectedObjects", ->
     assert.eq once, twice
 
     assert.eq once,
-      string:       inspectedObjectLiteral '"my string"'
+      string:       "my string"
       number:       123
       literal:      inspectedObjectLiteral "my literal"
       nestedObject: a: 1, b: 2

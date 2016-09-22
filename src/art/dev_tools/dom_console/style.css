@@ -47,6 +47,8 @@
     border-right: 2px solid transparent; }
     .domConsole .logLine .literal {
       color: green; }
+    .domConsole .logLine .errorLiteral {
+      color: red; }
     .domConsole .logLine .object .key {
       color: #bbbb00; }
     .domConsole .logLine:hover {

@@ -97,9 +97,9 @@ suite "Art.Foundation.Inspect.formattedInspect.multiLine", ->
       foo: "B"
       bar: "C"
     ]), """
-    A
-    foo: B
-    bar: C
+    "A"
+    foo: "B"
+    bar: "C"
     """
 
   testFIMultiLine [
