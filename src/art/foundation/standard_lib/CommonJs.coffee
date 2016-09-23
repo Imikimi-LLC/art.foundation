@@ -17,5 +17,7 @@ module.exports = class CommonJs
     else
       a
 
-    _module.exports = mod?.createWithPostCreate?(mod) || mod
+    result = _module.exports = mod?.createWithPostCreate?(mod) || mod
     definingModule = lastModule
+    
+    result
