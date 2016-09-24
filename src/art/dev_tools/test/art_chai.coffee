@@ -9,6 +9,7 @@ Foundation = require 'art-foundation'
   isFunction
   inspectLean
   isPlainArray
+  Promise
 } = Foundation
 
 {assert} = Chai
@@ -77,7 +78,12 @@ assert.within = (a, b, c, context) ->
 # Either use as last line of test, or follow with .then ->
 assert.rejects = (promise, context) ->
   uniqueObject = {}
-  promise.then (v) ->
+  p = if isFunction promise
+    Promise.then -> promise()
+  else
+    promise
+
+  p.then (v) ->
     uniqueObject.value = v
     Promise.reject uniqueObject
   .catch (v) ->
@@ -90,18 +96,9 @@ assert.rejects = (promise, context) ->
 
 assert.rejectsWith = (promise, rejectValue, context) ->
   log.error "DEPRICATED: assert.rejectsWith. Use: assert.rejects().then (rejectValue) -> assert.eq rejectValue, expectedRejectValue"
-  uniqueObject = {}
-  promise.then (v) ->
-    uniqueObject.value = v
-    Promise.reject uniqueObject
-  .catch (v) ->
-    if v == uniqueObject
-      failWithExpectedMessage context,
-        promise
-        "to be rejected. Instead, it succeeded with:"
-        v.value
-    else
-      getTesterFor("to eq this promise-rejection-value:", Foundation.eq) v, rejectValue, context
+  assert.rejects promise
+  .then (value) ->
+    assert.eq value, rejectValue, "rejects with: #{context}"
 
 addTester name, tester for name, tester of Types when name.match /^is/
 addTester name, Foundation[name] for name in wordsArray "gt gte lte lt eq neq floatEq"
