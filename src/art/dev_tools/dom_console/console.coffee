@@ -28,6 +28,7 @@ ToolBar = require './tool_bar'
   InspectedObjectLiteral
   deepEach
   deepMap
+  inspectLean
 } = Foundation
 
 isHTMLImageElement = if global.HTMLImageElement
@@ -43,7 +44,7 @@ containsImages = (plainStructure)->
   deepEach plainStructure, (v) -> foundImages ||= isImage v
   foundImages
 
-resolveImages = (plainStructure) -> 
+resolveImages = (plainStructure) ->
   # plainStructure
   deepAll deepMap plainStructure, (element) ->
     return element unless isImage element
@@ -220,6 +221,8 @@ module.exports = createWithPostCreate class Console extends BaseObject
     if options.maxDepth == 0
       return Span class:"array maxdepth #{options.class}", if arrayOfInspectedObjects.length == 0
         "[]"
+      else if arrayOfInspectedObjects.length <= 5 && (l = inspectLean arrayOfInspectedObjects).length <= 30
+        "[#{l}]"
       else
         "[... #{arrayOfInspectedObjects.length}]"
 
@@ -255,8 +258,14 @@ module.exports = createWithPostCreate class Console extends BaseObject
   objectToDomBasic: (inspectedObject, options) ->
     if options.maxDepth == 0
       length = objectKeyCount inspectedObject
-      inside = if length == 0 then "" else "... #{length}"
-      Span class:"object maxdepth #{options.class}", "{#{inside}}"
+      inside = if length == 0 then ""
+      else if length <= 5
+        if (l = inspectLean inspectedObject).length <= 40
+          l
+        else
+          Object.keys(inspectedObject).join ' '
+      else "#{length}"
+      return Span class:"object maxdepth #{options.class}", "{#{inside}}"
 
     Span
       class:"object"
@@ -275,8 +284,8 @@ module.exports = createWithPostCreate class Console extends BaseObject
       return Span class:"array", "[]"
 
     @treeViewCollapsable [
-      Ul class:"collapsable open array", @arrayKidsToDomArray arrayOfInspectedObjects, Li, options
-      @arrayToDomBasic arrayOfInspectedObjects, merge options, maxDepth:0, treeView:false, class: "collapsable closed"
+      Ul class:"array collapsable open",   @arrayKidsToDomArray arrayOfInspectedObjects, Li, options
+      Ul class:"array collapsable closed", @arrayToDomBasic arrayOfInspectedObjects, merge options, maxDepth:1, treeView:false
     ], options
 
   objectToDomTreeView: (inspectedObject, options) ->
@@ -287,8 +296,8 @@ module.exports = createWithPostCreate class Console extends BaseObject
       return Span class: "object", "{}"
 
     @treeViewCollapsable [
-      Ul class:"object open collapsable", @mapKidsToDomArray inspectedObject, Li, options
-      @objectToDomBasic inspectedObject, merge options, maxDepth:0, treeView:false, class: "collapsable closed"
+      Ul class:"object collapsable open",   @mapKidsToDomArray inspectedObject, Li, options
+      Ul class:"object collapsable closed", @objectToDomBasic inspectedObject, merge options, maxDepth:1, treeView:false
     ], options
 
   objectToDom: (inspectedObject, options) ->
@@ -392,7 +401,7 @@ module.exports = createWithPostCreate class Console extends BaseObject
     if options.isError
       options = merge options, formatSystemMessage failure: "ERROR"
 
-    ret = logSerializer.then => 
+    ret = logSerializer.then =>
 
       options.treeView = true
       {maxDepth} = options
@@ -400,7 +409,7 @@ module.exports = createWithPostCreate class Console extends BaseObject
 
       if typeof m is "string" && !m.match colorRegex
         @appendLog @format Pre(m), options
-      else        
+      else
         Promise.then =>
           if containsImages inspected = toInspectedObjects m
             resolveImages inspected

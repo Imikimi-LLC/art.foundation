@@ -41,6 +41,16 @@ if self.document
       testLog {a:1,b:2,c:3}
       testLog undefinedValue: undefined
 
+    mixed: ->
+      testLog [
+        {a: 1, b: 2, c: 3}
+        {alpha: 222, beta: 444, gamma: 666}
+      ]
+      testLog
+        foo: [1, 2, 3]
+        bar: ["alpha", "beta", "gamma"]
+        tooLong: ["alpha the quick brown fox", "beta", "gamma"]
+
     colors: ->
       testLog "#ffff00"
       testLog colorLikeString: "#ffff00"
