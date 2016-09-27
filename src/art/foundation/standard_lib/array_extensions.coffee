@@ -169,6 +169,11 @@ module.exports = class ArrayExtensions
   @withInserted: (array, index, item) =>
     @insert array.slice(), index, item
 
+  # returns a new, sorted array
+  @withSort: (array, sortFunction) ->
+    array = array.slice()
+    array.sort sortFunction
+
   @remove: (array, index, amount = 1) ->
     index = array.length + index + 1 if index<0
     array.splice index, amount
