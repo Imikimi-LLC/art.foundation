@@ -263,7 +263,7 @@ module.exports = suite:
 
     arrays: ->
       test "3-arg function: (map, k, v) -> map[k+v] = v", ->
-        assert.eq a1: 1, b2: 2, newMapFromEach ["a", "b"], (map, k, v) -> map[v] = k
+        assert.eq "0a": "a", "1b": "b", newMapFromEach ["a", "b"], (map, k, v) -> map[k+v] = v
 
   inject: ->
     add = (a, b) -> a + b
