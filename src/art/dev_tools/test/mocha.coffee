@@ -100,7 +100,7 @@ module.exports = class MyMocha
     self.skipKnownFailingTest = (name, f) ->
       message = "SKIPPING KNOWN-FAILING TEST: #{name}"
       test message, ->
-        console.error log message
+        log.error log message
 
     DomConsole?.enable()
     (new NestedSuites).groupTestSuites defineAllTests

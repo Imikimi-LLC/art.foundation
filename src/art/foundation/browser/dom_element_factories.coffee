@@ -115,7 +115,7 @@ module.exports = class DomElementFactories
       else
         unless child instanceof Node
           message = "DomElementFactory:#{nodeName}: Child is not a string or instance of Node. Child: #{child}"
-          console.error message, child
+          (Neptune?.Art?.Foundation?.log?.error? message, child) || console.log message, child
           throw new Error message
         element.appendChild child
 

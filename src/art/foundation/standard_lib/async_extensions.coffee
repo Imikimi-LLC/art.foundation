@@ -1,5 +1,6 @@
 Promise = require './promise'
 
+
 module.exports = class AsyncExtensions
 
   # IN: delay in ms
@@ -37,5 +38,5 @@ module.exports = class AsyncExtensions
     try
       f()
     catch e
-      console.error e.stack
+      Neptune.Art.Foundation.log.error "evalAndThrowErrorsOutOfStack", e
       @throwErrorOutOfStack e

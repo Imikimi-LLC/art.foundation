@@ -189,7 +189,7 @@ module.exports = class BaseObject extends MinimalBaseObject
 
   # depricated alias
   @createHotWithPostCreate: (a, b) ->
-    console.error "createHotWithPostCreate is DEPRICATED"
+    log.error "createHotWithPostCreate is DEPRICATED"
     createWithPostCreate a, b
 
   ###
@@ -225,18 +225,20 @@ module.exports = class BaseObject extends MinimalBaseObject
 
   excludedKeys = ["__super__", "namespace", "namespacePath"].concat Object.keys Neptune.Base
   @mixInto = mixInto = (intoClass, klass, keys...)->
+    log.error "DEPRICATED: mixInto"
     if keys.length == 0
       keys = Object.keys klass
     for k in keys when k not in excludedKeys
       v = klass[k]
-      console.error "Foundation.mixInto - mix #{getClassName(klass)} into #{getClassName(intoClass)}: #{k} already exists." if intoClass[k]
+      log.error "Foundation.mixInto - mix #{getClassName(klass)} into #{getClassName(intoClass)}: #{k} already exists." if intoClass[k]
       intoClass[k] = v
     intoClass
 
   @createAllClass = (namespace, args...)->
+    log.error "DEPRICATED: createAllClass. Use Neptune-Namespace feature: create file in directory that is the same name as the directory."
     for arg in args
       if arg.prototype instanceof BaseObject
-        console.error "createAllClass arguments cannot be subclasses of BaseObject: #{getClassName(namespace)}:#{getClassName(arg)}"
+        log.error "createAllClass arguments cannot be subclasses of BaseObject: #{getClassName(namespace)}:#{getClassName(arg)}"
       mixInto namespace, arg
     class All extends namespace
 
@@ -296,7 +298,7 @@ module.exports = class BaseObject extends MinimalBaseObject
   ###
   warnedAboutIncludeOnce = false
   @include: (obj) ->
-    console.error "DEPRICATED: BaseObject.include. Use pattern."
+    log.error "DEPRICATED: BaseObject.include. Use pattern."
     unless warnedAboutIncludeOnce
       warnedAboutIncludeOnce = true
       console.warn """
@@ -340,7 +342,7 @@ module.exports = class BaseObject extends MinimalBaseObject
       that extendClone recognizes that handles the logic of "ExtendableArray".
   ###
   @getPrototypePropertyExtendedByInheritance: (propertyName, defaultStructure, _clone = extendClone) ->
-    console.error "DEPRICATED: getPrototypePropertyExtendedByInheritance"
+    log.error "DEPRICATED: getPrototypePropertyExtendedByInheritance"
     getOwnProperty @prototype, propertyName, (object) -> _clone object[propertyName] || defaultStructure
 
   ###

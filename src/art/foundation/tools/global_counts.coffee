@@ -1,5 +1,5 @@
 StandardLib = require '../standard_lib'
-{isPlainObject, currentSecond} = StandardLib
+{isPlainObject, currentSecond, log} = StandardLib
 
 # for debugging - a quick way to count things
 module.exports = class GlobalCounts
@@ -23,6 +23,6 @@ module.exports = class GlobalCounts
 
   @countStep: =>
     nextTime = currentSecond()
-    console.error "GlobalCounts gap" if nextTime - globalTime > .002
+    log.error "GlobalCounts gap" if nextTime - globalTime > .002
     globalTime = nextTime
     @globalCount "step"

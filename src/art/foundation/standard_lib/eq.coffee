@@ -82,12 +82,7 @@ module.exports = class Eq
     >0: a > b
   ###
   @compare: (a, b, recursionBlockEnabled) =>
-    try
-      @_compare a, b, recursionBlockEnabled && []
-    catch error
-      info = "compare(a, b, #{recursionBlockEnabled}) threw error: "
-      console.error info, error
-      throw new Error info + error
+    @_compare a, b, recursionBlockEnabled && []
 
   @_compare: (a, b, recursionBlockArray) =>
     return 0 if a == b
