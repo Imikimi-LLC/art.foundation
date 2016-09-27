@@ -144,6 +144,11 @@ module.exports = class Eq
     else
       false
 
+  # alias - ArtReact, ArtFlux and ArtEry were all making this local alias
+  # This standardizes the alias.
+  # 2016-09-27 SBd
+  @propsEq: plainObjectsDeepEq
+
   @plainObjectsDeepDiffArray: (before, after) =>
 
     res = null
@@ -200,6 +205,10 @@ module.exports = class Eq
     else
       before: before
       after: after
+
+  # alias - it's so often the right diff, I'm trying it out as just "diff"
+  # 2016-09-27 SBD
+  @diff: plainObjectsDeepDiff
 
   # test with == and, failing that, use a's eq
   @shallowEq: (a, b) => a == b || (a && b && a.eq && a.eq b)
