@@ -31,7 +31,7 @@
       border-radius: 5px; }
   .domConsole .collapsable.closed {
     overflow: hidden;
-    height: 16px;
+    height: 14px;
   }
   .domConsole .collapsable.closed.array:before {
     content: "▹"; }
