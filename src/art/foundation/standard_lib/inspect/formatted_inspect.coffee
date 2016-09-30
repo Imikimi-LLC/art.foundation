@@ -81,7 +81,7 @@ formattedInspectRecursive = (m, maxLineLength) ->
       #{indentedInspectedArray.join "\n"}
       """
   else if isString m
-    if m.match /\n/
+    if m.length > 10 && m.match(/\n/) && !m.match /\ (\n|$)/
       [
         '"""'
         m.replace /"""/, '""\\"'
