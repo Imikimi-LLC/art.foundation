@@ -558,7 +558,36 @@ module.exports = class BaseObject extends MinimalBaseObject
       inspectedObjectLiteral @getNamespacePath()
 
   ######################################################
-  # Class Methods
+  # Abstract Classes
+  ######################################################
+
+  ###
+  Define this class as an abstract class. Implicitly it means
+  any class it extends is also abstract, at least in this context.
+
+  Definition: Abstract classes are not intended to every be instantiated.
+    i.e.: never do: new MyAbstractClass
+
+  TODO: in Debug mode, in the constructor:
+    throw new Error "cannot instantiate abstract classes" if @class.getIsAbstract()
+
+  ###
+  @abstractClass: ->
+    throw new Error "abstract classes cannot also be singleton" if @getIsSingletonClass()
+    @_firstAbstractAncestor = @
+
+  @classGetter
+    isAbstractClass: -> !(@prototype instanceof @_firstAbstractAncestor)
+    abstractPrototype: -> @_firstAbstractAncestor.prototype
+    firstAbstractAncestor: -> @_firstAbstractAncestor
+    isSingletonClass: -> !!@getSingleton
+  @getAbstractClass: -> @_firstAbstractAncestor
+
+  # BaseObject is an abstract-class
+  @abstractClass()
+
+  ######################################################
+  # SingletonClasses
   ######################################################
 
   ###
@@ -570,6 +599,8 @@ module.exports = class BaseObject extends MinimalBaseObject
   The singleton instance is created on demand the first time it is accessed.
   ###
   @singletonClass: (args...) ->
+    throw new Error "singleton classes cannot be abstract" if @getIsAbstractClass()
+
     # return if @hasOwnProperty("getSingleton") && isFunction @getSingleton
     map = singleton: ->
       if @_singleton?.class == @
