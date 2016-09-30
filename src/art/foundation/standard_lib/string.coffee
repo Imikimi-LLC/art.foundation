@@ -6,7 +6,7 @@ Types          = require './types'
 {compactFlatten} = Neptune.NeptuneLib
 
 escapedQuoteRegex    = /[\\]["]/
-escapedNonQuoteRegex = /[\\][^"]/
+escapedNonQuoteRegex = /[\\][^']/
 {floor} = Math
 
 module.exports = class StringExtensions
@@ -84,13 +84,19 @@ module.exports = class StringExtensions
 
     s = '"' + s + '"'
 
+  ###
+  SBD for a while I only had JSON.stringify here, but I hate seeing: "I said, \"hello.\""
+  when I could be seeing: 'I said, "hello."'
+
+  Is this going to break anything? I figure if you really need "" only, just use stringify.
+  ###
   @escapeJavascriptString: escapeJavascriptString = (str) =>
-    JSON.stringify str
+    s = JSON.stringify str
     # s = escapeDoubleQuoteJavascriptString str
-    # if s.match(escapedQuoteRegex) && !s.match(escapedNonQuoteRegex)
-    #   "'#{str}'"
-    # else
-    #   s
+    if s.match(escapedQuoteRegex) && !s.match(escapedNonQuoteRegex)
+      "'#{str}'"
+    else
+      s
 
 
   @allIndexes: (str, regex) =>
