@@ -220,8 +220,16 @@ module.exports = class BaseObject extends MinimalBaseObject
 
     module: the CommonJs module object.
 
+  {hotReloadEnabled, hotReloaded, classModuleState, module} = options
   ###
-  @postCreate: ({hotReloadEnabled, hotReloaded, classModuleState, module}) -> @
+  @postCreate: (options) ->
+    if @getIsAbstractClass()
+      @postCreateAbstractClass options
+    else
+      @postCreateConcreteClass options
+
+  @postCreateAbstractClass: (options) -> @
+  @postCreateConcreteClass: (options) -> @
 
   excludedKeys = ["__super__", "namespace", "namespacePath"].concat Object.keys Neptune.Base
   @mixInto = mixInto = (intoClass, klass, keys...)->
@@ -569,7 +577,7 @@ module.exports = class BaseObject extends MinimalBaseObject
     i.e.: never do: new MyAbstractClass
 
   TODO: in Debug mode, in the constructor:
-    throw new Error "cannot instantiate abstract classes" if @class.getIsAbstract()
+    throw new Error "cannot instantiate abstract classes" if @class.getIsAbstractClass()
 
   ###
   @abstractClass: ->
