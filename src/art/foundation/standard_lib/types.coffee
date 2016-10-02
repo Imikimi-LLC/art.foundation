@@ -97,7 +97,9 @@ module.exports = class Types
   If 'obj' has method: obj.present() => obj.present()
   ###
   @present: (obj, returnIfNotPresent = false) ->
-    present = if isFunction obj?.present
+    present = if isFunction obj?.getPresent
+      obj.getPresent()
+    else if isFunction obj?.present
       obj.present()
     else if isString obj
       !obj.match /^\s*$/
