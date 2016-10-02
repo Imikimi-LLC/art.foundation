@@ -4,6 +4,9 @@ mergeIntoBasic = (into, source) ->
   into[k] = v for k, v of source
   into
 
+{isFunction} = require '../standard_lib/types'
+{fastBind} = require '../standard_lib/function'
+
 module.exports = class ObjectTreeFactory
   deepArgsProcessing = (array, children) ->
     for el in array when el
@@ -14,6 +17,32 @@ module.exports = class ObjectTreeFactory
 
   ###
   IN:
+    options:
+      mergePropsInto: (props, ...) ->
+        function to merge arguments 1 on into props
+        default: mergeIntoBasic
+
+      inspectedName: string
+        for introspection:
+          Factory.getName() == inspectedName
+
+      class: a class
+        if specified, additioanl properties will be set on the Factory function:
+          Factory.class = class
+          Factory._name = class.getName() + "Factory"
+
+          all concrete class-methods are made available in the Factory
+          (see BaseObject.abstractClass)
+
+      bind: string or array of strings
+        NODE: class must be set
+        list of method-names to bind from class onto the factory
+
+      preprocessElement: (element) -> element
+        can do custom preprocssing of each argument to the factory.
+
+
+        defualt: preprocessElementBasic (no-op)
     nodeFactory: ->
       IN:
         props:    plain object mapping props to prop-values
@@ -44,6 +73,11 @@ module.exports = class ObjectTreeFactory
     mergePropsInto ||= mergeIntoBasic
     preprocessElement ||= preprocessElementBasic
 
+    if klass = options.class
+      abstractClass = klass.getAbstractClass()
+      bindList = compactFlatten (k for k, v of klass when !abstractClass[k] && isFunction v), options.bind
+      inspectedName ||= klass.getName() + "Factory"
+
     ret = ->
       oneProps = null
       props = null
@@ -66,7 +100,16 @@ module.exports = class ObjectTreeFactory
           else children.push el
 
       props ||= oneProps || {}
-      nodeFactory props, children
+      Factory = nodeFactory props, children
+      Factory._name = inspectedName if inspectedName
+
+      if klass
+        Factory.class = klass
+        if bindList
+          Factory[k] = fastBind klass[k], klass for k in bindList
+
+      Factory
+
 
     # show nice output when inspected
     ret.inspect = -> "<#{inspectedName || 'ObjectTreeFactory'}>"
