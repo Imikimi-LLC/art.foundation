@@ -11,9 +11,9 @@ formatMultilineSubStructure = (m, inspected) ->
   return inspected unless inspected.match /\n/
   inspected = inspected.replace /\n/g, newLineWithNiceNodeInspectIndent
   if isPlainObject m
-    "\n#{newLineWithNiceNodeInspectIndent}#{inspected}\n"
+    "#{newLineWithNiceNodeInspectIndent}#{inspected}"
   else if isPlainArray m
-    "[]\n#{newLineWithNiceNodeInspectIndent}#{inspected}\n"
+    "[]#{newLineWithNiceNodeInspectIndent}#{inspected}"
   else
     inspected
 

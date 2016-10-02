@@ -51,15 +51,11 @@ suite "Art.Foundation.Inspect.formattedInspect.multiLine", ->
   testFIMultiLine [1, 2], "1\n2"
   testFIMultiLine [[1, 2], [3,4]], """
     []
-
       1
       2
-
     []
-
       3
       4
-
     """
 
   testFIMultiLine ['string', foo: 'bar'], """
@@ -74,23 +70,17 @@ suite "Art.Foundation.Inspect.formattedInspect.multiLine", ->
   testFIMultiLine a:1, wxyz:4, "a:    1\nwxyz: 4"
   testFIMultiLine a:[1,2], b:2, """
     a: []
-
       1
       2
-
     b: 2
     """
   testFIMultiLine a:{a1:1, a2:2}, b:{b1:1, b2:2}, """
     a:
-
       a1: 1
       a2: 2
-
     b:
-
       b1: 1
       b2: 2
-
     """
   testFIMultiLine (getInspectedObjects:-> [
       "A"
