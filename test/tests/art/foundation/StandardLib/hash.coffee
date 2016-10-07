@@ -1,7 +1,7 @@
 
 {Foundation} = Neptune.Art
 {
-  newMapFromEach
+  newObjectFromEach
   clone
   eq
   inspect
@@ -237,33 +237,33 @@ module.exports = suite:
         foo: null, bar: false, baz: undefined
         select foo: null, bar: false, baz: undefined, -> true
 
-  newMapFromEach:
+  newObjectFromEach:
     objects: ->
       test "no function, empty object", ->
-        b = newMapFromEach a = {}
+        b = newObjectFromEach a = {}
         assert.eq a, b
         assert.notSame a, b
 
       test "no function, non-empty object", ->
-        b = newMapFromEach a = a: 1, b: 2
+        b = newObjectFromEach a = a: 1, b: 2
         assert.eq a, b
         assert.notSame a, b
 
       test "0-arg function: -> 123", ->
-        assert.eq a: 123, b: 123, newMapFromEach a = a: 1, b: 2, -> 123
+        assert.eq a: 123, b: 123, newObjectFromEach a = a: 1, b: 2, -> 123
 
       test "1-arg function: (v) -> v + 1", ->
-        assert.eq a: 2, b: 3, newMapFromEach a: 1, b: 2, (v) -> v + 1
+        assert.eq a: 2, b: 3, newObjectFromEach a: 1, b: 2, (v) -> v + 1
 
       test "2-arg function: (k, v) -> k + v", ->
-        assert.eq a: "a1", b: "b2", newMapFromEach a: 1, b: 2, (k, v) -> k + v
+        assert.eq a: "a1", b: "b2", newObjectFromEach a: 1, b: 2, (k, v) -> k + v
 
       test "3-arg function: (map, k, v) -> map[k+v] = v", ->
-        assert.eq a1: 1, b2: 2, newMapFromEach a: 1, b: 2, (map, k, v) -> map[k+v] = v
+        assert.eq a1: 1, b2: 2, newObjectFromEach a: 1, b: 2, (map, k, v) -> map[k+v] = v
 
     arrays: ->
       test "3-arg function: (map, k, v) -> map[k+v] = v", ->
-        assert.eq "0a": "a", "1b": "b", newMapFromEach ["a", "b"], (map, k, v) -> map[k+v] = v
+        assert.eq "0a": "a", "1b": "b", newObjectFromEach ["a", "b"], (map, k, v) -> map[k+v] = v
 
   inject: ->
     add = (a, b) -> a + b

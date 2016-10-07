@@ -23,7 +23,7 @@ suite "Art.Foundation.Inspect.Inspected.String", ->
 
   test "with needs-escaping", ->
     inspected = new Inspected.String "\"hi\"\n\"bye\""
-    assert.equal inspected.toString(), "\"\\\"hi\\\"\\n\\\"bye\\\"\""
+    assert.equal inspected.toString(), '\'"hi"\\n"bye"\''
 
 suite "Art.Foundation.Inspect.Inspected.array", ->
   test "basic", ->
