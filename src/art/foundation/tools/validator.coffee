@@ -185,9 +185,9 @@ module.exports = class Validator extends BaseObject
     if ft.requiredPresent
       throw new Error "DEPRICATED: requiredPresent. Use: present: true"
     if isString ft.required
-      throw new Error "DEPRICATED: required can no longer specifiy the file-type. Use: required: fieldType: myFieldTypeString"
+      throw new Error "DEPRICATED: required can no longer specifiy the field-type. Use: required: fieldType: myFieldTypeString OR 'required myFieldTypeString'"
     if isString ft.present
-      throw new Error "DEPRICATED: present can no longer specifiy the file-type. Use: present: fieldType: myFieldTypeString"
+      throw new Error "DEPRICATED: present can no longer specifiy the field-type. Use: present: fieldType: myFieldTypeString OR 'present myFieldTypeString'"
     ft
 
   normalizeFieldTypeProp = (ft) ->
