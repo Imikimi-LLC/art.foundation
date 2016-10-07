@@ -5,8 +5,8 @@ Types          = require './types'
 {isString, isNumber, isPlainObject, isArray} = Types
 {compactFlatten} = Neptune.NeptuneLib
 
-escapedQuoteRegex    = /[\\]["]/
-escapedNonQuoteRegex = /[\\][^']/
+escapedDoubleQuoteRegex    = /[\\]["]/g
+
 {floor} = Math
 
 module.exports = class StringExtensions
@@ -93,8 +93,8 @@ module.exports = class StringExtensions
   @escapeJavascriptString: escapeJavascriptString = (str) =>
     s = JSON.stringify str
     # s = escapeDoubleQuoteJavascriptString str
-    if s.match(escapedQuoteRegex) && !s.match(escapedNonQuoteRegex)
-      "'#{str}'"
+    if s.match escapedDoubleQuoteRegex
+      "'#{s.replace(escapedDoubleQuoteRegex, '"').replace(/'/g, "\\'").slice 1, -1}'"
     else
       s
 
