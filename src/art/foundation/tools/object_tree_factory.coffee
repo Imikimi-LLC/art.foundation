@@ -73,12 +73,8 @@ module.exports = class ObjectTreeFactory
     mergePropsInto ||= mergeIntoBasic
     preprocessElement ||= preprocessElementBasic
 
-    if klass = options.class
-      abstractClass = klass.getAbstractClass()
-      bindList = compactFlatten (k for k, v of klass when !abstractClass[k] && isFunction v), options.bind
-      inspectedName ||= klass.getName() + "Factory"
 
-    ret = ->
+    Factory = ->
       oneProps = null
       props = null
       children = []
@@ -100,20 +96,23 @@ module.exports = class ObjectTreeFactory
           else children.push el
 
       props ||= oneProps || {}
-      Factory = nodeFactory props, children
-      Factory._name = inspectedName if inspectedName
+      nodeFactory props, children
 
-      if klass
-        Factory.class = klass
-        if bindList
-          Factory[k] = fastBind klass[k], klass for k in bindList
 
-      Factory
+    if klass = options.class
+      Factory.class = klass
 
+      abstractClass = klass.getAbstractClass()
+      bindList = compactFlatten (k for k, v of klass when !abstractClass[k] && isFunction v), options.bind
+      inspectedName ||= klass.getName() + "Factory"
+
+      Factory[k] = fastBind klass[k], klass for k in bindList
+
+    Factory._name = inspectedName if inspectedName
 
     # show nice output when inspected
-    ret.inspect = -> "<#{inspectedName || 'ObjectTreeFactory'}>"
-    ret
+    Factory.inspect = -> "<#{inspectedName || 'ObjectTreeFactory'}>"
+    Factory
 
   ###
   IN:
