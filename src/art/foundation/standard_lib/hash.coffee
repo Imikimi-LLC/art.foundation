@@ -127,7 +127,7 @@ module.exports = class Hash
     block: (v) -> newV
       for arrays, k is the index
   ###
-  @newMapFromEach: newMapFromEach = (input, block = (map, k, v) -> map[k] = v) ->
+  @newObjectFromEach: newObjectFromEach = (input, block = (map, k, v) -> map[k] = v) ->
     inject input, {}, if isPlainArray input
       switch block.length
         when 0, 1 then (memo, k, v) -> memo[v] = block v;     memo
@@ -144,7 +144,7 @@ module.exports = class Hash
           throw new Error "expecting block-function with 0, 1, 2 or 3 arguments"
 
   # Alias - which one is best?
-  @newObjectFromEach: newMapFromEach
+  @newMapFromEach: newObjectFromEach
 
   ###
 
