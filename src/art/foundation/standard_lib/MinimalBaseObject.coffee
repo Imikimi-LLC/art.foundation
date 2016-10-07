@@ -13,6 +13,11 @@ module.exports = class MinimalBaseObject
   @getter: -> defProperties @::, arguments, true, false
   @setter: -> defProperties @::, arguments, false, true
 
+  @addGetter:       (prop, getter) -> @_addGetter @::, prop, getter
+  @addSetter:       (prop, setter) -> @_addSetter @::, prop, setter
+  @addClassGetter:  (prop, getter) -> @_addGetter @, prop, getter
+  @addClassSetter:  (prop, setter) -> @_addSetter @, prop, setter
+
   ###
   IN: arguments is a list of strings or objects
     strings: are just the names of the properties
@@ -37,6 +42,7 @@ module.exports = class MinimalBaseObject
   # use o.getFoo() wherever speed is a concern
   @_addGetter: addGetter = (obj, prop, getter) ->
     obj[propGetterName prop] = getter
+    getter = (-> getter) unless isFunction getter
     Object.defineProperty obj, prop, get: getter, configurable: yes
     prop
 
