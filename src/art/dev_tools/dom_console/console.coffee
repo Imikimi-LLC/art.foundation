@@ -29,6 +29,7 @@ ToolBar = require './tool_bar'
   deepEach
   deepMap
   inspectLean
+  escapeJavascriptString
 } = Foundation
 
 isHTMLImageElement = if global.HTMLImageElement
@@ -315,7 +316,11 @@ module.exports = createWithPostCreate class Console extends BaseObject
     Factory class: classes, literalString
 
   literalToDom: (inspectedObject) ->
-    literalToDomHelper "literal", "#{inspectedObject}"
+
+    literalToDomHelper "literal", if isString inspectedObject
+        escapeJavascriptString inspectedObject
+      else
+        "#{inspectedObject}"
 
   errorLiteralToDom: (inspectedObject) ->
     literalToDomHelper "errorLiteral", inspectedObject.toString()
