@@ -75,7 +75,7 @@ module.exports = suite:
     testFIMultiLine a:1, b:2, "a: 1\nb: 2"
     testFIMultiLine a:1, wxyz:4, "a:    1\nwxyz: 4"
     testFIMultiLine a:[1,2], b:2, """
-      a: []
+      a:
         1
         2
       b: 2

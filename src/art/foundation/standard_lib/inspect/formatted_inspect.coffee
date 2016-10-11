@@ -7,17 +7,17 @@
 niceNodeInspectIndent = '  '
 newLineWithNiceNodeInspectIndent = "\n#{niceNodeInspectIndent}"
 
-formatMultilineSubStructure = (m, inspected) ->
+formatMultilineSubStructure = (m, inspected, implicitRepresentationOk) ->
   return inspected unless inspected.match /\n/
   inspected = inspected.replace /\n/g, newLineWithNiceNodeInspectIndent
   if isPlainObject m
     "#{newLineWithNiceNodeInspectIndent}#{inspected}"
   else if isPlainArray m
-    "[]#{newLineWithNiceNodeInspectIndent}#{inspected}"
+    "#{if implicitRepresentationOk && m.length > 1 then "" else "[]"}#{newLineWithNiceNodeInspectIndent}#{inspected}"
   else
     inspected
 
-formattedInspectRecursive = (m, maxLineLength) ->
+formattedInspectRecursive = (m, maxLineLength, implicitRepresentationOk) ->
   if isPlainObject m
     inspectedLength = 0
 
@@ -27,7 +27,7 @@ formattedInspectRecursive = (m, maxLineLength) ->
 
     inspectedValues = for key, value of m
       keyCount++
-      inspectedValue = formatMultilineSubStructure value, formattedInspectRecursive value, maxLineLength
+      inspectedValue = formatMultilineSubStructure value, formattedInspectRecursive(value, maxLineLength), true
       key = inspect key unless key.match /^[_a-zA-Z[_a-zA-Z0-9]*$/
       inspectedLength += inspectedValue.length + key.length + 2
       forceMultilineOutput ||= shouldBeOnOwnLine # if previous entry should be on own line, force all on own line
@@ -53,16 +53,18 @@ formattedInspectRecursive = (m, maxLineLength) ->
     containsConsecutiveObjects = false
     containsConsecutiveArrays = false
     inspectedValues = for value in m
+      implicitRepresentationOk = true
       if _isPlainObject = isPlainObject value
         containsConsecutiveObjects ||= lastWasObject
         lastWasObject = true
       else
         lastWasObject = false
       if isPlainArray value
+        implicitRepresentationOk = false
         containsConsecutiveArrays ||= lastWasArray
         lastWasArray = true
-      inspected = formattedInspectRecursive value, maxLineLength
-      inspected = formatMultilineSubStructure value, inspected unless _isPlainObject
+      inspected = formattedInspectRecursive value, maxLineLength, implicitRepresentationOk
+      inspected = formatMultilineSubStructure value, inspected, implicitRepresentationOk unless _isPlainObject
 
       inspectedLength += inspected.length
       inspected
