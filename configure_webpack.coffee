@@ -10,18 +10,18 @@ standardNpmPackageProps =
   version: JSON.parse(fs.readFileSync("package.json").toString()).version
   author: "Shane Brinkman-Davis Delamore, Imikimi LLC"
   dependencies:
-    'neptune-namespaces': '^0.5.5'
+    'neptune-namespaces': '^1.4.0'
     'chai': '^3.5.0'
     'coffee-loader': '^0.7.2'
-    'coffee-script': '^1.10.0'
+    'coffee-script': '^1.11.1'
     'css-loader': '^0.23.1'
     'json-loader': '^0.5.4'
     'mocha': '^2.5.3'
     'script-loader': '^0.7.0'
     'sourcemapped-stacktrace': '^1.1.3'
     'style-loader': '^0.13.1'
-    'webpack': '^1.13.1'
-    'webpack-dev-server': '^1.14.0'
+    'webpack': '^1.13.2'
+    'webpack-dev-server': '^1.16.2'
   scripts:
     test:     'neptune-namespaces --std; webpack-dev-server -d --progress'
     dev:      'neptune-namespaces --std; webpack-dev-server -d --progress'

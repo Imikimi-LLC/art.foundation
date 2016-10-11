@@ -3,6 +3,6 @@ module.exports = (require "art-foundation/configure_webpack")
   package:
     description: 'Foundation classes for the Art framework. Javascript extensions.'
     dependencies:
-      atob: '^2.0.3'
-      'promise-polyfill': '^5.2.1'
-      "commander": '^2.9.0'
+      atob:               '^2.0.3'
+      'promise-polyfill': '^6.0.2'
+      commander:          '^2.9.0'
