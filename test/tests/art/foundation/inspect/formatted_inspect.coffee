@@ -2,6 +2,13 @@
 {Foundation} = Neptune.Art
 {log} = Foundation
 {formattedInspect, isString, inspect, toInspectedObjects, inspectedObjectLiteral, BaseObject, stripTrailingWhitespace} = Foundation
+testFIMultiLine = (input, out) ->
+  test str = "formattedInspect #{inspect input}, 0", ->
+    o = stripTrailingWhitespace formattedInspect input, 0
+    log inspect: -> str
+    log input
+    log o
+    assert.eq o, out
 
 module.exports = suite:
   singleLine: ->
@@ -30,84 +37,135 @@ module.exports = suite:
       inspectOutput
       ///
     testFI [], "[]"
-    testFI ['string', foo: 'bar'], "\"string\", foo: \"bar\""
-    testFI [1], "[] 1"
+    testFI ['string', foo: 'bar'], '"string", foo: "bar"'
+    testFI [1], "- 1"
     testFI [1,2], "1, 2"
     testFI [a:1, 2], "a: 1, 2"
     testFI a:1, b:2, "a: 1, b: 2"
     testFI a:[1, 2], b:3, "a: 1, 2\nb: 3"
-    testFI [[1, 2], [3,4]], "1, 2\n3, 4"
+    testFI [[1, 2], [3,4]], "- 1, 2\n- 3, 4"
     testFI a:{a1:1, a2:2}, b:{b1:1, b2:2}, "a: a1: 1, a2: 2\nb: b1: 1, b2: 2"
-    testFI [{a:1}, {b:2}], "{} a: 1\n{} b: 2"
+    testFI [{a:1}, {b:2}], "- a: 1\n- b: 2"
     testFI 'has:':1, '"has:": 1'
 
     testFI Foo, Foo.namespacePath
     testFI (new Foo), "<#{Foo.namespacePath}>"
 
-  multiLine: ->
+  multiLine:
+    array: ->
 
-    testFIMultiLine = (input, out) ->
-      test str = "formattedInspect #{inspect input}, 0", ->
-        o = stripTrailingWhitespace formattedInspect input, 0
-        log inspect: -> str
-        log input
-        log o
-        assert.eq o, out
+      testFIMultiLine [1, 2], """
+        - 1
+        - 2
+        """
+      testFIMultiLine [[1, 2], [3,4]], """
+        - - 1
+          - 2
+        - - 3
+          - 4
+        """
 
-    testFIMultiLine [1, 2], "1\n2"
-    testFIMultiLine [[1, 2], [3,4]], """
-      []
-        1
-        2
-      []
-        3
-        4
-      """
+    object: ->
+      testFIMultiLine a:1, b:2, "a: 1\nb: 2"
 
-    testFIMultiLine ['string', foo: 'bar'], """
-      "string"
-      foo: "bar"
-      """
-    testFIMultiLine [inspectedObjectLiteral('string'), foo: 'bar'], """
-      string
-      foo: "bar"
-      """
-    testFIMultiLine a:1, b:2, "a: 1\nb: 2"
-    testFIMultiLine a:1, wxyz:4, "a:    1\nwxyz: 4"
-    testFIMultiLine a:[1,2], b:2, """
-      a:
-        1
-        2
-      b: 2
-      """
-    testFIMultiLine a:{a1:1, a2:2}, b:{b1:1, b2:2}, """
-      a:
-        a1: 1
-        a2: 2
-      b:
-        b1: 1
-        b2: 2
-      """
-    testFIMultiLine (getInspectedObjects:-> [
-        "A"
-        foo: "B"
-        bar: "C"
-      ]), """
-      "A"
-      foo: "B"
-      bar: "C"
-      """
+      testFIMultiLine a:{a1:1, a2:2}, b:{b1:1, b2:2}, """
+        a:
+          a1: 1
+          a2: 2
+        b:
+          b1: 1
+          b2: 2
+        """
 
-    testFIMultiLine [
-        foo: "A"
-        bar: "B"
-        "C"
-        fad: "D"
-        baz: "E"
-      ], """
-      foo: "A"
-      bar: "B"
-      "C"
-      fad: "D"
-      baz: "E"
-      """
+    objectArrays: ->
+      testFIMultiLine a:[1, 2], b:[3, 4], """
+        a:
+        - 1
+        - 2
+
+        b:
+        - 3
+        - 4
+        """
+
+    objectArraysObjects: ->
+      testFIMultiLine a:[{a1:1}, a2:2], b:[{b3:3}, b4:4], """
+        a:
+        - a1: 1
+        - a2: 2
+
+        b:
+        - b3: 3
+        - b4: 4
+        """
+
+    arrayObjects: ->
+      testFIMultiLine [{a1:1, a2:2}, {b1:1, b2:2}], """
+        - a1: 1
+          a2: 2
+        - b1: 1
+          b2: 2
+        """
+
+    arrayObjectsArrays: ->
+      testFIMultiLine [{a1:[1,1], a2:[1,2]}, {b1:[2,1], b2:[2,2]}], """
+        - a1:
+          - 1
+          - 1
+
+          a2:
+          - 1
+          - 2
+
+        - b1:
+          - 2
+          - 1
+
+          b2:
+          - 2
+          - 2
+        """
+
+    tabs: ->
+      testFIMultiLine a:1, wxyz:4, "a:    1\nwxyz: 4"
+
+    mixed: ->
+      testFIMultiLine ['string', foo: 'bar'], """
+        - "string"
+        - foo: "bar"
+        """
+      testFIMultiLine [inspectedObjectLiteral('string'), foo: 'bar'], """
+        - string
+        - foo: "bar"
+        """
+      testFIMultiLine a:[1,2], b:2, """
+        a:
+        - 1
+        - 2
+
+        b: 2
+        """
+
+      testFIMultiLine (getInspectedObjects:-> [
+          "A"
+          foo: "B"
+          bar: "C"
+        ]), """
+        - "A"
+        - foo: "B"
+          bar: "C"
+        """
+
+      testFIMultiLine [
+          foo: "A"
+          bar: "B"
+          "C"
+          fad: "D"
+          baz: "E"
+        ], """
+        - foo: "A"
+          bar: "B"
+        - "C"
+        - fad: "D"
+          baz: "E"
+        """

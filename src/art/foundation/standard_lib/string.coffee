@@ -282,4 +282,4 @@ module.exports = class StringExtensions
     string + "…"
 
   @stripTrailingWhitespace: (a) ->
-    a.split(/[ ]*\n/).join("\n").split(/[ ]*$/)[0]
+    a.split(/[ ]*\n/).join("\n").split(/[ ]*$/)[0].replace(/\n+$/,'')
