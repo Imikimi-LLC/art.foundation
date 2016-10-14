@@ -350,7 +350,7 @@ module.exports = class BaseObject extends MinimalBaseObject
       that extendClone recognizes that handles the logic of "ExtendableArray".
   ###
   @getPrototypePropertyExtendedByInheritance: (propertyName, defaultStructure, _clone = extendClone) ->
-    log.error "DEPRICATED: getPrototypePropertyExtendedByInheritance"
+    log.error "DEPRICATED: getPrototypePropertyExtendedByInheritance. use extendableProperty"
     getOwnProperty @prototype, propertyName, (object) -> _clone object[propertyName] || defaultStructure
 
   ###
@@ -377,70 +377,134 @@ module.exports = class BaseObject extends MinimalBaseObject
         clone object[property] || init
 
   ###
-  for each foo: defaultValue in map
+  objectPropertyExtender
+
+  IN: @ is set to the property-value to extend
+
+  API 1:
+    IN: map
+    EFFECT: mergeInto propValue, map
+
+  API 2:
+    IN: key, value
+    EFFECT: propValue[key] = valuee
+
+  OUT: ignore
+  ###
+  @objectPropertyExtender: objectPropertyExtender = (mapOrKey, value) ->
+    if isString mapOrKey
+      @[mapOrKey] = value
+    else if isPlainObject mapOrKey
+      mergeInto @, mapOrKey
+    else
+      throw new Error "first value argument must be a plain object or string"
+
+  ###
+  arrayPropertyExtender
+
+  IN: @ is set to the property-value to extend
+
+  API 1:
+    IN: array
+    EFFECT: concatInto propValue, array
+
+  API 2:
+    IN: value
+    EFFECT: propValue.push value
+
+  NOTE: if you want to concat an array-as-a-value to the end of propValue, do this:
+    arrayPropertyExtender.call propValue, [arrayAsValue]
+
+  OUT: ignore
+  ###
+  @arrayPropertyExtender: arrayPropertyExtender = (arrayOrValue) ->
+    if isPlainArray arrayOrValue
+      concatInto @, arrayOrValue
+    else
+      @push arrayOrValue
+
+  ###
+  Extendable Properties
+
+  EXAMPLE:
+    class Foo extends BaseObject
+      @extendableProperty foo: {}
+
+  Extendable properties work like inheritance:
+
+    When any subclass or instance extends an extendable property, they
+    inherit a clone of the property from up the inheritance tree, and then
+    add their own extensions without effecting the parent copy.
+
+    With Object property types, this can just be a parallel prototype chain.
+    (It isn't currently: if you modify a parent after extending it to a child,
+    the child won't get updates.)
+
+    BUT, you can also have array or other types of extend-properties, which
+    JavaScript doesn't have any built-in mechanisms for inheriting.
+
+  BASIC API:
+  @extendableProperty: (map, propertyExtender = defaultPropertyExtender) -> ...
+
+  IN: map
+  IN: propertyExtender = (args...) ->
+    IN: @ is propValue
+    IN: 1 or more args
+    EFFECT: modifies propValue (passed as @), extending it, based on args...
+
+  EFFECT: for each {foo: defaultValue} in map, extendableProperty:
     defines standard getters:
       @class.getFoo()
       @prototype.getFoo()
       @prototype.foo # getter
+      WARNING:
+        !!! Don't modify the object returned by a getter !!!
+
+        Getters only return the current, most-extended property value. It may not be extended to the
+        current subclass or instance! Instead, call @extendFoo() if you wish to manually modify
+        the extended property.
 
     defines extender functions:
-      # both have the same basic function:
-        IN: value
-          if foo is an object, value should be an object
-          otherwise, value can be anything
-        OUT:
-          @class
+      @class.extendFoo value      # extends the property on the PROTOTYPE object
+      @prototype.extendFoo value  # extends the property on the INSTANCE object (which inherits from the prototype)
 
-        EFFECT:
-          if foo is object, mergeInto foo, value
-          if foo is array
-            if value is array, concatInto foo, value
-            else foo.push array
+      EFFECT: extends the property if not already extended
+      OUT: extendedPropValue
 
-      @class.extendFoo value
-        # extends the property on the PROTOTYPE object
-      @prototype.extendFoo value
-        # extends the property on the INSTANCE object (which inherits from the prototype)
+      API 1: IN: 0 args
+      API 2: IN: 1 or more args
+        ADDITIONAL EFFECT: calls: propExtender extendedPropValue, args...
 
-    NOTE: the prototype getters call the class getter for extension purposes.
+    NOTE: gthe prototype getters call the class getter for extension purposes.
       The result is each instance won't get its own version of the property.
       E.G. Interitance is done at the Class level, not the Instance level.
+
   ###
-  @extendProperty: extendProperty = (propValue, a, b) ->
-    if isPlainObject propValue
-      if isString a
-        propValue[a] = b
-      else if isPlainObject a
-        mergeInto propValue, a
-      else
-        throw new Error "first value argument must be a plain object or string"
-
-    else if isPlainArray propValue
-      if isPlainArray a
-        concatInto propValue, a
-      else
-        propValue.push a
-    b || a
-
-  @extendableProperty: (map, extendPropertyFunction = extendProperty) ->
+  @extendableProperty: (map, propertyExtender) ->
     for prop, defaultValue of map
       throw new Error "only plain objects or plain arrays supported for defaultValue" unless isPlainArray(defaultValue) || isPlainObject(defaultValue)
       do (prop, defaultValue) =>
+        propExtender  = propertyExtender || if isPlainObject defaultValue
+          objectPropertyExtender
+        else if isPlainArray defaultValue
+          arrayPropertyExtender
+        else throw new Error "Unsupported property type for extendableProperty: #{inspect defaultValue}. Please specify a custom propertyExtender function."
+
         internalName = @propInternalName prop
         ucProp = capitalize prop
         getterName = "get#{ucProp}"
         extenderName = "extend#{ucProp}"
         @[getterName] = -> @prototype[internalName] || defaultValue
-        @_addGetter @prototype, prop, -> @[internalName] || defaultValue
+        @addGetter prop, -> @[internalName] || defaultValue
 
-        @[extenderName] = (a, b) ->
+        @[extenderName] = (value) ->
           propValue = getOwnProperty @prototype, internalName, defaultValue
-          extendPropertyFunction propValue, a, b if arguments.length > 0
+          propExtender.apply propValue, arguments if arguments.length > 0
           propValue
 
-        @prototype[extenderName] = (a, b) ->
+        @prototype[extenderName] = (value) ->
           propValue = getOwnProperty @, internalName, defaultValue
-          extendPropertyFunction propValue, a, b if arguments.length > 0
+          propExtender.apply propValue, arguments if arguments.length > 0
           propValue
 
   ######################################################
