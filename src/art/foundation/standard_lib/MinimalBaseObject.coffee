@@ -10,11 +10,11 @@ module.exports = class MinimalBaseObject
     strings: are just the names of the properties
     objects: map from prop names to getter/setter functions
   ###
-  @getter: -> defProperties @::, arguments, true, false
-  @setter: -> defProperties @::, arguments, false, true
+  @getter: -> defProperties @prototype, arguments, true, false
+  @setter: -> defProperties @prototype, arguments, false, true
 
-  @addGetter:       (prop, getter) -> @_addGetter @::, prop, getter
-  @addSetter:       (prop, setter) -> @_addSetter @::, prop, setter
+  @addGetter:       (prop, getter) -> @_addGetter @prototype, prop, getter
+  @addSetter:       (prop, setter) -> @_addSetter @prototype, prop, setter
   @addClassGetter:  (prop, getter) -> @_addGetter @, prop, getter
   @addClassSetter:  (prop, setter) -> @_addSetter @, prop, setter
 
@@ -23,7 +23,7 @@ module.exports = class MinimalBaseObject
     strings: are just the names of the properties
     objects: map from prop names to initializers
   ###
-  @property: -> defProperties @::, arguments, true, true
+  @property: -> defProperties @prototype, arguments, true, true
 
   # NOTE: parts of classGetters and classSetters are NOT inherited with CoffeeScript-style inheritance
   #   NOT INHERITED: obj.prop & obj.prop=
@@ -74,7 +74,7 @@ module.exports = class MinimalBaseObject
     if defineGetter
       addGetter obj, prop, obj[propGetterName prop] = if isFunction initializer
           -> if @[propName]? then @[propName] else @[propName] = initializer()
-        else if initializer
+        else if initializer?
           -> if @[propName]? then @[propName] else @[propName] = initializer
         else
           -> @[propName]
