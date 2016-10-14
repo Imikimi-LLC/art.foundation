@@ -6,7 +6,9 @@ module.exports = class InspectedObjects
   @toInspectedObjects: toInspectedObjects = (m) ->
     return m unless m?
     oldm = m
-    if out = m.getInspectedObjects?()
+    if m == global
+      inspectedObjectLiteral "global"
+    else if out = m.getInspectedObjects?()
       out
     else if isPromise m
       inspectedObjectLiteral "Promise"
