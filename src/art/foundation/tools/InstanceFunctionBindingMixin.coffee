@@ -17,7 +17,7 @@ defineModule module, ->
     @getFunctionsToBindList: ->
       k for k, v of @prototype when k != "constructor" &&
         isFunction(v) &&
-        @methodIsConcrete(k) &&
+        @propertyIsConcrete(k) &&
         (!@nonBindingFunctions || k not in @nonBindingFunctions)
 
     getBoundFunctionList: -> @_boundFunctionList

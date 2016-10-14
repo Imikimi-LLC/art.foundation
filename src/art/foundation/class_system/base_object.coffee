@@ -658,6 +658,12 @@ module.exports = class BaseObject extends MinimalBaseObject
   # BaseObject is an abstract-class
   @abstractClass()
 
+  @propertyIsAbstract: (methodName) ->
+    @getAbstractClass().prototype[methodName] == @prototype[methodName]
+
+  @propertyIsConcrete: (methodName) ->
+    @getAbstractClass().prototype[methodName] != @prototype[methodName]
+
   ######################################################
   # SingletonClasses
   ######################################################
