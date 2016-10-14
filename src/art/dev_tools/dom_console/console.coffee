@@ -374,7 +374,7 @@ module.exports = createWithPostCreate class Console extends BaseObject
         console.error inspectedObject.literal
         @errorLiteralToDom inspectedObject.literal
       else
-        @literalToDom inspectedObject.literal
+        literalToDomHelper "literal", inspectedObject.literal
     else if isHTMLImageElement inspectedObject then @imgToDom inspectedObject
     else if isColor inspectedObject then @colorToDom inspectedObject
     else if isPlainArray  inspectedObject then @arrayToDom inspectedObject, options
