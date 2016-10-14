@@ -371,6 +371,7 @@ module.exports = createWithPostCreate class Console extends BaseObject
     else if inspectedObject instanceof InspectedObjectLiteral
       if isColor inspectedObject.literal then @colorToDom inspectedObject.literal
       else if inspectedObject.isError
+        console.error inspectedObject.literal
         @errorLiteralToDom inspectedObject.literal
       else
         @literalToDom inspectedObject.literal
