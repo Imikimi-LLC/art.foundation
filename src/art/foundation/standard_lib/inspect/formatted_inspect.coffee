@@ -98,7 +98,7 @@ formattedInspectRecursive = (m, options, implicitRepresentationOk) ->
   else
     inspect m
 
-alignTabs = (linesString) ->
+alignTabs = (maxLineLength, linesString) ->
   tabStops = 1
   lines = linesString.split "\n"
 
@@ -113,40 +113,43 @@ alignTabs = (linesString) ->
 
   numColumnsToPad = null
   maxColumnSizes = []
+  maxColumnWidth = maxLineLength / 2
   for line in lines when (elements = line.split "\t").length > 1
     if !numColumnsToPad?
       numColumnsToPad = elements.length - 1
     else if numColumnsToPad != elements.length - 1
       numColumnsToPad = 1
 
-    for el, i in elements
+    for el, i in elements when i < elements.length - 1 && (i == 0 || el.length < maxColumnWidth)
       maxColumnSizes.push 0 if maxColumnSizes.length == i
-      maxColumnSizes[i] = max maxColumnSizes[i], Math.ceil((el.length + 1)/tabStops) * tabStops
-  # console.log maxColumnSizes: maxColumnSizes
+      maxColumnSizes[i] = max maxColumnSizes[i], el.length + 1
+  # console.log maxColumnSizes: maxColumnSizes, numColumnsToPad:numColumnsToPad
 
   alignedLines = for line in lines
     elements = line.split "\t"
     r = if elements.length > 1
+      totalPad = 0
       for el, i in elements
-        if i >= numColumnsToPad
-          "#{el} "
-        else
+        totalPad += maxColumnSizes[i] || 0
+        if maxColumnSizes[i] # && (!maxLineLength? || totalPad < maxLineLength)
           pad el, maxColumnSizes[i]
+        else
+          "#{el} "
     else
       elements
     r.join ""
 
   alignedLines.join "\n"
 
-alignTabStopsByBlocks = (linesString) ->
+alignTabStopsByBlocks = (maxLineLength, linesString) ->
   # console.log blocks: linesString.split(/\n[ \t]*\n/).length, linesString: linesString
-  alignedBlocks = for block in linesString.split /\n[ \t]*\n/
-    alignTabs block
-  alignedBlocks.join "\n\n"
+  # alignedBlocks = for block in linesString.split /\n[ \t]*\n/
+    alignTabs maxLineLength, linesString
+  # alignedBlocks.join "\n\n"
 
 module.exports = class FormattedInspect
   @formattedInspect: (m, options = {}) ->
     if isNumber options
       options = maxLineLength: options
     options.maxLineLength ?= 80
-    stripTrailingWhitespace alignTabStopsByBlocks formattedInspectRecursive toInspectedObjects(m), options
+    stripTrailingWhitespace alignTabStopsByBlocks options.maxLineLength, formattedInspectRecursive toInspectedObjects(m), options
