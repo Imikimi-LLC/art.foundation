@@ -2,6 +2,7 @@
   defineModule
   isFunction
   fastBind
+  log
 } = require '../standard_lib'
 
 defineModule module, ->
@@ -14,10 +15,9 @@ defineModule module, ->
         @_functionsToBindList = @getFunctionsToBindList()
 
     @getFunctionsToBindList: ->
-      prototype = @::
-      k for k, v of prototype when k != "constructor" &&
+      k for k, v of @prototype when k != "constructor" &&
         isFunction(v) &&
-        prototype.hasOwnProperty(k) &&
+        @methodIsConcrete(k) &&
         (!@nonBindingFunctions || k not in @nonBindingFunctions)
 
     getBoundFunctionList: -> @_boundFunctionList
@@ -28,7 +28,8 @@ defineModule module, ->
       if @_boundFunctionList
         delete @[k] for k in @_boundFunctionList when k not in functionsToBindList
 
+      {prototype} = @class
       for k in functionsToBindList
-        @[k] = fastBind @class.prototype[k], @
+        @[k] = fastBind prototype[k], @
 
       @_boundFunctionList = functionsToBindList
