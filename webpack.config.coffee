@@ -1,4 +1,4 @@
-module.exports = (require "art-foundation/configure_webpack")
+module.exports = (require "./configure_webpack")
   entries: "index, test, perf, worker_for_worker_rpc_tests, dom_element_factories"
   package:
     description: 'Foundation classes for the Art framework. Javascript extensions.'

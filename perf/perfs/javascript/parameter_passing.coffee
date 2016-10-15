@@ -1,4 +1,4 @@
-Foundation = require 'art-foundation'
+{Foundation} = Neptune.Art
 
 
 {argumentsToArray, compactFlatten, isPlainObject, deepEach, keepIfRubyTrue} = Foundation

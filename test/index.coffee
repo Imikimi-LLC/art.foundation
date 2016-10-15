@@ -1,5 +1,5 @@
-require '../src/art/foundation'
-ArtMocha = require "art-foundation/src/art/dev_tools/test/mocha"
+require '../index'
+ArtMocha = require "../src/art/dev_tools/test/mocha"
 
 ArtMocha.run ({assert})->
   self.testAssetRoot = "/test/assets"

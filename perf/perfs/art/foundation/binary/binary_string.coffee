@@ -1,4 +1,4 @@
-Foundation = require 'art-foundation'
+{Foundation} = Neptune.Art
 {inspect, log, time, eq, plainObjectsDeepEq, shallowEq, floatEq, objectKeyCount, Binary, RestClient} = Foundation
 {BinaryString, binary} = Binary
 

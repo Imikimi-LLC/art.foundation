@@ -1,4 +1,4 @@
-Foundation = require 'art-foundation'
+{Foundation} = Neptune.Art
 
 suite "Javascript.math", ->
   localA = 0

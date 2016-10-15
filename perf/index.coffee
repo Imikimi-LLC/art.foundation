@@ -1,4 +1,6 @@
-{Mocha, Perf} = require "art-foundation/dev_tools/test"
+require '../index'
+{Mocha, Perf} = require "../src/art/dev_tools/test"
+
 self.benchmark = Perf.benchmark
 self.asyncBenchmark = Perf.asyncBenchmark
 

@@ -1,4 +1,4 @@
-Foundation = require 'art-foundation'
+{Foundation} = Neptune.Art
 {inspect, log, time, eq, plainObjectsDeepEq, shallowEq, Unique, BaseObject} = Foundation
 
 suite "Art.Foundation.Unique", ->
