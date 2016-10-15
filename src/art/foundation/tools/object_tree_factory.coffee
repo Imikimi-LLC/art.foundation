@@ -103,7 +103,7 @@ module.exports = class ObjectTreeFactory
       Factory.class = klass
 
       abstractClass = klass.getAbstractClass()
-      bindList = compactFlatten (k for k, v of klass when !abstractClass[k] && isFunction v), options.bind
+      bindList = compactFlatten [(k for k, v of klass when !abstractClass[k] && isFunction v), options.bind]
       inspectedName ||= klass.getName() + "Factory"
 
       Factory[k] = fastBind klass[k], klass for k in bindList
