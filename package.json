@@ -19,7 +19,7 @@
   },
   "description": "Foundation classes for the Art framework. Javascript extensions.",
   "license": "ISC",
-  "name": "aimee-shane",
+  "name": "art-foundation",
   "scripts": {
     "dev": "neptune-namespaces --std; webpack-dev-server -d --progress",
     "hot": "neptune-namespaces --std; webpack-dev-server --hot --inline --progress",
@@ -27,5 +27,5 @@
     "nodeTest": "neptune-namespaces --std;mocha -u tdd --compilers coffee:coffee-script/register",
     "test": "neptune-namespaces --std; webpack-dev-server -d --progress"
   },
-  "version": "0.1.1"
+  "version": "1.18.0"
 }
