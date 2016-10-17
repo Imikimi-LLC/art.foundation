@@ -1,1 +1,1 @@
-module.exports = require "./src/art/foundation"
+module.exports = global.Neptune?.Art?.Foundation || require "./src/art/foundation"
