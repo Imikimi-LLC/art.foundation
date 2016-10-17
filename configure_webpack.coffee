@@ -1,5 +1,10 @@
-StandardLib = require './src/art/foundation/standard_lib'
-{peek, deepMerge, consistentJsonStringify} = StandardLib
+require './dist'
+{inspect, peek, deepMerge, consistentJsonStringify, log} = Neptune.Art.Foundation
+
+[executable, firstArg] = process.argv
+isWebpackDevServer = !!(executable.match(/\/node$/) &&
+  firstArg?.match /webpack-dev-server/)
+
 fs = require 'fs'
 path = require "path"
 runNeptuneNamespaces = require './standard_neptune_namespace_generators'
@@ -36,21 +41,29 @@ class ArtWebpackConfigurator
   ###################
   @_selectEnties: (entries) ->
     if selectedEntry = process.env.WEBPACK_ENTRIES
-      console.log "detected environment variable: WEBPACK_ENTRIES=#{selectedEntry}"
+      log """
+        Configuring webpack to build entries eelcted in: WEBPACK_ENTRIES=#{selectedEntry}
+        """
       ret = {}
 
       selectedEntries = selectedEntry.split ','
 
       for entry in selectedEntries
-        console.log "  building: #{entry}"
+        log "  building: #{entry}"
         ret[entry] = entries[entry]
       for k, v of entries
-        console.log "  skipping: #{k}" unless ret[k]
+        log "  skipping: #{k}" unless ret[k]
       ret
     else
-      console.log "buildling all entries"
-      console.log "  NOTE: To build specific entries:"
-      console.log "  $ WEBPACK_ENTRIES=myEntry1,myEntry2 webpack[-dev-server]"
+      log """
+        webpack entries: #{Object.keys(entries).join(', ').green}
+
+          NOTE: Webpack is slower if building more entries.
+            To only build specific entries, use the following command-line pattern.
+            (this is an art-foundation configure-webpack feature, not a webpack-feature)
+
+            $ WEBPACK_ENTRIES=myEntry1,myEntry2 webpack[-dev-server]
+        """.gray
       entries
 
   @_transformEntries: (entries) ->
@@ -63,31 +76,12 @@ class ArtWebpackConfigurator
 createPackageJson = (npmPackage) ->
   npmPackage = deepMerge standardNpmPackageProps, npmPackage
   contents = consistentJsonStringify npmPackage, "  "
-  console.log "writing: ".gray + "package.json".green
-  # console.log "contents:", contents
+  log "generating and writing: ".gray + "package.json".green
+  # log "contents:", contents
   fs.writeFileSync "package.json", contents + "\n"
 
-module.exports = (options, rest...) ->
-  {entries, outputPath, dirname} = options
-  dirname ||= process.cwd()
-  outputPath ||= "build"
-  console.log "art-foundation: configure-webpack"
-  console.log "  entries:    #{entries}"
-  console.log "  outputPath: #{outputPath}"
-
-  entry = ArtWebpackConfigurator._transformEntries entries
-  console.log ""
-  if npmPackage = options.package
-    createPackageJson npmPackage
-
-  console.log "NeptuneNamespaces generation...".grey
-  runNeptuneNamespaces dirname
-  .then ->
-    # NOTE: webpack is fine with us returning a promise from config, but webpack-dev-server ISN'T
-    # DETAILS: https://github.com/webpack/webpack-dev-server/pull/419
-    #   looks like it's in the upcoming 2.0 release, but not in 1.x - which is the current stable release
-    console.log "NeptuneNamespaces generation done.".grey
-
+createWebpackConfig = (dirname, outputPath, entry, rest) ->
+  log "generating and returning: ".gray + "webpack.config".green
   result =
     entry: entry
 
@@ -111,3 +105,26 @@ module.exports = (options, rest...) ->
     [result].concat rest
   else
     result
+
+module.exports = (options, rest...) ->
+  {entries, outputPath, dirname} = options
+  dirname ||= process.cwd()
+  outputPath ||= "build"
+  log "\n-------------------------------------------------------------------------".gray
+  log "configuring webpack in: ".gray + dirname.green
+  log "-------------------------------------------------------------------------".gray
+
+  entry = ArtWebpackConfigurator._transformEntries entries
+  log ""
+  if npmPackage = options.package
+    createPackageJson npmPackage
+
+  # NOTE: webpack is fine with us returning a promise from config, but webpack-dev-server ISN'T
+  # DETAILS: https://github.com/webpack/webpack-dev-server/pull/419
+  #   looks like it's in the upcoming 2.0 release, but not in 1.x - which is the current stable release
+  if isWebpackDevServer
+    runNeptuneNamespaces dirname, isWebpackDevServer
+    createWebpackConfig dirname, outputPath, entry, rest
+  else
+    runNeptuneNamespaces dirname, isWebpackDevServer
+    .then -> createWebpackConfig dirname, outputPath, entry, rest

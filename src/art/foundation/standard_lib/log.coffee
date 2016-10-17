@@ -102,6 +102,8 @@ module.exports = class Log
       @log obj
       ret
 
+  @log.labeled = @log.withLabel
+
   @log.error = (args...) =>
     m = if args.length == 1
       args[0]
