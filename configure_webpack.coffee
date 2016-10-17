@@ -9,7 +9,7 @@ fs = require 'fs'
 path = require "path"
 runNeptuneNamespaces = require './standard_neptune_namespace_generators'
 
-standardNpmPackageProps =
+getStandardNpmPackageProps = ->
   license: 'ISC'
   name: peek process.cwd().split("/")
   version: JSON.parse(fs.readFileSync("package.json").toString()).version
@@ -74,7 +74,7 @@ class ArtWebpackConfigurator
     @_selectEnties entryConfig
 
 createPackageJson = (npmPackage) ->
-  npmPackage = deepMerge standardNpmPackageProps, npmPackage
+  npmPackage = deepMerge getStandardNpmPackageProps(), npmPackage
   contents = consistentJsonStringify npmPackage, "  "
   log "generating and writing: ".gray + "package.json".green
   # log "contents:", contents
