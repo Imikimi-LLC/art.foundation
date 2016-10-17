@@ -70,7 +70,7 @@ createPackageJson = (npmPackage) ->
 module.exports = (options, rest...) ->
   {entries, outputPath, dirname} = options
   dirname ||= process.cwd()
-  outputPath ||= "dist"
+  outputPath ||= "build"
   console.log "art-foundation: configure-webpack"
   console.log "  entries:    #{entries}"
   console.log "  outputPath: #{outputPath}"
