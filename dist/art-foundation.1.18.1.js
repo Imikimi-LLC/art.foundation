@@ -3579,7 +3579,7 @@
 	  match OUTPUT: [url, protocol, '://', domain, ':', port, path, '?', query]
 	  
 	  USAGE:
-	    [_, protocol, _, domain, _, port, path, _, query] = str.match findUrlRegexp
+	    [__, protocol, __, domain, __, port, path, __, query] = str.match findUrlRegexp
 	  
 	  DESIGN NOTE:
 	    The reason why I included the fixed strings ('://', ':' and '?') was so that
@@ -4460,12 +4460,12 @@
 	  };
 
 	  ParseUrl.parseUrl = function(url) {
-	    var _, a, anchor, fileName, host, hostWithPort, m, password, path, pathName, port, protocol, query, username;
+	    var __, a, anchor, fileName, host, hostWithPort, m, password, path, pathName, port, protocol, query, username;
 	    m = url.match(/(([A-Za-z]+):(\/\/)?)?(([\-;&=\+\$,\w]+)(:([\-;:&=\+\$,\w]+))?@)?([A-Za-z0-9\.\-]+)(:([0-9]+))?(\/[\+~%\/\.\w\-]*)?(\?([\-\+=&;%@\.\w,]*))?(\#([\.\!\/\\\w]*))?/);
 	    if (!m) {
 	      return void 0;
 	    }
-	    _ = m[0], _ = m[1], protocol = m[2], _ = m[3], _ = m[4], username = m[5], _ = m[6], password = m[7], host = m[8], _ = m[9], port = m[10], pathName = m[11], _ = m[12], query = m[13], _ = m[14], anchor = m[15];
+	    __ = m[0], __ = m[1], protocol = m[2], __ = m[3], __ = m[4], username = m[5], __ = m[6], password = m[7], host = m[8], __ = m[9], port = m[10], pathName = m[11], __ = m[12], query = m[13], __ = m[14], anchor = m[15];
 	    if (pathName) {
 	      a = pathName.split("/");
 	      fileName = a[a.length - 1];
@@ -7120,6 +7120,8 @@
 	      return ret;
 	    }
 	  };
+
+	  Log.log.labeled = Log.log.withLabel;
 
 	  Log.log.error = function() {
 	    var args, m, stack;
@@ -12170,7 +12172,7 @@
 			"nodeTest": "neptune-namespaces --std;mocha -u tdd --compilers coffee:coffee-script/register",
 			"test": "neptune-namespaces --std; webpack-dev-server -d --progress"
 		},
-		"version": "1.17.2"
+		"version": "1.18.1"
 	};
 
 /***/ },
