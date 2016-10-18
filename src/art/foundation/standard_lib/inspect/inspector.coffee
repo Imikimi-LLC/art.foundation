@@ -31,7 +31,9 @@ module.exports = class Inspector
     @inspectingMap = new Map
     @done = false
 
-  @inspect: (obj, options = {}) =>
+  @inspect: inspect = (obj, options = {}) ->
+    return Neptune.Base.inspect.call @ if @ != global
+
     inspector = new Inspector options
     inspector.inspect obj
     inspector.getResult()
@@ -50,7 +52,7 @@ module.exports = class Inspector
   #    anything @inspect accepts
   #    forArgs: true # never include [] around the top-level array
   @inspectLean: (object, options) =>
-    fullInspect = @inspect object, options
+    fullInspect = inspect object, options
     if !isFunction(object?.inspect) && (isPlainObject(object) || (isPlainArray(object) && (object.length > 1 || options?.forArgs)))
       match = fullInspect.match /^\[(.+)\]$|^\{(.+)\}$/
       if match then match[1] || match[2] || match[3] else fullInspect

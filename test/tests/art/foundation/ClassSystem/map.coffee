@@ -1,8 +1,12 @@
-{Map, inspect} = Neptune.Art.Foundation
+{Map, inspect, log} = Neptune.Art.Foundation
 
 suite "Art.Foundation.Map.inspect", ->
   test "inspect just string keys", ->
     om = new Map
+    log
+        om: typeof om
+        ins: om instanceof Neptune.Base
+        inspect: inspect
     om.set "foo", 1
     om.set "bar", 2
     assert.eq "{Map foo: 1, bar: 2}", inspect om

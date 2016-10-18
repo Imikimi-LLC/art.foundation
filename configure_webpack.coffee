@@ -15,7 +15,7 @@ getStandardNpmPackageProps = ->
   version: JSON.parse(fs.readFileSync("package.json").toString()).version
   author: "Shane Brinkman-Davis Delamore, Imikimi LLC"
   dependencies:
-    'neptune-namespaces': '^1.4.0'
+    'neptune-namespaces': '^1.5.0'
     'chai': '^3.5.0'
     'coffee-loader': '^0.7.2'
     'coffee-script': '^1.11.1'
