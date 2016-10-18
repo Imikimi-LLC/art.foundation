@@ -35,7 +35,7 @@ module.exports = class Regexp
   match OUTPUT: [url, protocol, '://', domain, ':', port, path, '?', query]
 
   USAGE:
-    [_, protocol, _, domain, _, port, path, _, query] = str.match findUrlRegexp
+    [__, protocol, __, domain, __, port, path, __, query] = str.match findUrlRegexp
 
   DESIGN NOTE:
     The reason why I included the fixed strings ('://', ':' and '?') was so that

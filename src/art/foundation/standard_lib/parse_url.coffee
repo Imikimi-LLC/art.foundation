@@ -23,14 +23,14 @@ module.exports = class ParseUrl
     ///
     return undefined unless m
     [
-      _, _, protocol
-      _, _, username
-      _, password
+      __, __, protocol
+      __, __, username
+      __, password
       host
-      _, port
+      __, port
       pathName
-      _, query
-      _, anchor
+      __, query
+      __, anchor
     ] = m
 
     if pathName
