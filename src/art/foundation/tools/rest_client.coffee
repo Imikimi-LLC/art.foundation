@@ -5,9 +5,18 @@ StandardLib = require '../standard_lib'
 {present, Promise, merge, isNumber, timeout} = StandardLib
 
 module.exports = class RestClient
+  @legalVerbs:
+    get: "GET"
+    GET: "GET"
+    put: "PUT"
+    PUT: "PUT"
+    post: "POST"
+    POST: "POST"
+    delete: "DELETE"
+    DELETE: "DELETE"
 
   ###
-  get/put/post
+  get/put/post/delete
 
   IN:
     url: valid url string
@@ -55,46 +64,31 @@ module.exports = class RestClient
       that was made up to the point of the event.
   ###
 
-  @get:  (url, options) ->
-    RestClient.restRequest merge options,
-      verb: "GET"
-      url: url
-
-  @delete:  (url, options) ->
-    RestClient.restRequest merge options,
-      verb: "DELETE"
-      url: url
+  @get:     (url, options)           -> RestClient.restRequest merge options, verb: "GET",    url: url
+  @put:     (url, data, options)     -> RestClient.restRequest merge options, verb: "PUT",    url: url, data: data
+  @post:    (url, data, options)     -> RestClient.restRequest merge options, verb: "POST",   url: url, data: data
+  @delete:  (url, options)           -> RestClient.restRequest merge options, verb: "DELETE", url: url
 
   # OUT: Promise -> responseData is ArrayBuffer
-  @getArrayBuffer: (url, options) ->
-    @get url, merge options, responseType: "arraybuffer"
-
-  @put:  (url, data, options) ->
-    RestClient.restRequest merge options,
-      verb: "PUT"
-      url: url
-      data: data
-
-  @post: (url, data, options) ->
-    RestClient.restRequest merge options,
-      verb: "POST"
-      url: url
-      data: data
+  @getArrayBuffer: (url, options) -> @get url, merge options, responseType: "arraybuffer"
 
   ###
-  OUT: Promise -> responseData is plainObject (responseData string parsed as JSON)
-  NOTE: if the response fails to parse as JSON, the promise will be rejected.
-    The unparsed response can be accessed as follows: promise.then ..., (restRequestStatus) -> restRequestStatus.response
+  get/put/post/deleteJson
 
-  IN:
-    data:     if data is provided, it will be encoded as JSON (this becomes the request body)
-    url:      (See above)
-    options:  (See above)
+  same as get/put/post/delete above
+
+  except:
+    sent data should be plain objects which are JSON.stringified
+    response data is automatically JSON.parsed
+
+    additional options are set:
+      responseType: "json"
+      headers:      Accept: 'application/json'
   ###
-  @getJson:     (url, options)       -> @get  url,                               merge options, responseType: "json", headers: Accept: 'application/json'
-  @deleteJson:  (url, options)       -> @delete  url,                            merge options, responseType: "json", headers: Accept: 'application/json'
-  @putJson:     (url, data, options) -> @put  url, data && JSON.stringify(data), merge options, responseType: "json", headers: Accept: 'application/json'
-  @postJson:    (url, data, options) -> @post url, data && JSON.stringify(data), merge options, responseType: "json", headers: Accept: 'application/json'
+  @getJson:     (url, options)       -> RestClient.restJsonRequest merge options, verb: "get",     url: url
+  @deleteJson:  (url, options)       -> RestClient.restJsonRequest merge options, verb: "delete",  url: url
+  @putJson:     (url, data, options) -> RestClient.restJsonRequest merge options, verb: "put",     url: url, data: data
+  @postJson:    (url, data, options) -> RestClient.restJsonRequest merge options, verb: "post",    url: url, data: data
 
   ###
   IN:
@@ -133,6 +127,8 @@ module.exports = class RestClient
   @restRequest: (options) ->
     {verb, url, data, headers, onProgress, responseType, formData, showProgressAfter} = options
     showProgressAfter = 100 unless isNumber showProgressAfter
+
+    throw new Error "invalid verb: #{specifiedVerb}" unless verb = RestClient.legalVerbs[specifiedVerb = verb]
 
     if formData
       throw new Error "can't specify both 'data' and 'formData'" if data
@@ -221,3 +217,11 @@ module.exports = class RestClient
           request.upload.addEventListener "progress", progressCallbackInternal
 
       request.send data
+
+  @restJsonRequest: (options) ->
+    @restRequest merge
+      responseType: "json"
+      headers:      merge Accept: 'application/json', options?.headers
+      verb:         "get"
+      data:         options?.data && JSON.stringify options.data
+      options
