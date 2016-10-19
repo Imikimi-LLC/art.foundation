@@ -10,7 +10,7 @@ Foundation = require 'art-foundation'
 Atomic = require 'art-atomic'
 ToolBar = require './tool_bar'
 
-{color, Color, point, point0} = Atomic
+{rgbColor, Color, point, point0} = Atomic
 {
   BaseObject, inspect, clone, merge, Map, nextTick, timeout, flatten,
   isArray, isString, isFunction
@@ -330,7 +330,7 @@ module.exports = createWithPostCreate class Console extends BaseObject
 
   colorToDom: (clr) ->
     displayString = if isString clrString = clr
-      clr = color clr
+      clr = rgbColor clr
       "'#{clrString}'"
     else
       clr.toString()

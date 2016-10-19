@@ -1,6 +1,6 @@
 Atomic = require 'art-atomic'
 Foundation = require 'art-foundation'
-{point, color, rect, Matrix} = Atomic
+{point, rgbColor, rect, Matrix} = Atomic
 {inspect, log} = Foundation
 
 module.exports = class Chart
@@ -9,10 +9,10 @@ module.exports = class Chart
     pixelsPerPoint = options.pixelsPerPoint || 2
     fontSize = options.fontSize || 10
     margin = options.margin || if range then fontSize*1.4 else 0
-    bgColor = color options.bgColor || color 1,1,1,0
-    chartBgColor = color options.chartBgColor || "#fff7f0"
-    barColor = color options.barColor || "rgba(0,0,0,.5)"
-    textColor = color options.textColor || "orange"
+    bgColor = rgbColor options.bgColor || rgbColor 1,1,1,0
+    chartBgColor = rgbColor options.chartBgColor || "#fff7f0"
+    barColor = rgbColor options.barColor || "rgba(0,0,0,.5)"
+    textColor = rgbColor options.textColor || "orange"
     minWidth = options.minWidth || 50
     size = options.size || point numbers.length * 4, 50 + 2 * margin
 
