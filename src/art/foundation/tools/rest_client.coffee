@@ -2,7 +2,7 @@
 #  http://www.w3.org/TR/XMLHttpRequest2/
 #  http://www.html5rocks.com/en/tutorials/file/xhr2/
 StandardLib = require '../standard_lib'
-{present, Promise, merge, isNumber, timeout} = StandardLib
+{present, Promise, merge, isNumber, timeout, log} = StandardLib
 
 module.exports = class RestClient
   @legalVerbs:
@@ -94,6 +94,7 @@ module.exports = class RestClient
   IN:
     options:
       verb: "GET", "PUT", "POST"
+      method: alias for verb
 
       data: data to restRequest - passed to xmlHttpRequest.restRequest
 
@@ -125,8 +126,10 @@ module.exports = class RestClient
 
   ###
   @restRequest: (options) ->
-    {verb, url, data, headers, onProgress, responseType, formData, showProgressAfter} = options
+    {verb, method, url, data, headers, onProgress, responseType, formData, showProgressAfter} = options
     showProgressAfter = 100 unless isNumber showProgressAfter
+
+    verb ||= method
 
     throw new Error "invalid verb: #{specifiedVerb}" unless verb = RestClient.legalVerbs[specifiedVerb = verb]
 
@@ -219,9 +222,9 @@ module.exports = class RestClient
       request.send data
 
   @restJsonRequest: (options) ->
-    @restRequest merge
+    @restRequest merge options,
       responseType: "json"
-      headers:      merge Accept: 'application/json', options?.headers
-      verb:         "get"
+      headers: merge
+        Accept:         'application/json'
+        options?.headers
       data:         options?.data && JSON.stringify options.data
-      options
