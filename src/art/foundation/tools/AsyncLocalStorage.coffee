@@ -1,4 +1,4 @@
-{defineModule, Promise, log} = require '../standard_lib'
+{defineModule, Promise, log, objectKeyCount} = require '../standard_lib'
 {isWebWorker} = require './web_worker'
 {workerRpc} = require './worker_rpc'
 
@@ -15,6 +15,15 @@ API:
 
 defineModule module, ->
   {localStorage} = global
+  localStorage ||= class LocalStorageShimForNode
+    @store: {}
+    @getItem:     (k)     => @store[k]
+    @setItem:     (k, v)  => @store[k] = v
+    @removeItem:  (k)     => delete @store[k]
+    @clear:               => @store = {}
+    @key:         (i)     => Object.keys(@store)[i]
+    @getLength:           => objectKeyCount @store
+
   if isWebWorker
     workerRpc.bindWithPromises localStorage: ["getItem", "setItem", "removeItem", "clear", "key"]
   else
