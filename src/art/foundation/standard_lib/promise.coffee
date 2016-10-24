@@ -64,6 +64,14 @@ module.exports = class ArtPromise #extends Promise
     deepEach plainStructure, (v) -> containsPromises ||= isPromise v
     containsPromises
 
+  @withCallback: (startPromiseBodyFunction) ->
+    new Promise (resolve, reject) ->
+      callback = (err, data) ->
+        return reject err if err
+        resolve data
+
+      startPromiseBodyFunction callback
+
   noop = (a) -> a
   @deepAll: (plainStructure, resolvedResultPreprocessor = noop) ->
     promises = []
