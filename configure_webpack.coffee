@@ -1,5 +1,5 @@
 require './dist'
-{inspect, peek, deepMerge, consistentJsonStringify, log} = Neptune.Art.Foundation
+{inspect, peek, deepMerge, consistentJsonStringify, log, merge} = Neptune.Art.Foundation
 
 [executable, firstArg] = process.argv
 isWebpackDevServer = !!(executable.match(/\/node$/) &&
@@ -80,10 +80,10 @@ createPackageJson = (npmPackage) ->
   # log "contents:", contents
   fs.writeFileSync "package.json", contents + "\n"
 
-createWebpackConfig = (dirname, outputPath, entry, rest) ->
+createWebpackConfig = (options) ->
+  {dirname, outputPath, rest} = options
   log "generating and returning: ".gray + "webpack.config".green
-  result =
-    entry: entry
+  result = merge options,
 
     resolve:
       extensions: ["", ".webpack.js", ".web.js", ".js", ".coffee"]
@@ -101,6 +101,7 @@ createWebpackConfig = (dirname, outputPath, entry, rest) ->
         { test: /\.jpg$/, loader: "file-loader" }
         { test: /\.json$/, loader: "json-loader" }
       ]
+
   if rest.length > 0
     [result].concat rest
   else
@@ -115,6 +116,12 @@ module.exports = (options, rest...) ->
   log "-------------------------------------------------------------------------".gray
 
   entry = ArtWebpackConfigurator._transformEntries entries
+  webpackOptions = merge options,
+    dirname: dirname
+    outputPath: outputPath
+    entry: entry
+    rest: rest
+
   log ""
   if npmPackage = options.package
     createPackageJson npmPackage
@@ -124,7 +131,7 @@ module.exports = (options, rest...) ->
   #   looks like it's in the upcoming 2.0 release, but not in 1.x - which is the current stable release
   if isWebpackDevServer
     runNeptuneNamespaces dirname, isWebpackDevServer
-    createWebpackConfig dirname, outputPath, entry, rest
+    createWebpackConfig webpackOptions
   else
     runNeptuneNamespaces dirname, isWebpackDevServer
-    .then -> createWebpackConfig dirname, outputPath, entry, rest
+    .then -> createWebpackConfig webpackOptions
