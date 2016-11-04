@@ -41,14 +41,11 @@ module.exports = buildCommander = (options) ->
       .option command, help
       .on commandName, (a...)->
         console.log "exec: #{commandName}..."
-        {log} = require 'art-foundation'
-        [args..., __] = a
-        log arguments: args if args.length > 0
-        # console.log a
+        {log, merge} = require 'art-foundation'
         actionTaken = true
 
         Promise.resolve beforeActions? commander
-        .then -> action a...
+        .then (beforeActionsOptions) -> action merge beforeActionsOptions, args: a
         .then  (out) -> log success: out
         .catch (err) ->
           log error: err
