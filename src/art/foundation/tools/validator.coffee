@@ -11,6 +11,7 @@ StandardLib = require '../standard_lib'
   emailRegexp
   mergeIntoUnless
   w
+  isFunction
 } = StandardLib
 
 {validStatus} = require './communication_status'
@@ -96,6 +97,7 @@ module.exports = class Validator extends BaseObject
     string:     validate: (a) -> isString a
     object:     validate: (a) -> isPlainObject a
     array:      validate: (a) -> isPlainArray a
+    function:   validate: (a) -> isFunction a
 
   booleanDataType = "boolean"
   numberDataType =  "number"
@@ -156,6 +158,9 @@ module.exports = class Validator extends BaseObject
     trimmedString:
       validate: (v) -> isString v
       preprocess: (v) -> v.trim()
+
+    function:
+      dataType: "function"
 
   # apply defaults
   for k, v of fieldTypes
