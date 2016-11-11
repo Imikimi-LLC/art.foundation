@@ -1,4 +1,4 @@
-require './dist'
+require './index'
 {inspect, peek, deepMerge, consistentJsonStringify, log, merge} = Neptune.Art.Foundation
 
 [executable, firstArg] = process.argv
@@ -77,6 +77,8 @@ createPackageJson = (npmPackage) ->
   npmPackage = deepMerge getStandardNpmPackageProps(), npmPackage
   contents = consistentJsonStringify npmPackage, "  "
   log "generating and writing: ".gray + "package.json".green
+  log npmPackage: npmPackage, contents: contents
+
   # log "contents:", contents
   fs.writeFileSync "package.json", contents + "\n"
 

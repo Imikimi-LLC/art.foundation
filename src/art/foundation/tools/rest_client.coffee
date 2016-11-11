@@ -156,7 +156,7 @@ module.exports = class RestClient
       getResponse = ->
         {response} = request
         if response && responseType == "json"
-          response = JSON.parse response
+          JSON.parse response
         else
           response
 

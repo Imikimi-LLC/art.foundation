@@ -2,9 +2,9 @@
 {Foundation} = Neptune.Art
 {log} = Foundation
 {formattedInspect, isString, inspect, toInspectedObjects, inspectedObjectLiteral, BaseObject, stripTrailingWhitespace} = Foundation
-testFIMultiLine = (input, out) ->
-  test str = "formattedInspect #{inspect input}, 0", ->
-    o = stripTrailingWhitespace formattedInspect input, 0
+testFIMultiLine = (input, out, maxLineLength = 0) ->
+  test str = "formattedInspect #{inspect input}, #{maxLineLength}", ->
+    o = stripTrailingWhitespace formattedInspect input, maxLineLength
     log inspect: -> str
     log input
     log o
@@ -51,6 +51,37 @@ module.exports = suite:
     testFI Foo, Foo.namespacePath
     testFI (new Foo), "<#{Foo.namespacePath}>"
 
+  maxLineLength: ->
+    testFIMultiLine [1, 2], """
+      - 1
+      - 2
+      """, 3
+
+    testFIMultiLine [1, 2], "1, 2", 4
+
+    testFIMultiLine
+      a: [1, 2]
+      "a: 1, 2"
+      7
+
+    testFIMultiLine
+      a: [1, 2]
+      """
+      a:
+        1, 2
+      """
+      6
+
+    testFIMultiLine
+      a: [1, 2]
+      """
+      a:
+        1
+        2
+      """
+      5
+
+
   multiLine:
     array: ->
 
@@ -58,9 +89,11 @@ module.exports = suite:
         - 1
         - 2
         """
+
       testFIMultiLine [[1, 2], [3,4]], """
         - - 1
           - 2
+
         - - 3
           - 4
         """
@@ -72,6 +105,7 @@ module.exports = suite:
         a:
           a1: 1
           a2: 2
+
         b:
           b1: 1
           b2: 2
@@ -103,6 +137,7 @@ module.exports = suite:
       testFIMultiLine [{a1:1, a2:2}, {b1:1, b2:2}], """
         - a1: 1
           a2: 2
+
         - b1: 1
           b2: 2
         """
@@ -134,10 +169,12 @@ module.exports = suite:
         - "string"
         - foo: "bar"
         """
+
       testFIMultiLine [inspectedObjectLiteral('string'), foo: 'bar'], """
         - string
         - foo: "bar"
         """
+
       testFIMultiLine a:[1,2], b:2, """
         a:
         - 1
@@ -165,6 +202,7 @@ module.exports = suite:
         ], """
         - foo: "A"
           bar: "B"
+
         - "C"
         - fad: "D"
           baz: "E"

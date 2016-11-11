@@ -148,7 +148,7 @@ module.exports = class StringExtensions
     out = if object == false || object == true || object == null || isNumber object
       "" + object
     else if isString object
-      escapeJavascriptString object
+      JSON.stringify object
     else
       indentObject = if indent
         if typeof indent == "string"
@@ -173,7 +173,7 @@ module.exports = class StringExtensions
       if isPlainObject object
         openObject + (
           for k in (Object.keys object).sort() when object[k] != undefined
-            escapeJavascriptString(k) + ": " + consistentJsonStringify object[k], indentObject
+            JSON.stringify(k) + ": " + consistentJsonStringify object[k], indentObject
         ).join(joiner) +
         closeObject
       else if isArray object

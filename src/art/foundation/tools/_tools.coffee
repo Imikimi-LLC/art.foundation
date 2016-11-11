@@ -3,4 +3,5 @@ module.exports = [
   require './web_worker'
   require './global_counts'
   require "./object_tree_factory"
+  require './DateFormat'
 ]

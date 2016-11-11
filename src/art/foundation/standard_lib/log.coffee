@@ -59,7 +59,7 @@ module.exports = class Log
       logger if isString m
         m
       else
-        Inspect.formattedInspect m
+        Inspect.formattedInspect m, process.stdout.columns
     else
       logger m, "\n# Foundation.log called " + @contextString stack, className
 

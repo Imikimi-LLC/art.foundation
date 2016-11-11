@@ -1,8 +1,8 @@
 # TODO: merge with standard_lib/regexp
 module.exports = class ParseUrl
-  @parseQuery: (qs = self.location?.search) ->
+  @parseQuery: (qs = self.location?.search || "") ->
     obj = {}
-    for pair in qs.replace('?', '').split('&')
+    for pair in qs.replace(/^\?/, '').split('&')
       i = pair.indexOf '='
       key = pair.slice 0, i
       val = pair.slice i+1

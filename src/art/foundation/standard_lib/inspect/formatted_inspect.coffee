@@ -7,94 +7,93 @@
 niceNodeInspectIndent = '  '
 newLineWithNiceNodeInspectIndent = "\n#{niceNodeInspectIndent}"
 
-formatMultilineSubStructure = (m, inspected, implicitRepresentationOk) ->
-  return inspected unless inspected.match /\n/
-  inspected.replace /\n/g, newLineWithNiceNodeInspectIndent
+formattedInspectObject = (m, maxLineLength, options) ->
+  inspectedLength = 0
 
-formatMultilineSubStructureForObject = (m, inspected, implicitRepresentationOk) ->
-  return inspected unless inspected.match /\n/
-  if inspected.match /^- /
-    "\n#{inspected}\n"
+  forceMultilineOutput = false
+  shouldBeOnOwnLine = false
+  keyCount = 0
+
+  inspectedValues = for key, value of m
+    keyCount++
+    inspected = formattedInspectRecursive value, maxLineLength, options
+
+    if inspected.match /\n/
+      inspected = if inspected.match /^- /
+        "\n#{inspected}"
+      else
+        newLineWithNiceNodeInspectIndent + inspected.replace /\n/g, newLineWithNiceNodeInspectIndent
+
+    key = inspect key unless key.match /^[-._a-zA-Z[_a-zA-Z0-9]*$/
+    inspectedLength += inspected.length + key.length + 2
+    forceMultilineOutput ||= shouldBeOnOwnLine # if previous entry should be on own line, force all on own line
+    shouldBeOnOwnLine = !inspected.match /^([^,:]|\(.*\)|\{.*\}|\".*\"|\'.*\'|\[.*\])*$/
+    [key, inspected]
+
+  return "{}" if keyCount == 0
+
+  index = 0
+  finalInspectedValues = for [k, v] in inspectedValues
+    "#{k}:\t#{v}"
+
+  finalInspectedValues.join if !forceMultilineOutput && maxLineLength >= inspectedLength + (inspectedValues.length - 1) * 2
+    ",\t"
   else
-    newLineWithNiceNodeInspectIndent + inspected.replace /\n/g, newLineWithNiceNodeInspectIndent
+    "\n"
 
-formattedInspectRecursive = (m, options, implicitRepresentationOk) ->
-  {maxLineLength} = options
-  if isPlainObject m
-    inspectedLength = 0
-
-    forceMultilineOutput = false
-    shouldBeOnOwnLine = false
-    keyCount = 0
-
-    inspectedValues = for key, value of m
-      keyCount++
-      inspectedValue = formatMultilineSubStructureForObject value, formattedInspectRecursive(value, options)
-      key = inspect key unless key.match /^[-._a-zA-Z[_a-zA-Z0-9]*$/
-      inspectedLength += inspectedValue.length + key.length + 2
-      forceMultilineOutput ||= shouldBeOnOwnLine # if previous entry should be on own line, force all on own line
-      shouldBeOnOwnLine = !inspectedValue.match /^([^,:]|\(.*\)|\{.*\}|\".*\"|\'.*\'|\[.*\])*$/
-      [key, inspectedValue]
-
-    return "{}" if keyCount == 0
-
-    index = 0
-    finalInspectedValues = for [k, v] in inspectedValues
-      "#{k}:\t#{v}"
-
-    finalInspectedValues.join if !forceMultilineOutput && maxLineLength >= inspectedLength + (inspectedValues.length - 1) * 2
-      ",\t"
+formattedInspectArray = (m, maxLineLength, options, implicitRepresentationOk) ->
+  inspectedLength = 0
+  lastWasObject = false
+  lastWasArray = false
+  containsConsecutiveObjects = false
+  containsConsecutiveArrays = false
+  inspectedValues = for value in m
+    implicitRepresentationOk = true
+    if _isPlainObject = isPlainObject value
+      containsConsecutiveObjects ||= lastWasObject
+      lastWasObject = true
     else
-      "\n"
+      lastWasObject = false
+    if isPlainArray value
+      implicitRepresentationOk = false
+      containsConsecutiveArrays ||= lastWasArray
+      lastWasArray = true
+    inspected = formattedInspectRecursive value, maxLineLength, options, implicitRepresentationOk
 
-  else if isPlainArray m
-    inspectedLength = 0
-    lastWasObject = false
-    lastWasArray = false
-    containsConsecutiveObjects = false
-    containsConsecutiveArrays = false
-    inspectedValues = for value in m
-      implicitRepresentationOk = true
-      if _isPlainObject = isPlainObject value
-        containsConsecutiveObjects ||= lastWasObject
-        lastWasObject = true
-      else
-        lastWasObject = false
-      if isPlainArray value
-        implicitRepresentationOk = false
-        containsConsecutiveArrays ||= lastWasArray
-        lastWasArray = true
-      inspected = formattedInspectRecursive value, options, implicitRepresentationOk
-      inspected = formatMultilineSubStructure value, inspected, implicitRepresentationOk #unless _isPlainObject
+    if inspected.match /\n/
+      inspected = inspected.replace /\n/g, newLineWithNiceNodeInspectIndent
 
-      inspectedLength += inspected.length
-      inspected
+    inspectedLength += inspected.length
+    inspected
 
-    if !containsConsecutiveArrays && !containsConsecutiveObjects && maxLineLength >= inspectedLength + (inspectedValues.length - 1) * 2
-      if inspectedValues.length == 0
-        "[]"
-      else if inspectedValues.length <= 1
-        "- #{inspectedValues.join ",\t"}"
-      else
-        inspectedValues.join ",\t"
+  if !containsConsecutiveArrays && !containsConsecutiveObjects && maxLineLength >= inspectedLength + (inspectedValues.length - 1) * 2
+    if inspectedValues.length == 0
+      "[]"
+    else if inspectedValues.length <= 1
+      "- #{inspectedValues.join ",\t"}"
     else
-      indentedInspectedArray = for inspectedEl, i in inspectedValues
-        # v = inspectedEl
-        # v = "{}#{if v.match("\n") then "\n  " else " "}#{v.replace(/\n/g, "\n  ")}" if containsConsecutiveObjects && isPlainObject m[i]
-        # v
-        "- #{inspectedEl}"
-      """
-      #{indentedInspectedArray.join "\n"}
-      """
-  else if isString m
-    if m.length > 10 && m.match(/\n/) && !m.match /\ (\n|$)/
-      [
-        '"""'
-        m.replace /"""/, '""\\"'
-        '"""'
-      ].join '\n'
-    else
-      escapeJavascriptString m
+      inspectedValues.join ",\t"
+  else
+    indentedInspectedArray = for inspectedEl, i in inspectedValues
+      "- #{inspectedEl}"
+    """
+    #{indentedInspectedArray.join "\n"}
+    """
+
+formattedInspectString = (m) ->
+  if m.length > 10 && m.match(/\n/) && !m.match /\ (\n|$)/
+    [
+      '"""'
+      m.replace /"""/, '""\\"'
+      '"""'
+    ].join '\n'
+  else
+    escapeJavascriptString m
+
+formattedInspectRecursive = (m, maxLineLength, options, implicitRepresentationOk) ->
+  if isPlainObject m      then formattedInspectObject m, maxLineLength, options
+  else if isPlainArray m  then formattedInspectArray  m, maxLineLength, options, implicitRepresentationOk
+  else if isString m      then formattedInspectString m
   else
     inspect m
 
@@ -142,14 +141,24 @@ alignTabs = (maxLineLength, linesString) ->
   alignedLines.join "\n"
 
 alignTabStopsByBlocks = (maxLineLength, linesString) ->
-  # console.log blocks: linesString.split(/\n[ \t]*\n/).length, linesString: linesString
-  # alignedBlocks = for block in linesString.split /\n[ \t]*\n/
-    alignTabs maxLineLength, linesString
-  # alignedBlocks.join "\n\n"
+  alignTabs maxLineLength, linesString
+
+addNewLineAfterDownIndent = (string) ->
+  lines = string.split "\n"
+  lastIndent = 0
+  outLines = for line in lines
+    _lastIndent = lastIndent
+    lastIndent = indent = line.match(/^ *-?/)[0].length
+    if indent < _lastIndent
+      "\n#{line}"
+    else
+      line
+  outLines.join '\n'
 
 module.exports = class FormattedInspect
   @formattedInspect: (m, options = {}) ->
     if isNumber options
       options = maxLineLength: options
     options.maxLineLength ?= 80
-    stripTrailingWhitespace alignTabStopsByBlocks options.maxLineLength, formattedInspectRecursive toInspectedObjects(m), options
+
+    addNewLineAfterDownIndent stripTrailingWhitespace alignTabStopsByBlocks options.maxLineLength, formattedInspectRecursive toInspectedObjects(m), options.maxLineLength, options
