@@ -51,35 +51,85 @@ module.exports = suite:
     testFI Foo, Foo.namespacePath
     testFI (new Foo), "<#{Foo.namespacePath}>"
 
-  maxLineLength: ->
-    testFIMultiLine [1, 2], """
-      - 1
-      - 2
-      """, 3
+  maxLineLength:
+    simpleArray: ->
+      testFIMultiLine [1, 2], """
+        - 1
+        - 2
+        """, 3
 
-    testFIMultiLine [1, 2], "1, 2", 4
+      testFIMultiLine [1, 2], "1, 2", 4
 
-    testFIMultiLine
-      a: [1, 2]
-      "a: 1, 2"
-      7
+    objectArray: ->
+      testFIMultiLine
+        a: [1, 2]
+        "a: 1, 2"
+        7
 
-    testFIMultiLine
-      a: [1, 2]
-      """
-      a:
-        1, 2
-      """
-      6
+      testFIMultiLine
+        a: [1, 2]
+        """
+        a:
+          1, 2
+        """
+        6
 
-    testFIMultiLine
-      a: [1, 2]
-      """
-      a:
-        1
-        2
-      """
-      5
+      testFIMultiLine
+        a: [1, 2]
+        """
+        a:
+        - 1
+        - 2
+        """
+        5
+
+    arrayObject: ->
+      testFIMultiLine [a: 1],
+        """
+        - a: 1
+        """
+        6
+
+      testFIMultiLine [a: 1],
+        """
+        - a:
+            1
+        """
+        5
+
+      testFIMultiLine [a: 1],
+        """
+        - a:
+            1
+        """
+        4
+
+    tabs: ->
+      testFIMultiLine
+        userA:
+          name: "John Groovy Handcock"
+          address: "home"
+        userB:
+          name: "Amy Mae"
+          address: "home on the range"
+        """
+        userA: name: "John Groovy Handcock", address: "home"
+        userB: name: "Amy Mae",              address: "home on the range"
+        """
+        65
+
+      testFIMultiLine
+        userA:
+          name: "John Groovy Handcock"
+          address: "home"
+        userB:
+          name: "Amy Mae"
+          address: "home on the range"
+        """
+        userA: name: "John Groovy Handcock", address: "home"
+        userB: name: "Amy Mae", address: "home on the range"
+        """
+        64
 
 
   multiLine:
@@ -99,16 +149,28 @@ module.exports = suite:
         """
 
     object: ->
-      testFIMultiLine a:1, b:2, "a: 1\nb: 2"
+      testFIMultiLine a:1, b:2, """
+        a:
+          1
+
+        b:
+          2
+        """
 
       testFIMultiLine a:{a1:1, a2:2}, b:{b1:1, b2:2}, """
         a:
-          a1: 1
-          a2: 2
+          a1:
+            1
+
+          a2:
+            2
 
         b:
-          b1: 1
-          b2: 2
+          b1:
+            1
+
+          b2:
+            2
         """
 
     objectArrays: ->
@@ -125,21 +187,33 @@ module.exports = suite:
     objectArraysObjects: ->
       testFIMultiLine a:[{a1:1}, a2:2], b:[{b3:3}, b4:4], """
         a:
-        - a1: 1
-        - a2: 2
+        - a1:
+            1
+
+        - a2:
+            2
 
         b:
-        - b3: 3
-        - b4: 4
+        - b3:
+            3
+
+        - b4:
+            4
         """
 
     arrayObjects: ->
       testFIMultiLine [{a1:1, a2:2}, {b1:1, b2:2}], """
-        - a1: 1
-          a2: 2
+        - a1:
+            1
 
-        - b1: 1
-          b2: 2
+          a2:
+            2
+
+        - b1:
+            1
+
+          b2:
+            2
         """
 
     arrayObjectsArrays: ->
@@ -162,18 +236,20 @@ module.exports = suite:
         """
 
     tabs: ->
-      testFIMultiLine a:1, wxyz:4, "a:    1\nwxyz: 4"
+      testFIMultiLine a:1, wxyz:4, "a:    1\nwxyz: 4", 10
 
     mixed: ->
       testFIMultiLine ['string', foo: 'bar'], """
         - "string"
         - foo: "bar"
-        """
+        """,
+        12
 
       testFIMultiLine [inspectedObjectLiteral('string'), foo: 'bar'], """
         - string
         - foo: "bar"
-        """
+        """,
+        12
 
       testFIMultiLine a:[1,2], b:2, """
         a:
@@ -181,7 +257,8 @@ module.exports = suite:
         - 2
 
         b: 2
-        """
+        """,
+        5
 
       testFIMultiLine (getInspectedObjects:-> [
           "A"
@@ -191,7 +268,7 @@ module.exports = suite:
         - "A"
         - foo: "B"
           bar: "C"
-        """
+        """, 11
 
       testFIMultiLine [
           foo: "A"
@@ -206,4 +283,4 @@ module.exports = suite:
         - "C"
         - fad: "D"
           baz: "E"
-        """
+        """, 11

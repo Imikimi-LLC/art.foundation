@@ -4,10 +4,11 @@
 {inspect} = require './inspector'
 {toInspectedObjects} = require './to_inspected_objects'
 
-niceNodeInspectIndent = '  '
-newLineWithNiceNodeInspectIndent = "\n#{niceNodeInspectIndent}"
+indentString = '  '
+indentLength = indentString.length
+newLineWithIndentString = "\n#{indentString}"
 
-formattedInspectObject = (m, maxLineLength, options) ->
+formattedInspectObject = (m, maxLineLength) ->
   inspectedLength = 0
 
   forceMultilineOutput = false
@@ -16,13 +17,16 @@ formattedInspectObject = (m, maxLineLength, options) ->
 
   inspectedValues = for key, value of m
     keyCount++
-    inspected = formattedInspectRecursive value, maxLineLength, options
+    inspected = formattedInspectRecursive value, maxLineLength - indentLength
 
     if inspected.match /\n/
       inspected = if inspected.match /^- /
         "\n#{inspected}"
       else
-        newLineWithNiceNodeInspectIndent + inspected.replace /\n/g, newLineWithNiceNodeInspectIndent
+        newLineWithIndentString + inspected.replace /\n/g, newLineWithIndentString
+      inspected += "\n"
+    else if inspected.length > maxLineLength - (key.length + 2)
+      inspected = "#{newLineWithIndentString}#{inspected}\n"
 
     key = inspect key unless key.match /^[-._a-zA-Z[_a-zA-Z0-9]*$/
     inspectedLength += inspected.length + key.length + 2
@@ -41,7 +45,7 @@ formattedInspectObject = (m, maxLineLength, options) ->
   else
     "\n"
 
-formattedInspectArray = (m, maxLineLength, options, implicitRepresentationOk) ->
+formattedInspectArray = (m, maxLineLength, implicitRepresentationOk) ->
   inspectedLength = 0
   lastWasObject = false
   lastWasArray = false
@@ -54,14 +58,16 @@ formattedInspectArray = (m, maxLineLength, options, implicitRepresentationOk) ->
       lastWasObject = true
     else
       lastWasObject = false
+
     if isPlainArray value
       implicitRepresentationOk = false
       containsConsecutiveArrays ||= lastWasArray
       lastWasArray = true
-    inspected = formattedInspectRecursive value, maxLineLength, options, implicitRepresentationOk
+
+    inspected = formattedInspectRecursive value, maxLineLength - indentLength, implicitRepresentationOk
 
     if inspected.match /\n/
-      inspected = inspected.replace /\n/g, newLineWithNiceNodeInspectIndent
+      inspected = inspected.replace(/\n/g, newLineWithIndentString) + "\n"
 
     inspectedLength += inspected.length
     inspected
@@ -84,15 +90,15 @@ formattedInspectString = (m) ->
   if m.length > 10 && m.match(/\n/) && !m.match /\ (\n|$)/
     [
       '"""'
-      m.replace /"""/, '""\\"'
+      m.replace /"""/g, '""\\"'
       '"""'
     ].join '\n'
   else
     escapeJavascriptString m
 
-formattedInspectRecursive = (m, maxLineLength, options, implicitRepresentationOk) ->
-  if isPlainObject m      then formattedInspectObject m, maxLineLength, options
-  else if isPlainArray m  then formattedInspectArray  m, maxLineLength, options, implicitRepresentationOk
+formattedInspectRecursive = (m, maxLineLength, implicitRepresentationOk) ->
+  if isPlainObject m      then formattedInspectObject m, maxLineLength
+  else if isPlainArray m  then formattedInspectArray  m, maxLineLength, implicitRepresentationOk
   else if isString m      then formattedInspectString m
   else
     inspect m
@@ -122,17 +128,19 @@ alignTabs = (maxLineLength, linesString) ->
     for el, i in elements when i < elements.length - 1 && (i == 0 || el.length < maxColumnWidth)
       maxColumnSizes.push 0 if maxColumnSizes.length == i
       maxColumnSizes[i] = max maxColumnSizes[i], el.length + 1
-  # console.log maxColumnSizes: maxColumnSizes, numColumnsToPad:numColumnsToPad
 
   alignedLines = for line in lines
+    spaceAvailable = maxLineLength - line.length
     elements = line.split "\t"
     r = if elements.length > 1
-      totalPad = 0
       for el, i in elements
-        totalPad += maxColumnSizes[i] || 0
-        if maxColumnSizes[i] # && (!maxLineLength? || totalPad < maxLineLength)
+        if i == elements.length - 1
+          el
+        else if maxColumnSizes[i]? && (expandAmount = maxColumnSizes[i] - el.length - 1) <= spaceAvailable
+          spaceAvailable -= expandAmount
           pad el, maxColumnSizes[i]
         else
+          spaceAvailable = 0
           "#{el} "
     else
       elements
@@ -140,25 +148,42 @@ alignTabs = (maxLineLength, linesString) ->
 
   alignedLines.join "\n"
 
-alignTabStopsByBlocks = (maxLineLength, linesString) ->
-  alignTabs maxLineLength, linesString
+# alignTabStopsByBlocks = (maxLineLength, linesString) ->
+#   alignTabs maxLineLength, linesString
 
-addNewLineAfterDownIndent = (string) ->
-  lines = string.split "\n"
+postWhitespaceFormatting = (maxLineLength, string) ->
   lastIndent = 0
-  outLines = for line in lines
-    _lastIndent = lastIndent
-    lastIndent = indent = line.match(/^ *-?/)[0].length
-    if indent < _lastIndent
-      "\n#{line}"
-    else
-      line
+  sameIndentGroup = []
+  outLines = []
+
+  alignTabsInSameIndentGroup = ->
+    return unless sameIndentGroup.length > 0
+    str = sameIndentGroup.join "\n"
+    sameIndentGroup = []
+    outLines.push alignTabs maxLineLength, str
+
+  for line in string.split "\n"
+    line = line.replace /\s+$/g, ''
+
+    if lastIndent != indent = line.match(/^ *-?/)[0].length
+      alignTabsInSameIndentGroup()
+      # outLines.push "" if indent < lastIndent
+
+    sameIndentGroup.push line
+    lastIndent = indent
+
+  alignTabsInSameIndentGroup()
+
   outLines.join '\n'
 
 module.exports = class FormattedInspect
   @formattedInspect: (m, options = {}) ->
-    if isNumber options
-      options = maxLineLength: options
-    options.maxLineLength ?= 80
+    maxLineLength = if isNumber options
+      options
+    else
+      options.maxLineLength || 80
 
-    addNewLineAfterDownIndent stripTrailingWhitespace alignTabStopsByBlocks options.maxLineLength, formattedInspectRecursive toInspectedObjects(m), options.maxLineLength, options
+    out = postWhitespaceFormatting maxLineLength,
+      formattedInspectRecursive toInspectedObjects(m), maxLineLength
+    .replace /\n\n\n+/g, "\n\n"
+    .replace /\n\n$/, "\n"
