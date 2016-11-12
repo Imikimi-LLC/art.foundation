@@ -73,7 +73,7 @@ module.exports = class ArtPromise #extends Promise
       startPromiseBodyFunction callback
 
   noop = (a) -> a
-  @deepAll: (plainStructure, resolvedResultPreprocessor = noop) ->
+  @deepAll: deepAll = (plainStructure, resolvedResultPreprocessor = noop) ->
     promises = []
 
     deepEach plainStructure, (v) ->
@@ -87,6 +87,8 @@ module.exports = class ArtPromise #extends Promise
           resolvedResultPreprocessor resolved[i++]
         else
           v
+
+  @deepResolve: deepAll
 
   ###
   Serializer makes it easy to ensure promise-returning functions are invoked in order, after each
