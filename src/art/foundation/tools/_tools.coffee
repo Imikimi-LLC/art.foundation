@@ -4,4 +4,5 @@ module.exports = [
   require './global_counts'
   require "./object_tree_factory"
   require './DateFormat'
+  require './ArtConfig'
 ]

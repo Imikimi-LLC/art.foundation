@@ -77,9 +77,7 @@ createPackageJson = (npmPackage) ->
   npmPackage = deepMerge getStandardNpmPackageProps(), npmPackage
   contents = consistentJsonStringify npmPackage, "  "
   log "generating and writing: ".gray + "package.json".green
-  log npmPackage: npmPackage, contents: contents
-
-  # log "contents:", contents
+  # log npmPackage: npmPackage, contents: contents
   fs.writeFileSync "package.json", contents + "\n"
 
 createWebpackConfig = (options) ->

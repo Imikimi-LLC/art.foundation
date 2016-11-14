@@ -15,6 +15,7 @@ WebpackHotLoader = require './webpack_hot_loader'
   concatInto
   mergeInto
   isString
+  newObjectFromEach
 } = StandardLib
 
 {nextUniqueObjectId} = Unique
@@ -653,6 +654,7 @@ module.exports = class BaseObject extends MinimalBaseObject
     abstractPrototype: -> @_firstAbstractAncestor.prototype
     firstAbstractAncestor: -> @_firstAbstractAncestor
     isSingletonClass: -> !!@getSingleton
+
   @getAbstractClass: -> @_firstAbstractAncestor
 
   # BaseObject is an abstract-class
