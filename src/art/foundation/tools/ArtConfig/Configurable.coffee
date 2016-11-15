@@ -43,24 +43,14 @@ defineModule module, class Configurable extends BaseObject
   # OVERRIDES
   #####################################
 
-  # called just before config is passed to configure
-  # IMPORTANT: should not alter config; return a new object
-  @preprocessConfig: (config) ->
-    preprocessedConfig = merge @getPathedConfiguration config
-
-    # apply shared props
-    for k, v of config when !isPlainObject(v) && !preprocessedConfig.hasOwnProperty k
-      preprocessedConfig[k] = v
-
-    preprocessedConfig
-
   # updates config
   @configure: (config) ->
-    mergeInto @reset(), @preprocessConfig config
+    mergeInto @reset(), @getPathedConfiguration config
     @configured()
 
   # called after @config has been updated
   @configured: ->
+    @config.configured = true
 
   #####################################
   # HELPERS

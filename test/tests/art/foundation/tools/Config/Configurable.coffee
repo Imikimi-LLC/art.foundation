@@ -1,4 +1,4 @@
-{merge, w, ConfigRegistry, Configurable, defineModule} = Neptune.Art.Foundation
+{merge, w, ConfigRegistry, Configurable, defineModule, log} = Neptune.Art.Foundation
 
 expectedPath = w "Tests Art Foundation Tools Config"
 pathedConfig = Tests: Art: Foundation: Tools: Config: foo: 1
@@ -7,8 +7,6 @@ defineModule module, class TestConfigurable extends Configurable
   @defaults
     name:     "TestName"
     verbose:  false
-
-  @configured: -> @config.configured = true
 
   @suite: ->
     test "TestConfigurable.getConfigurationPath", ->
@@ -23,15 +21,6 @@ defineModule module, class TestConfigurable extends Configurable
       assert.eq
         foo: 1
         TestConfigurable.getPathedConfiguration pathedConfig
-
-
-    test "TestConfigurable.preprocessConfig", ->
-      assert.eq
-        foo: 1
-        verbose: true
-        TestConfigurable.preprocessConfig merge
-          verbose: true
-          pathedConfig
 
     test "TestConfigurable.reset()", ->
       configBefore = TestConfigurable.config
@@ -54,7 +43,6 @@ defineModule module, class TestConfigurable extends Configurable
 
       assert.eq TestConfigurable.config,
         name: "TestName"
-        novelProp: "cool"
         foo: 1
-        verbose: true
+        verbose: false
         configured: true
