@@ -178,7 +178,7 @@ module.exports = class RestClient
         reject merge restRequestStatus,
           event: event
           response: rescuedGetResponse()
-          error: "XMLHttpRequest triggered 'error' event"
+          message: "failed to connect to: #{url}"
 
       request.addEventListener "load", (event) ->
         requestResolved = true
@@ -193,12 +193,13 @@ module.exports = class RestClient
               status: status
               response: rescuedGetResponse()
               error: error
+              message: "#{error}"
         else
           reject merge restRequestStatus,
             event: event
             status: status
             response: rescuedGetResponse()
-            error: "response status was #{status}"
+            message: "response status was #{status}"
 
       if onProgress
         initialProgressCalled = showProgressAfter <= 0
