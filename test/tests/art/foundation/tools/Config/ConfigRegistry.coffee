@@ -1,4 +1,4 @@
-{w, ConfigRegistry, Configurable, defineModule} = Neptune.Art.Foundation
+{w, log, ConfigRegistry, Configurable, defineModule} = Neptune.Art.Foundation
 
 resetGlobals = ->
   global.artConfig = null
@@ -13,17 +13,23 @@ defineModule module, suite:
       ConfigRegistry.configure foo: "argsBar"
       assert.eq ConfigRegistry.artConfig, foo: "argsBar"
 
+    test "merged args", ->
+      ConfigRegistry.configure {foo: "argsFoo"}, {bar: "argsBar"}
+      assert.eq ConfigRegistry.artConfig,
+        foo: "argsFoo"
+        bar: "argsBar"
+
     test "global.artConfig", ->
       global.artConfig = foo: "globalBar"
       ConfigRegistry.configure()
       assert.eq ConfigRegistry.artConfig, foo: "globalBar"
 
     test "env", ->
-      ConfigRegistry.configure null, artConfig: JSON.stringify foo: "envBar"
+      ConfigRegistry.configure artConfig: {}, __testEnv: artConfig: JSON.stringify foo: "envBar"
       assert.eq ConfigRegistry.artConfig, foo: "envBar"
 
     test "parseQuery", ->
-      ConfigRegistry.configure null, null, "?artConfig=#{JSON.stringify foo: "queryBar"}"
+      ConfigRegistry.configure artConfig: {}, __testQueryString: "?artConfig=#{JSON.stringify foo: "queryBar"}"
       assert.eq ConfigRegistry.artConfig, foo: "queryBar"
 
   artConfigNameSources: ->
@@ -47,12 +53,12 @@ defineModule module, suite:
       assert.eq ConfigRegistry.artConfigName, 'TestConfig'
 
     test "env", ->
-      ConfigRegistry.configure null, artConfigName: 'TestConfig'
+      ConfigRegistry.configure artConfig: {}, __testEnv: artConfigName: 'TestConfig'
       assert.eq ConfigRegistry.artConfig, propA: "propAFromTestConfig"
       assert.eq ConfigRegistry.artConfigName, 'TestConfig'
 
     test "parseQuery", ->
-      ConfigRegistry.configure null, null, "?artConfigName=TestConfig"
+      ConfigRegistry.configure artConfig: {}, __testQueryString: "?artConfigName=TestConfig"
       assert.eq ConfigRegistry.artConfig, propA: "propAFromTestConfig"
       assert.eq ConfigRegistry.artConfigName, 'TestConfig'
 
