@@ -624,7 +624,7 @@ module.exports = class BaseObject extends MinimalBaseObject
       @getInspectedObjects()
 
     inspectedObjects: ->
-      inspectedObjectLiteral "<#{@class.getNamespacePath()}>"
+      inspectedObjectLiteral "<#{@class?.getNamespacePath()}>"
 
   @classGetter
     inspectedObjects: ->
@@ -654,17 +654,22 @@ module.exports = class BaseObject extends MinimalBaseObject
     abstractPrototype: -> @_firstAbstractAncestor.prototype
     firstAbstractAncestor: -> @_firstAbstractAncestor
     isSingletonClass: -> !!@getSingleton
+    concretePrototypeProperties: ->
+      abstractClassPrototype = @getAbstractClass().prototype
+      newObjectFromEach @prototype, when: (k, v) ->
+        k != "constructor" &&
+        abstractClassPrototype[k] != v
 
   @getAbstractClass: -> @_firstAbstractAncestor
 
   # BaseObject is an abstract-class
   @abstractClass()
 
-  @propertyIsAbstract: (methodName) ->
-    @getAbstractClass().prototype[methodName] == @prototype[methodName]
+  @propertyIsAbstract: (propName) ->
+    @getAbstractClass().prototype[propName] == @prototype[propName]
 
-  @propertyIsConcrete: (methodName) ->
-    @getAbstractClass().prototype[methodName] != @prototype[methodName]
+  @propertyIsConcrete: (propName) ->
+    @getAbstractClass().prototype[propName] != @prototype[propName]
 
   ######################################################
   # SingletonClasses
