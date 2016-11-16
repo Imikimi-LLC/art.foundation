@@ -92,8 +92,8 @@ defineModule module, class ConfigRegistry extends BaseObject
   TEST INPUTS: the second and third inputs are env and
     queryString, and are only there as mocks for testing.
   ###
-  @configure: (@configureOptions = {}) =>
-    {artConfigName: artConfigNameArgument, artConfig: artConfigArgument} = @configureOptions
+  @configure: (configureOptions...) =>
+    {artConfigName: artConfigNameArgument, artConfig: artConfigArgument, __testEnv, __testQueryString} = @configureOptions = deepMerge configureOptions...
 
     unless artConfigArgument
       artConfigArgument = merge @configureOptions
@@ -102,7 +102,7 @@ defineModule module, class ConfigRegistry extends BaseObject
     artConfigGlobal = global.artConfig
 
     log {arguments}
-    externalEnvironment = @getExternalEnvironment arguments[1], arguments[2]
+    externalEnvironment = @getExternalEnvironment __testEnv, __testQueryString
 
     @artConfigName = externalEnvironment.artConfigName || artConfigNameArgument || global.artConfigName
     @artConfigName = @normalizeArtConfigName @artConfigName

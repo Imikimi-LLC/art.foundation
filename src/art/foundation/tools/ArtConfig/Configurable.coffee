@@ -46,6 +46,10 @@ defineModule module, class Configurable extends BaseObject
   # updates config
   @configure: (config) ->
     mergeInto @reset(), @getPathedConfiguration config
+    if config.verbose
+      log Configure:
+        configurationPath: @getConfigurationPath().join "."
+        config: @config
     @configured()
 
   # called after @config has been updated
