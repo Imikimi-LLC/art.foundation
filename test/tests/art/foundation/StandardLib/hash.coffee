@@ -261,6 +261,9 @@ module.exports = suite:
       test "3-arg function: (map, k, v) -> map[k+v] = v", ->
         assert.eq a1: 1, b2: 2, newObjectFromEach a: 1, b: 2, (map, k, v) -> map[k+v] = v
 
+      test "when", ->
+        assert.eq b: 2, d: 4, newObjectFromEach {a: 1, b: 2, c: 3, d: 4}, when: (v) -> v % 2 == 0
+
     arrays: ->
       test "3-arg function: (map, k, v) -> map[k+v] = v", ->
         assert.eq "0a": "a", "1b": "b", newObjectFromEach ["a", "b"], (map, k, v) -> map[k+v] = v

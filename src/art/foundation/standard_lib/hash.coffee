@@ -1,5 +1,5 @@
 {compactFlatten, deepArrayEach, isArrayOrArguments, mergeInto} = Neptune.NeptuneLib
-{isPlainObject, isFunction, isPlainArray} = require './types'
+{isPlainObject, isObject, isFunction, isPlainArray} = require './types'
 
 module.exports = class Hash
   # http://jsperf.com/counting-object-properties/3
@@ -82,9 +82,10 @@ module.exports = class Hash
         So two-input blocks work the same regardless of if an array or object is input.
 
   ###
+  truthWhenBlock = -> true
   @inject: inject = (input, a, b) ->
     {log} = Neptune.Art.Foundation
-    block = if arguments.length == 2
+    doBlock = if arguments.length == 2
       memoSet = false
       memo = null
       a
@@ -93,25 +94,35 @@ module.exports = class Hash
       memoSet = true
       b
 
-    twoInputBlock = block.length >= 3
+    if isPlainObject doBlock
+      whenBlock = doBlock.when
+      doBlock = doBlock.do
 
-    # log inject: input: input, block: block, memo: memo, memoSet: memoSet, twoInputBlock: twoInputBlock
-    if isPlainObject input
+    whenBlock ||= truthWhenBlock
+
+    twoInputWhenBlock = whenBlock.length >= 2
+
+    twoInputBlock = doBlock.length >= 3
+
+    # log inject: input: input, doBlock: doBlock, memo: memo, memoSet: memoSet, twoInputBlock: twoInputBlock
+    if isObject input
       for k, v of input
-        unless memoSet
-          # log setInitialMemo: v
-          memo = v
-          memoSet = true
-        else
-          memo = if twoInputBlock then block memo, k, v else block memo, v
-    else
+        if (twoInputWhenBlock && whenBlock k, v) || whenBlock v
+          unless memoSet
+            # log setInitialMemo: v
+            memo = v
+            memoSet = true
+          else
+            memo = if twoInputBlock then doBlock memo, k, v else doBlock memo, v
+    else if input.length >= 0
       for v, k in input
-        unless memoSet
-          # log setInitialMemoArray: v
-          memo = v
-          memoSet = true
-        else
-          memo = if twoInputBlock then block memo, k, v else block memo, v
+        if (twoInputWhenBlock && whenBlock k, v) || whenBlock v
+          unless memoSet
+            # log setInitialMemoArray: v
+            memo = v
+            memoSet = true
+          else
+            memo = if twoInputBlock then doBlock memo, k, v else doBlock memo, v
     memo
 
   ###
@@ -122,21 +133,31 @@ module.exports = class Hash
     block: (v) -> newV
       for arrays, k is the index
   ###
-  @newObjectFromEach: newObjectFromEach = (input, block = (map, k, v) -> map[k] = v) ->
-    inject input, {}, if isPlainArray input
-      switch block.length
-        when 0, 1 then (memo, k, v) -> memo[v] = block v;     memo
-        when 2    then (memo, k, v) -> memo[v] = block k, v;  memo
-        when 3    then (memo, k, v) -> block memo, k, v;      memo
+  copyDoBlock = (map, k, v) -> map[k] = v
+  @newObjectFromEach: newObjectFromEach = (input, doBlock) ->
+    if isPlainObject doBlock
+      whenBlock = doBlock.when
+      doBlock = doBlock.do
+
+    doBlock ||= copyDoBlock
+
+    inject input, {},
+      when: whenBlock
+      do:
+        if isPlainArray input
+          switch doBlock.length
+            when 0, 1 then (memo, k, v) -> memo[v] = doBlock v;     memo
+            when 2    then (memo, k, v) -> memo[v] = doBlock k, v;  memo
+            when 3    then (memo, k, v) -> doBlock memo, k, v;      memo
+            else
+              throw new Error "expecting doBlock-function with 0, 1, 2 or 3 arguments"
         else
-          throw new Error "expecting block-function with 0, 1, 2 or 3 arguments"
-    else
-      switch block.length
-        when 0, 1 then (memo, k, v) -> memo[k] = block v;     memo
-        when 2    then (memo, k, v) -> memo[k] = block k, v;  memo
-        when 3    then (memo, k, v) -> block memo, k, v;      memo
-        else
-          throw new Error "expecting block-function with 0, 1, 2 or 3 arguments"
+          switch doBlock.length
+            when 0, 1 then (memo, k, v) -> memo[k] = doBlock v;     memo
+            when 2    then (memo, k, v) -> memo[k] = doBlock k, v;  memo
+            when 3    then (memo, k, v) -> doBlock memo, k, v;      memo
+            else
+              throw new Error "expecting doBlock-function with 0, 1, 2 or 3 arguments"
 
   # Alias - which one is best?
   @newMapFromEach: newObjectFromEach
