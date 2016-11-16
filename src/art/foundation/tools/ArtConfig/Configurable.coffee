@@ -37,6 +37,7 @@ defineModule module, class Configurable extends BaseObject
     else
       @config = {}
     mergeInto @config, @defaultConfig if @defaultConfig
+    @namespace?.config = @config
     @config
 
   #####################################
@@ -47,9 +48,8 @@ defineModule module, class Configurable extends BaseObject
   @configure: (config) ->
     mergeInto @reset(), @getPathedConfiguration config
     if config.verbose
-      log Configure:
-        configurationPath: @getConfigurationPath().join "."
-        config: @config
+      log ConfigRegistry:
+        "#{@getConfigurationPath().join "."}.config": @config
     @configured()
 
   # called after @config has been updated

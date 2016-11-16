@@ -17,7 +17,7 @@
 
 defineModule module, class ConfigRegistry extends BaseObject
 
-  @artConfigName: "Development"
+  @artConfigName: defaultArtConfigName = "Development"
   @artConfig: {}
 
   @configurables: []
@@ -101,7 +101,6 @@ defineModule module, class ConfigRegistry extends BaseObject
 
     artConfigGlobal = global.artConfig
 
-    log {arguments}
     externalEnvironment = @getExternalEnvironment __testEnv, __testQueryString
 
     @artConfigName = externalEnvironment.artConfigName || artConfigNameArgument || global.artConfigName
@@ -109,7 +108,7 @@ defineModule module, class ConfigRegistry extends BaseObject
 
     throw new Error "no config registered with name: #{@artConfigName}" if @artConfigName && !@configs[@artConfigName]
 
-    @artConfigName ||= "Development"
+    @artConfigName ||= defaultArtConfigName
 
     delete @artConfig[k] for k, v of @artConfig
 
@@ -119,18 +118,18 @@ defineModule module, class ConfigRegistry extends BaseObject
       artConfigArgument
       externalEnvironment.artConfig
 
-    log ConfigRegistry:
-      configure: {@artConfigName, @artConfig}
+    log ConfigRegistry: {@artConfigName, @artConfig}
 
     if @artConfig.verbose
       log ConfigRegistry:
         Verbose:
           "registered-configs": Object.keys @configs
-          "artConfigName = firstTrue":
+          artConfigName: firstTrue:
             "externalEnvironment.artConfigName": externalEnvironment.artConfigName
             artConfigNameArgument: artConfigNameArgument
+            default: defaultArtConfigName
 
-          "artConfig = merge":
+          artConfig: merge:
             "ConfigRegistry.configs.#{@artConfigName}": @configs[@artConfigName]
             artConfigGlobal:      artConfigGlobal
             artConfigArgument:    artConfigArgument
