@@ -5,6 +5,7 @@ module.exports = buildCommander = (options) ->
   commander = require "commander"
   {version, name} = options.package
   commander.version "#{name} v#{version}"
+  commander.option "-v, --verbose"
 
   actionTaken = false
   letterAssignments = {}
