@@ -265,6 +265,15 @@ module.exports = suite:
         assert.eq b: 2, d: 4, newObjectFromEach {a: 1, b: 2, c: 3, d: 4}, when: (v) -> v % 2 == 0
 
     arrays: ->
+      test "0-arg function: -> true", ->
+        assert.eq a: true, b: true, newObjectFromEach ["a", "b"], -> true
+
+      test "1-arg function: (v) -> v + v", ->
+        assert.eq a: "aa", b: "bb", newObjectFromEach ["a", "b"], (v) -> v+v
+
+      test "2-arg function: (k, v) -> map[k+v] = v", ->
+        assert.eq a: "0a", b: "1b", newObjectFromEach ["a", "b"], (k, v) -> k+v
+
       test "3-arg function: (map, k, v) -> map[k+v] = v", ->
         assert.eq "0a": "a", "1b": "b", newObjectFromEach ["a", "b"], (map, k, v) -> map[k+v] = v
 

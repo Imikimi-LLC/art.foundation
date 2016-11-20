@@ -21,10 +21,11 @@
   "license": "ISC",
   "name": "art-foundation",
   "scripts": {
+    "build": "neptune-namespaces --std; webpack --progress",
     "dev": "neptune-namespaces --std; webpack-dev-server -d --progress",
     "hot": "neptune-namespaces --std; webpack-dev-server --hot --inline --progress",
     "nn": "neptune-namespaces --std",
-    "nodeTest": "neptune-namespaces --std;mocha -u tdd --compilers coffee:coffee-script/register",
+    "nodeTest": "neptune-namespaces --std; mocha -u tdd --compilers coffee:coffee-script/register",
     "test": "neptune-namespaces --std; webpack-dev-server -d --progress"
   },
   "version": "1.26.0"

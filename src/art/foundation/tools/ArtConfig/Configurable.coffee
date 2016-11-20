@@ -49,7 +49,7 @@ defineModule module, class Configurable extends BaseObject
     mergeInto @reset(), @getPathedConfiguration config
     if config.verbose
       log ConfigRegistry:
-        "#{@getConfigurationPath().join "."}.config": @config
+        configured: "#{@getConfigurationPath().join "."}.config": @config
     @configured()
 
   # called after @config has been updated

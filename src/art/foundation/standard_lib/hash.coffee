@@ -105,6 +105,7 @@ module.exports = class Hash
     twoInputBlock = doBlock.length >= 3
 
     # log inject: input: input, doBlock: doBlock, memo: memo, memoSet: memoSet, twoInputBlock: twoInputBlock
+    # TODO: detect if ES6 iterable
     if isObject input
       for k, v of input
         if (twoInputWhenBlock && whenBlock k, v) || whenBlock v
@@ -114,6 +115,7 @@ module.exports = class Hash
             memoSet = true
           else
             memo = if twoInputBlock then doBlock memo, k, v else doBlock memo, v
+
     else if input.length >= 0
       for v, k in input
         if (twoInputWhenBlock && whenBlock k, v) || whenBlock v
@@ -206,3 +208,4 @@ module.exports = class Hash
       result
     else
       obj
+

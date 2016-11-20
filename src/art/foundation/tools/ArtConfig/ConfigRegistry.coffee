@@ -123,7 +123,9 @@ defineModule module, class ConfigRegistry extends BaseObject
     if @artConfig.verbose
       log ConfigRegistry:
         Verbose:
-          "registered-configs": Object.keys @configs
+          registered:
+            configs: Object.keys @configs
+            configurables: (c.namespacePath for c in @configurables)
           artConfigName: firstTrue:
             "externalEnvironment.artConfigName": externalEnvironment.artConfigName
             artConfigNameArgument: artConfigNameArgument

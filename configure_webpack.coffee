@@ -31,8 +31,9 @@ getStandardNpmPackageProps = ->
     test:     'neptune-namespaces --std; webpack-dev-server -d --progress'
     dev:      'neptune-namespaces --std; webpack-dev-server -d --progress'
     hot:      'neptune-namespaces --std; webpack-dev-server --hot --inline --progress'
-    nodeTest: 'neptune-namespaces --std;mocha -u tdd --compilers coffee:coffee-script/register'
+    nodeTest: 'neptune-namespaces --std; mocha -u tdd --compilers coffee:coffee-script/register'
     nn:       'neptune-namespaces --std'
+    build:    'neptune-namespaces --std; webpack --progress'
 
 class ArtWebpackConfigurator
 

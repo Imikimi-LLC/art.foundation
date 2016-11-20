@@ -101,6 +101,7 @@ module.exports = class ObjectTreeFactory
 
     if klass = options.class
       Factory.class = klass
+      klass.Factory = Factory
 
       abstractClass = klass.getAbstractClass()
       bindList = compactFlatten [(k for k, v of klass when !abstractClass[k] && isFunction v), options.bind]
