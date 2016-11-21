@@ -32,6 +32,15 @@ defineModule module, suite:
       ConfigRegistry.configure artConfig: {}, __testQueryString: "?artConfig=#{JSON.stringify foo: "queryBar"}"
       assert.eq ConfigRegistry.artConfig, foo: "queryBar"
 
+  pathedConfigProps: ->
+    setup resetGlobals
+    teardown resetGlobals
+
+    test "foo.bar: 'globalBar'", ->
+      global.artConfig = "foo.bar": "globalBar"
+      ConfigRegistry.configure()
+      assert.eq ConfigRegistry.artConfig, foo: bar: "globalBar"
+
   artConfigNameSources: ->
     setup resetGlobals
     teardown resetGlobals

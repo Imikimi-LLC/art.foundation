@@ -12,6 +12,7 @@
   isPlainObject
   isString
   upperCamelCase
+  expandPathedProperties
 } = require '../../standard_lib'
 {BaseObject} = require '../../class_system'
 
@@ -112,11 +113,13 @@ defineModule module, class ConfigRegistry extends BaseObject
 
     delete @artConfig[k] for k, v of @artConfig
 
-    mergeInto @artConfig, deepMerge null,
-      @configs[@artConfigName]
-      artConfigGlobal
-      artConfigArgument
-      externalEnvironment.artConfig
+    for conf in [
+        @configs[@artConfigName]
+        artConfigGlobal
+        artConfigArgument
+        externalEnvironment.artConfig
+      ]
+      expandPathedProperties conf, @artConfig
 
     log ConfigRegistry: {@artConfigName, @artConfig}
 
