@@ -209,3 +209,32 @@ module.exports = class Hash
     else
       obj
 
+  @propertyIsPathed: propertyIsPathed = (key) -> !!key.match /[\s\.\/]/
+
+  @withPropertyPath: withPropertyPath = (obj, propertyPath, action) ->
+    propertyPath = propertyPath.match /[^\s\.\/]+/g
+    for key, i in propertyPath
+      if i == propertyPath.length - 1
+        action obj, key
+      else
+        obj = obj[key]||={}
+    obj
+
+  @setPathedProperty: setPathedProperty = (obj, propertyPath, value) ->
+    withPropertyPath obj, propertyPath, (o, k) -> o[k] = value
+    obj
+
+  @expandPathedProperties: expandPathedProperties = (obj, into = {}) ->
+    for k, v of obj
+      if propertyIsPathed k
+        withPropertyPath into, k, (o, finalKey) ->
+          if isPlainObject v
+            expandPathedProperties v, o[finalKey] = {}
+          else
+            o[finalKey] = v
+      else if isPlainObject v
+          expandPathedProperties v, into[k] = {}
+      else
+        into[k] = v
+
+    into

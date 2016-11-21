@@ -16,6 +16,8 @@
   toObject
   select
   inject
+  setPathedProperty
+  expandPathedProperties
 } = Foundation
 
 module.exports = suite:
@@ -351,3 +353,83 @@ module.exports = suite:
         bad: "wolf"
         foo: 1
         bar: baz: a: 123, b: 123
+
+  pathedProperties: ->
+    test "setPathedProperty not really pathed", ->
+      assert.eq
+        b: 123
+        setPathedProperty {}, "b", 123
+
+    test "setPathedProperty 'b.c'", ->
+      assert.eq
+        b: c: 123
+        setPathedProperty {}, "b.c", 123
+
+    test "setPathedProperty 'b c'", ->
+      assert.eq
+        b: c: 123
+        setPathedProperty {}, "b c", 123
+
+    test "setPathedProperty 'b/c'", ->
+      assert.eq
+        b: c: 123
+        setPathedProperty {}, "b/c", 123
+
+    test "setPathedProperty two overlapping paths", ->
+      assert.eq
+        b:
+          c: 123
+          d: 456
+        setPathedProperty
+          b: c: 123
+          "b.d", 456
+
+    test "setPathedProperty two non-overlapping paths", ->
+      assert.eq
+        b: c: 123
+        d: c: 456
+        setPathedProperty
+          b: c: 123
+          "d.c", 456
+
+  expandPathedProperties: ->
+    test "a: 1", ->
+      assert.eq
+        a: 1
+        expandPathedProperties a: 1
+
+    test "a.b: 1", ->
+      assert.eq
+        a:b: 1
+        expandPathedProperties "a.b": 1
+
+    test "a: b.c: 1", ->
+      assert.eq
+        a:b:c: 1
+        expandPathedProperties a: "b.c": 1
+
+    test "a.b.c: 1", ->
+      assert.eq
+        a:b:c: 1
+        expandPathedProperties "a.b.c": 1
+
+    test "a.b: c.d: 1", ->
+      assert.eq
+        a:b:c:d: 1
+        expandPathedProperties "a.b": "c.d": 1
+
+    test "realworld", ->
+      assert.eq
+        verbose: true
+        Art:
+          Imikimi:
+            Auth:
+              Server:
+                testAuthEmail:  "special@imikimi.com"
+                testAuthCode:   "107734"
+
+        expandPathedProperties
+          verbose: true
+          "Art.Imikimi.Auth.Server":
+            testAuthEmail: "special@imikimi.com"
+            testAuthCode: "107734"
