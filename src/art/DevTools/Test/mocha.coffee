@@ -97,6 +97,8 @@ defineSuitesByObjectStructure = (object, namespacePath) ->
 module.exports = class MyMocha
   @assert: chai.assert
   @run: (defineAllTests)=>
+    global.testAssetRoot = "/test/assets"
+
     self.skipKnownFailingTest = (name, f) ->
       message = "SKIPPING KNOWN-FAILING TEST: #{name}"
       test message, ->
