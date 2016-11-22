@@ -4,7 +4,7 @@
   merge
   isPlainObject
   mergeInto
-} = require '../../standard_lib'
+} = require '../../StandardLib'
 {BaseObject} = require '../../class_system'
 
 ConfigRegistry = require './ConfigRegistry'

@@ -3,7 +3,7 @@
   isFunction
   fastBind
   log
-} = require '../standard_lib'
+} = require '../StandardLib'
 
 defineModule module, ->
   (superClass) -> class InstanceFunctionBindingMixin extends superClass

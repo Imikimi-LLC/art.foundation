@@ -1,4 +1,4 @@
-StandardLib = require '../standard_lib'
+StandardLib = require '../StandardLib'
 ClassSystem = require '../class_system'
 WebWorker = require './web_worker'
 

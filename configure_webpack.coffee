@@ -8,6 +8,7 @@ isWebpackDevServer = !!(executable.match(/\/node$/) &&
 fs = require 'fs'
 path = require "path"
 runNeptuneNamespaces = require './standard_neptune_namespace_generators'
+CaseSensitivePathsPlugin = require 'case-sensitive-paths-webpack-plugin'
 
 getStandardNpmPackageProps = ->
   license: 'ISC'
@@ -27,6 +28,7 @@ getStandardNpmPackageProps = ->
     'style-loader': '^0.13.1'
     'webpack': '^1.13.2'
     'webpack-dev-server': '^1.16.2'
+    'case-sensitive-paths-webpack-plugin': '^1.1.4'
   scripts:
     test:     'neptune-namespaces --std; webpack-dev-server -d --progress'
     dev:      'neptune-namespaces --std; webpack-dev-server -d --progress'
@@ -92,6 +94,10 @@ createWebpackConfig = (options) ->
     output:
       path: path.join dirname, outputPath
       filename: "[name].js"
+
+    plugins: [
+      new CaseSensitivePathsPlugin
+    ]
 
     module:
       loaders: [

@@ -3,7 +3,5 @@
 
 module.exports = require './namespace'
 .addModules
-  CallStack: require './CallStack'
-  Clone:     require './clone'    
-  Map:       require './map'      
+  Clone: require './clone'
 require './BaseObject'

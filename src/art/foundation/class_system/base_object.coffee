@@ -1,4 +1,4 @@
-StandardLib = require '../standard_lib'
+StandardLib = require '../StandardLib'
 WebpackHotLoader = require './webpack_hot_loader'
 
 {

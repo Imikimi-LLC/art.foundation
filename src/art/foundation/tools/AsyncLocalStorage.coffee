@@ -1,4 +1,4 @@
-{defineModule, Promise, log, objectKeyCount} = require '../standard_lib'
+{defineModule, Promise, log, objectKeyCount} = require '../StandardLib'
 {isWebWorker} = require './web_worker'
 {workerRpc} = require './worker_rpc'
 

@@ -1,5 +1,5 @@
 Foundation = require '../namespace'
-StandardLib = require '../standard_lib'
+StandardLib = require '../StandardLib'
 ClassSystem = require '../class_system'
 
 {BaseObject} = ClassSystem

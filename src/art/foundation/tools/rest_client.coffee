@@ -1,7 +1,7 @@
 # uses XMLHttpRequest2
 #  http://www.w3.org/TR/XMLHttpRequest2/
 #  http://www.html5rocks.com/en/tutorials/file/xhr2/
-StandardLib = require '../standard_lib'
+StandardLib = require '../StandardLib'
 {present, Promise, merge, isNumber, timeout, log} = StandardLib
 
 module.exports = class RestClient

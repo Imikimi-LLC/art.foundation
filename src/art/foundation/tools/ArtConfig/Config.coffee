@@ -3,7 +3,7 @@
   log
   newObjectFromEach
   merge
-} = require '../../standard_lib'
+} = require '../../StandardLib'
 {BaseObject} = require '../../class_system'
 
 ConfigRegistry = require './ConfigRegistry'

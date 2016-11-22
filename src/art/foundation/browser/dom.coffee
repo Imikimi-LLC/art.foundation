@@ -1,7 +1,7 @@
 # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input
 DomElementFactories = require "./dom_element_factories"
 
-{isString} = require "../standard_lib"
+{isString} = require "../StandardLib"
 
 module.exports = class Dom
   @createElementFromHtml: (html) ->

@@ -1,4 +1,4 @@
-StandardLib = require '../standard_lib'
+StandardLib = require '../StandardLib'
 
 {binary}     = require "./binary_string"
 {readAsDataURL} = require './file'

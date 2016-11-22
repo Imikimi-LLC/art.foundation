@@ -1,4 +1,4 @@
-{bound} = require '../standard_lib'
+{bound} = require '../StandardLib'
 
 # typed-array slice polyfill
 # several browsers do not support 'slice' on typed arrays

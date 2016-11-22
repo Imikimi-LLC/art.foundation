@@ -1,4 +1,4 @@
-StandardLib = require '../standard_lib'
+StandardLib = require '../StandardLib'
 {toDataUri} = require './data_uri'
 {Promise, readFileAsDataUrl} = StandardLib
 

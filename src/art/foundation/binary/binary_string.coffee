@@ -2,7 +2,7 @@
 Binary = require "./namespace"
 Utf8 = require   "./utf8"
 
-StandardLib = require '../standard_lib'
+StandardLib = require '../StandardLib'
 ClassSystem = require '../class_system'
 {isString, isFunction, isPlainArray, log, min, inspect, readFileAsDataUrl, readFileAsArrayBuffer, compactFlatten, pad} = StandardLib
 {BaseObject, inspect} = ClassSystem

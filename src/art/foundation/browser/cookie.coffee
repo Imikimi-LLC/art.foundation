@@ -1,6 +1,6 @@
 # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input
 
-StandardLib = require '../standard_lib'
+StandardLib = require '../StandardLib'
 ClassSystem = require '../class_system'
 
 {log, isString, isPlainArray, isPlainObject} = StandardLib

@@ -4,8 +4,8 @@ mergeIntoBasic = (into, source) ->
   into[k] = v for k, v of source
   into
 
-{isFunction} = require '../standard_lib/types'
-{fastBind} = require '../standard_lib/function'
+{isFunction} = require '../StandardLib/Types'
+{fastBind} = require '../StandardLib/Function'
 
 module.exports = class ObjectTreeFactory
   deepArgsProcessing = (array, children) ->

@@ -1,4 +1,4 @@
-{log, Promise, isNumber} = require '../standard_lib'
+{log, Promise, isNumber} = require '../StandardLib'
 ClassSystem = require '../class_system'
 AsyncLocalStorage = require './AsyncLocalStorage'
 {BaseObject} = ClassSystem
