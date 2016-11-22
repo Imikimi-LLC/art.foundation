@@ -1,1 +1,1 @@
-module.exports = require "../src/art/dev_tools/test"
+module.exports = require "../src/Art/DevTools/Test"

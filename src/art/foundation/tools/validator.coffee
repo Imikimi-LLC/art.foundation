@@ -1,0 +1,342 @@
+StandardLib = require '../StandardLib'
+
+{
+  merge, log, BaseObject, shallowClone
+  isNumber, isString, isPlainObject, isPlainArray
+  Promise
+  isBoolean
+  formattedInspect
+  present
+  select
+  emailRegexp
+  mergeIntoUnless
+  w
+  isFunction
+} = StandardLib
+
+{validStatus} = require './CommunicationStatus'
+
+###
+NOTES:
+
+  validators are evaluated before preprocessors
+
+  preprocessors should NOT throw validation-related errors
+
+  TODO?: We could add postValidators to allow you to validate AFTER the preprocessor...
+
+USAGE:
+  new Validator validatorFieldsProps, options
+
+    IN:
+      validatorFieldsProps:
+        plain object with zero or more field-validations defined:
+          fieldName: fieldProps
+      options:
+        exclusive: true/false
+          if true, only fields listed in validatorFieldsProps are allowed.
+
+    fieldProps:
+      string or plainObject
+      string: selects fieldProps from one of the standard @fieldTypes (see below)
+      plainObject: (all fields are optional)
+
+        validate: (v) -> true/false
+          whenever this field is included in an update OR create operation,
+            validate() must return true
+          NOTE: is evaluated BEFORE preprocess
+
+        preprocess: (v1) -> v2
+          whenever this field is included in an update OR create operation,
+            after validation succeeds,
+            value = preprocess value
+
+        required: true/false/string
+          if true/string
+            when creating records, this field must be included
+          if string
+            fieldProps = merge fieldProps, fieldTypes[string]
+
+        present: true/false
+          if true
+            when creating records, this field must be include and 'present' (see Art.Foundation.present)
+
+        fieldType: string
+          fieldProps = merge fieldTypes[string], fieldProps
+
+        dataType: string
+          sepecify which of the standard Json data-types this field contains
+          This is not used by Validator itself, but is available for clients to reflect on field-types.
+          Must be one of the values in: @dataTypes
+
+        instanceof: class
+          in addition to passing validate(), if present, the value must also be an instance of the
+          specified class
+
+EXAMPLES:
+  new
+
+###
+
+{BaseObject} = require '../ClassSystem'
+
+isId = (v) -> isString(v) && v.match ///^[-_a-z0-9]+$///i
+isHexColor = (v) -> isString(v) && v.match /^#([a-f0-9]{3})|([a-f0-9]{6})/i
+
+module.exports = class Validator extends BaseObject
+
+  ###
+  @dataTypes only includes the Standard Json types:
+    except 'null':
+      no field has the type of 'null'
+      instead, it has some other type and can be 'null' unless it is 'required'
+  ###
+  @dataTypes: dataTypes =
+    boolean:    validate: (a) -> isBoolean a
+    number:     validate: (a) -> isNumber a
+    string:     validate: (a) -> isString a
+    object:     validate: (a) -> isPlainObject a
+    array:      validate: (a) -> isPlainArray a
+    function:   validate: (a) -> isFunction a
+
+  booleanDataType = "boolean"
+  numberDataType =  "number"
+  stringDataType =  "string"
+  objectDataType =  "object"
+  arrayDataType =   "array"
+
+  ###
+  standard FieldType props:
+    validate: (v) -> true/false
+    preprocess: (v1) -> v2
+    required: true/false
+    dataType: one of @dataTypes, default: 'string'
+
+  You can add your own, too, but they are ignored by this class.
+  ###
+  # fieldTypes are just easy, pre-defined Objects with the right properties:
+  # Usage:
+  #   This:           @fields webPage: @fieldTypes.id
+  #   is the same as: @fields webPage: validate: (v) -> isId v
+  #   and this:       @fields webPage: fieldType: "id"
+  @fieldTypes: fieldTypes =
+    boolean:  dataType: booleanDataType
+    number:   dataType: numberDataType
+    string:   {}
+    object:   dataType: objectDataType
+    array:    dataType: arrayDataType
+
+    count:    dataType: numberDataType
+
+    id:
+      required: true
+      validate: (v) -> isId v
+
+    date:
+      validate:   (v) -> isString(v) || (v instanceof Date)
+      preprocess: (v) -> if isString(v) then new Date v else v
+
+    timestamp: # milliseconds since 1970; to get the current timestamp: Date.now()
+      dataType: numberDataType
+      validate:   (v) -> isNumber(v) || (v instanceof Date)
+      preprocess: (v) -> if v instanceof Date then v - 0 else v
+
+    color:
+      validate: (v) -> isHexColor v
+
+    email:
+      validate: (v) -> isString(v) && v.trim().match emailRegexp
+      preprocess: (v) -> v.trim().toLowerCase()
+
+    url:
+      validate: (v) -> isString(v) && v.match urlRegexp
+      preprocess: (v) -> normalizeUrl v # downcase protocol and domain name
+
+    communicationStatus:
+      validate: (v) -> validStatus v
+
+    trimmedString:
+      validate: (v) -> isString v
+      preprocess: (v) -> v.trim()
+
+    function:
+      dataType: "function"
+
+  # apply defaults
+  for k, v of fieldTypes
+    v.dataType ||= stringDataType
+    v.validate ||= dataTypes[v.dataType].validate
+
+  normalizeInstanceOfProp = (ft) ->
+    if _instanceof = ft.instanceof
+      {validate} = ft
+      merge ft,
+        validate: (v) ->
+          (v instanceof _instanceof) &&
+          (!validate || validate v)
+    else
+      ft
+
+  normalizePlainObjectProps = (ft) ->
+    out = null
+    for k, v of ft
+      if isPlainObject subObject = v
+        out = shallowClone ft unless out
+        out[k] = true
+        mergeIntoUnless out, normalizePlainObjectProps subObject
+    out || ft
+
+  normalizeDepricatedProps = (ft) ->
+    if ft.requiredPresent
+      throw new Error "DEPRICATED: requiredPresent. Use: present: true"
+    if isString ft.required
+      throw new Error "DEPRICATED: required can no longer specifiy the field-type. Use: required: fieldType: myFieldTypeString OR 'required myFieldTypeString'"
+    if isString ft.present
+      throw new Error "DEPRICATED: present can no longer specifiy the field-type. Use: present: fieldType: myFieldTypeString OR 'present myFieldTypeString'"
+    ft
+
+  normalizeFieldTypeProp = (ft) ->
+    if ft.fieldType
+      merge normalizeFieldProps(ft.fieldType), ft
+    else
+      ft
+
+  @normalizeFieldProps: normalizeFieldProps = (ft) ->
+    ft = if isPlainObject ft
+
+      normalizeFieldTypeProp normalizeInstanceOfProp normalizeDepricatedProps normalizePlainObjectProps ft
+
+    else if isPlainArray array = ft
+      processed = for ft in array
+        normalizeFieldProps ft
+      merge processed...
+
+    else if isString strings = ft
+      ft = {}
+      for string in w strings
+        if subFt = fieldTypes[string]
+          mergeIntoUnless ft, subFt
+        else
+          ft[string] = true
+      ft
+
+    else
+      throw new Error "fieldType must be a string or plainObject: #{formattedInspect ft}"
+
+    merge fieldTypes[ft.fieldType], ft
+
+  constructor: (fieldDeclarationMap, options) ->
+    @_fieldProps = {}
+    @_requiredFieldsMap = {}
+    @addFields fieldDeclarationMap
+    if options
+      {@exclusive, @context} = options
+
+  @property "exclusive"
+
+  addFields: (fieldDeclarationMap) ->
+    for field, fieldOptions of fieldDeclarationMap
+      fieldOptions = @_addField field, fieldOptions
+      @_requiredFieldsMap[field] = undefined if fieldOptions.required
+    null
+
+
+  ###
+  IN:
+    fields: object with fields to validate OR Promise returning said object
+
+  OUT:
+    promise.then (validatedPreprocessedFields) ->
+    .catch (validationFailureInfoObject) ->
+  ###
+  preCreate: preCreate = (fields, options) -> Promise.resolve(fields).then (fields) => @preCreateSync fields, options
+  validate: preCreate
+
+
+  ###
+  IN:
+    fields: object with fields to validate OR Promise returning said object
+
+  OUT:
+    promise.then (validatedPreprocessedFields) ->
+    .catch (validationFailureInfoObject) ->
+  ###
+  preUpdate: (fields, options) -> Promise.resolve(fields).then (fields) => @preUpdateSync fields, options
+
+  preCreateSync: preCreateSync = (fields, options) ->
+    requiredFieldsPresent = @requiredFieldsPresent fields
+    presentFieldsValid = @presentFieldsValid fields
+    if requiredFieldsPresent && presentFieldsValid
+      @preprocessFields fields
+    else
+      status = if !presentFieldsValid
+        if !requiredFieldsPresent
+          "invalid and missing"
+        else "invalid"
+      else "missing"
+      info =
+        validationFailure: "#{options?.context || @context || "Validator"}: create: field(s) are #{status}"
+      info.invalidFields = @invalidFields fields unless presentFieldsValid
+      info.missingFields = @missingFields fields unless requiredFieldsPresent
+      throw info
+  validateSync: preCreateSync
+
+  preUpdateSync: (fields, options) ->
+    if @presentFieldsValid fields
+      @preprocessFields fields
+    else
+      throw
+        validationFailure: "#{options?.context || @context || "Validator"}: update: field(s) are invalid"
+        invalidFields: @invalidFields fields
+
+  ####################
+  # VALIDATION CORE
+  ####################
+  presentFieldValid: (fields, fieldName) ->
+    if fieldProps = @_fieldProps[fieldName]
+      {validate} = fieldProps
+      !validate || !(value = fields[fieldName])? || value == null || value == undefined || validate value
+    else
+      !@exclusive
+
+  requiredFieldPresent: (fields, fieldName) ->
+    return true unless fieldProps = @_fieldProps[fieldName]
+    return false if fieldProps.required && !fields[fieldName]?
+    return false if fieldProps.present  && !present fields[fieldName]
+    true
+
+  presentFieldsValid: (fields) ->
+    for fieldName, __ of fields
+      return false unless @presentFieldValid fields, fieldName
+    true
+
+  requiredFieldsPresent: (fields) ->
+    for fieldName, __ of @_fieldProps
+      return false unless @requiredFieldPresent fields, fieldName
+    true
+
+  ####################
+  # PREPROCESS CORE
+  ####################
+  preprocessFields: (fields) ->
+    processedFields = null
+    for fieldName, {preprocess} of @_fieldProps when preprocess && (value = fields[fieldName])?
+      if (v = preprocess oldV = fields[fieldName]) != oldV
+        processedFields ||= shallowClone fields
+        processedFields[fieldName] = v
+    processedFields || fields
+
+  ####################
+  # VALIDATION INFO CORE
+  ####################
+  invalidFields: (fields) -> select fields, (key, value) => !@presentFieldValid fields, key
+  missingFields: (fields) ->
+    # log missingFields: fields, _requiredFieldsMap:@_requiredFieldsMap, _fieldProps: @_fieldProps
+    fields = merge @_requiredFieldsMap, fields
+    select fields, (key, value) => !@requiredFieldPresent fields, key
+
+  ###################
+  # PRIVATE
+  ###################
+  _addField: (field, options) ->
+    @_fieldProps[field] = normalizeFieldProps options
