@@ -40,6 +40,10 @@ defineModule module, class Configurable extends BaseObject
     @namespace?.config = @config
     @config
 
+  @getInspectedObjects: ->
+    "#{@getConfigurationPath().join '.'}": @config
+
+
   #####################################
   # OVERRIDES
   #####################################
@@ -49,7 +53,7 @@ defineModule module, class Configurable extends BaseObject
     mergeInto @reset(), @getPathedConfiguration config
     if config.verbose
       log ConfigRegistry:
-        configured: "#{@getConfigurationPath().join "."}.config": @config
+        configured: @
     @configured()
 
   # called after @config has been updated
