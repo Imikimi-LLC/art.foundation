@@ -9,6 +9,15 @@ module.exports = class ParseUrl
       obj[key] = decodeURIComponent val if key.length > 0
     obj
 
+  @generateQuery: generateQuery= (o) ->
+    parts = for k, v of o
+      "#{encodeURIComponent k}=#{encodeURIComponent v}"
+    parts.join "&"
+
+  @appendQuery: (uri, o) ->
+    str = generateQuery o
+    "#{uri}#{if uri.match /\?/ then "&" else "?"}#{str}"
+
   # returns undefined if not a legal url
   @parseUrl: (url) =>
     # http://www.w3.org/Addressing/URL/5_BNF.html
