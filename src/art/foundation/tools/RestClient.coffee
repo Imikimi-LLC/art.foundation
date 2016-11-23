@@ -2,7 +2,7 @@
 #  http://www.w3.org/TR/XMLHttpRequest2/
 #  http://www.html5rocks.com/en/tutorials/file/xhr2/
 StandardLib = require '../StandardLib'
-{present, Promise, merge, isNumber, timeout, log} = StandardLib
+{present, Promise, merge, isNumber, timeout, log, objectKeyCount, appendQuery, newObjectFromEach} = StandardLib
 
 module.exports = class RestClient
   @legalVerbs:
@@ -141,6 +141,11 @@ module.exports = class RestClient
       data = data?.toArrayBuffer?() || data
 
     new Promise (resolve, reject) ->
+      if verb == "GET" && data
+        log.error RestClient_restRequest:
+          info: "can't GET with data"
+          options: options
+        throw new Error "With their ultimate wisdom, the HTTP gods decree: NO DATA WITH GET"
 
       restRequestStatus =
         request: request = new XMLHttpRequest
@@ -223,9 +228,23 @@ module.exports = class RestClient
       request.send data
 
   @restJsonRequest: (options) ->
+    {verb, method, data, headers} = options
+    verb = RestClient.legalVerbs[verb || method]
+    data = null if data && objectKeyCount(data) == 0
+
+
+    if verb == "GET" && options.data
+      options = merge options,
+        url: appendQuery options.url, newObjectFromEach data, (v) -> JSON.stringify v
+
+      data = null
+    else
+      data &&= JSON.stringify data
+
     @restRequest merge options,
       responseType: "json"
       headers: merge
         Accept:         'application/json'
-        options?.headers
-      data:         options?.data && JSON.stringify options.data
+        headers
+      data:             data
+
