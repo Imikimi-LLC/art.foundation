@@ -29,6 +29,8 @@ defineModule module, class Configurable extends BaseObject
   # call this to initialize default values for your config
   @defaults: (@defaultConfig) ->
 
+  @getDefaults: -> @defaultConfig
+
   # reset @config
   # NOTE: the goal is leave all direct references to @config intact; just update the props.
   @reset: ->
