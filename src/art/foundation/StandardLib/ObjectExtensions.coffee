@@ -1,7 +1,7 @@
 {compactFlatten, deepArrayEach, isArrayOrArguments, mergeInto} = Neptune.NeptuneLib
 {isPlainObject, isObject, isFunction, isPlainArray} = require './Types'
 
-module.exports = class Hash
+module.exports = class ObjectExtensions
   # http://jsperf.com/counting-object-properties/3
   @countKeys: (o) ->
     Object.keys(o).length
@@ -10,6 +10,11 @@ module.exports = class Hash
     count = 0
     count++ for k, v of o
     count
+
+  @objectHasKeys: (o) ->
+    return true for k, b of o
+    false
+    # Caf: find o with true
 
   @objectLength: objectKeyCount
 
