@@ -1,3 +1,38 @@
+###
+TODO
+
+1) convert this file into a generic ArtStuite configuration tool.
+    webpack.config.js and package.json are just two of the outputs.
+    Since webpack.config.js is executed code, we don't need to pre-build it.
+    We can still just return the generated config like we do in this file.
+    BUT, this file could be executed independently to generate package.json and
+    anything else we need to generate.
+
+    Possible new files: caffeine.config.caf
+
+    Mostly this change will be just in-name at first, but I am currently
+    running this script more and more just to configure package.json - separate
+    from webpack.
+
+2) I want to re-think how I geneate webpack "entries"
+
+  a. There should be a global set of defaults for all entries.
+  b. Each entry can override those defaults individually.
+  c. Not all entries are built by default. There could be a default set,
+      but WEBPACK_ENTRIES should be used to select other entries or entry-sets.
+  d. WEBPACK_ENTRIES can be used to define entries not explicitly in the config.
+    The defaults are just used.
+
+3) I'd like to create a command-line tool which effectively supersceeds 'npm' for
+  my common use-cases:
+
+  a. running defined-scripts should be top-level. Isn't there a RAKE equiv for javascript?
+  b. 'myNpm version' should just show the current npm's version
+  c. 'myNpm list' should not only list the installed packages and their versions - not the dependency tree
+###
+
+
+
 require './index'
 {inspect, peek, deepMerge, consistentJsonStringify, log, merge} = Neptune.Art.Foundation
 
@@ -30,28 +65,31 @@ getStandardNpmPackageProps = ->
     'webpack-dev-server': '^1.16.2'
     'case-sensitive-paths-webpack-plugin': '^1.1.4'
   scripts:
-    test:     'neptune-namespaces --std; webpack-dev-server -d --progress'
-    dev:      'neptune-namespaces --std; webpack-dev-server -d --progress'
-    hot:      'neptune-namespaces --std; webpack-dev-server --hot --inline --progress'
-    nodeTest: 'neptune-namespaces --std; mocha -u tdd --compilers coffee:coffee-script/register'
-    nn:       'neptune-namespaces --std'
-    build:    'neptune-namespaces --std; webpack --progress'
+    # https://docs.npmjs.com/misc/scripts#description
+    # standard life-cycle scripts
+    test:     'nn -s; webpack-dev-server -d --progress'
+    start:    'nn -s; webpack-dev-server --hot --inline --progress'
+
+    # ArtSuite scripts
+    nodeTest: 'nn -s; mocha -u tdd --compilers coffee:coffee-script/register'
+    build:    'nn -s; webpack --progress'
+    # dev:      'nn -s; webpack-dev-server -d --progress'
+    # hot:      'nn -s; webpack-dev-server --hot --inline --progress'
+    # nn:       'nn -s'
 
 class ArtWebpackConfigurator
 
   ###################
   # PRIVATE
   ###################
-  @_selectEnties: (entries) ->
-    if selectedEntry = process.env.WEBPACK_ENTRIES
+  @_selectEntries: (entries) ->
+    if selectedEntries = process.env.WEBPACK_ENTRIES
       log """
-        Configuring webpack to build entries eelcted in: WEBPACK_ENTRIES=#{selectedEntry}
+        Configuring webpack to build entries selected in: WEBPACK_ENTRIES=#{selectedEntries}
         """
       ret = {}
 
-      selectedEntries = selectedEntry.split ','
-
-      for entry in selectedEntries
+      for entry in selectedEntries.split ','
         log "  building: #{entry}"
         ret[entry] = entries[entry]
       for k, v of entries
@@ -71,10 +109,12 @@ class ArtWebpackConfigurator
 
   @_transformEntries: (entries) ->
     entryConfig = {}
-    entries = entries.split /[,\s]+/ if typeof entries == "string"
+    if typeof entries == "string"
+      entries = (process.env.WEBPACK_ENTRIES || entries).split /[,\s]+/
+
     for entry in entries
       entryConfig[entry] = ["./#{entry}"]
-    @_selectEnties entryConfig
+    @_selectEntries entryConfig
 
 createPackageJson = (npmPackage) ->
   npmPackage = deepMerge getStandardNpmPackageProps(), npmPackage
@@ -94,6 +134,7 @@ createWebpackConfig = (options) ->
     output:
       path: path.join dirname, outputPath
       filename: "[name].js"
+      # pathinfo: true - use --output-pathinfo commandline option
 
     plugins: [
       new CaseSensitivePathsPlugin
