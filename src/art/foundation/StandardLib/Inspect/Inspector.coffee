@@ -22,7 +22,7 @@ module.exports = class Inspector
 
 
   constructor: (options = {})->
-    @maxLength = options.maxLength || 1000
+    @maxLength = options.maxLength || 10000
     @allowCustomInspectors = !options.noCustomInspectors
     @maxDepth = if options.maxDepth? then options.maxDepth else 10
     @outArray = []
@@ -61,12 +61,14 @@ module.exports = class Inspector
 
   put: (s) ->
     return if @done
-    @outArray.push if @length + s.length > @maxLength
+
+    if @length + s.length > @maxLength
       @done = true
-      "..."
-    else
-      @length += s.length
-      s
+      remaining = @maxLength - @length
+      s = "#{s.slice 0, remaining}<... showing: #{remaining} of #{s.length}>"
+
+    @length += s.length
+    @outArray.push s
     s
 
   getResult: -> @outArray.join ""
