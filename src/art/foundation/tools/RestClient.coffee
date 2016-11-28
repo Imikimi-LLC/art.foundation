@@ -2,7 +2,7 @@
 #  http://www.w3.org/TR/XMLHttpRequest2/
 #  http://www.html5rocks.com/en/tutorials/file/xhr2/
 StandardLib = require '../StandardLib'
-{present, Promise, merge, isNumber, timeout, log, objectKeyCount, appendQuery, newObjectFromEach} = StandardLib
+{present, Promise, merge, isNumber, timeout, log, objectKeyCount, appendQuery, object} = StandardLib
 
 module.exports = class RestClient
   @legalVerbs:
@@ -235,7 +235,7 @@ module.exports = class RestClient
 
     if verb == "GET" && options.data
       options = merge options,
-        url: appendQuery options.url, newObjectFromEach data, (v) -> JSON.stringify v
+        url: appendQuery options.url, object data, (v) -> JSON.stringify v
 
       data = null
     else

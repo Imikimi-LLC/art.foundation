@@ -65,7 +65,7 @@ module.exports = class Inspector
     if @length + s.length > @maxLength
       @done = true
       remaining = @maxLength - @length
-      s = "#{s.slice 0, remaining}<... showing: #{remaining} of #{s.length}>"
+      s = "#{s.slice 0, remaining}<... first #{remaining}/#{s.length}>"
 
     @length += s.length
     @outArray.push s

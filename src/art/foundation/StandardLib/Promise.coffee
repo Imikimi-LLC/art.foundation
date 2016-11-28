@@ -1,7 +1,7 @@
 # promise-polyfill takes advantage of setImmediate for performance gains
 # This polyfil promises good setImmediate performance: https://github.com/YuzuJS/setImmediate
 Promise = require 'promise-polyfill'
-{deepMap, deepEach, isFunction} = require './Types'
+{deepMap, deepEach, isFunction, isPlainObject} = require './Types'
 
 ###
 ArtPromise extends ES6 Promises in the following ways:
@@ -248,4 +248,12 @@ module.exports = class ArtPromise #extends Promise
   then: (a, b) -> @_nativePromise.then a, b
   catch: (a) -> @_nativePromise.catch a
 
-self.Promise ||= ArtPromise
+# TODO: iterate over an object or array while serializing the promise results and collecting, ultimately returning an array of all the resolve results
+#   each: (object, doFunction) ->
+#     if isPlainObject object
+#       for k, v of object
+#         do (k, v, object) ->
+#           serialize.then ->
+#             doFunction k, v, object
+
+# self.Promise ||= ArtPromise

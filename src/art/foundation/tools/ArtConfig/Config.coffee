@@ -1,7 +1,6 @@
 {
   defineModule
   log
-  newObjectFromEach
   merge
 } = require '../../StandardLib'
 {BaseObject} = require '../../ClassSystem'

@@ -17,6 +17,7 @@ module.exports = [
   require "./Time"
   require "./Types"
   require "./CommonJs"
+  require "./Iteration"
 
   require "./Inspect"
   require "./Clone"

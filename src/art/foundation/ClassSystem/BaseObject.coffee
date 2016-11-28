@@ -15,7 +15,7 @@ WebpackHotLoader = require './WebpackHotLoader'
   concatInto
   mergeInto
   isString
-  newObjectFromEach
+  object
 } = StandardLib
 
 {nextUniqueObjectId} = Unique
@@ -656,7 +656,7 @@ module.exports = class BaseObject extends MinimalBaseObject
     isSingletonClass: -> !!@getSingleton
     concretePrototypeProperties: ->
       abstractClassPrototype = @getAbstractClass().prototype
-      newObjectFromEach @prototype, when: (k, v) ->
+      object @prototype, when: (v, k) ->
         k != "constructor" &&
         abstractClassPrototype[k] != v
 

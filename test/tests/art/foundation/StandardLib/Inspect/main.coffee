@@ -46,7 +46,7 @@ suite "Art.Foundation.Inspect.basic", ->
     assert.equal "[undefined, undefined]", inspect [undefined, undefined]
 
   test "inspect maxLength", ->
-    assert.eq '["foo", ...', inspect ["foo", "bar", "is", "good"], maxLength: 10
+    assert.eq '["foo", "b<... first 2/5>', inspect ["foo", "bar", "is", "good"], maxLength: 10
 
   test "inspect maxDepth", ->
     a =
