@@ -248,12 +248,4 @@ module.exports = class ArtPromise #extends Promise
   then: (a, b) -> @_nativePromise.then a, b
   catch: (a) -> @_nativePromise.catch a
 
-# TODO: iterate over an object or array while serializing the promise results and collecting, ultimately returning an array of all the resolve results
-#   each: (object, doFunction) ->
-#     if isPlainObject object
-#       for k, v of object
-#         do (k, v, object) ->
-#           serialize.then ->
-#             doFunction k, v, object
-
-# self.Promise ||= ArtPromise
+self.Promise ||= ArtPromise
