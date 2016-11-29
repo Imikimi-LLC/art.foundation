@@ -163,6 +163,8 @@ defineModule module, class ConfigRegistry extends BaseObject
 
           #{formattedInspect externalEnvironment: externalEnvironment}
 
+          artConfig: #{formattedInspect artConfig}
+
           error: #{e}
 
           """
