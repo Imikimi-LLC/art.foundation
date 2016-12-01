@@ -32,39 +32,8 @@ ToolBar = require './ToolBar'
   escapeJavascriptString
 } = Foundation
 
-isHTMLImageElement = if global.HTMLImageElement
-  (obj) -> obj instanceof HTMLImageElement
-else
-  -> false
-
-isImage = (o) ->
-  isHTMLImageElement(o) || isFunction o.toImage
-
-containsImages = (plainStructure)->
-  foundImages = false
-  deepEach plainStructure, (v) -> foundImages ||= isImage v
-  foundImages
-
-resolveImages = (plainStructure) ->
-  # plainStructure
-  deepAll deepMap plainStructure, (element) ->
-    return element unless isImage element
-    Promise.then ->
-      if isHTMLImageElement element
-        element
-      else
-        element.toImage()
-    .then (htmlImageElement) ->
-      htmlImageElement
-      if htmlImageElement.complete
-        htmlImageElement
-      else
-        new Promise (resolve) ->
-          htmlImageElement.onload = -> resolve htmlImageElement
-
+{containsImages, resolveImages, isHTMLImageElement, imgToDom} = require './Images'
 {Div, Pre, Span, Img, Li, Ul} = Foundation.Browser.DomElementFactories
-
-isImage = (o) -> o && ((typeof o.toImage == "function") || o.constructor == HTMLImageElement)
 htmlEscape = (str) -> str
 
 insertBetweenEveryElement = (array, el) ->
@@ -95,7 +64,6 @@ module.exports = createWithPostCreate class Console extends BaseObject
   constructor: ->
     window.domConsole = @
     @_width = 500
-    @_devicePixelRatio = Foundation.Browser.Dom.getDevicePixelRatio()
     @initDom()
 
   reset: -> @domContainer.innerHTML = ""
@@ -343,26 +311,6 @@ module.exports = createWithPostCreate class Console extends BaseObject
         color:            if clr.perceptualLightness < .8 && clr.a > .25 then 'white' else 'black'
       "#{displayString}"
 
-  imgToDom: (image) ->
-    minImageDisplaySize = point 0 # 32
-    maxImageDisplaySize = point(1024, 512).mul @_devicePixelRatio
-
-    size = point image.width, image.height
-
-    scale = 1 / @_devicePixelRatio
-
-    if !size.gte minImageDisplaySize
-      scale *= Math.ceil minImageDisplaySize.div(size).min()
-    else if !size.lt maxImageDisplaySize
-      scale *= maxImageDisplaySize.div(size).min()
-
-    Img
-      src: image.src
-      if size.gt point0
-        style:
-          width:  "#{image.naturalWidth  * scale | 0}px"
-          height: "#{image.naturalHeight * scale | 0}px"
-
   isColor = (obj) ->
     (obj instanceof Color) || (isString(obj) && obj.match colorRegex)
 
@@ -375,7 +323,7 @@ module.exports = createWithPostCreate class Console extends BaseObject
         @errorLiteralToDom inspectedObject.literal
       else
         literalToDomHelper "literal", inspectedObject.literal
-    else if isHTMLImageElement inspectedObject then @imgToDom inspectedObject
+    else if isHTMLImageElement inspectedObject then imgToDom inspectedObject
     else if isColor inspectedObject then @colorToDom inspectedObject
     else if isPlainArray  inspectedObject then @arrayToDom inspectedObject, options
     else if isPlainObject inspectedObject then @objectToDom inspectedObject, options
