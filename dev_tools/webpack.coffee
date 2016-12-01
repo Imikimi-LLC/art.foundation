@@ -1,1 +1,1 @@
-module.exports = require "../src/Art/DevTools/Webpack"
+module.exports = require "../source/Art/DevTools/Webpack"

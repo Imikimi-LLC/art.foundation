@@ -1,1 +1,1 @@
-module.exports = require "./src/Art/DevTools/Test/Mocha"
+module.exports = require "./source/Art/DevTools/Test/Mocha"

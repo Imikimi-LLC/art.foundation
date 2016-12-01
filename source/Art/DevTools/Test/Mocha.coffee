@@ -1,5 +1,5 @@
 {log, isFunction, isPlainObject, merge} = require 'art-foundation'
-chai = require 'art-foundation/src/Art/DevTools/Test/ArtChai'
+chai = require 'art-foundation/source/Art/DevTools/Test/ArtChai'
 self.assert = chai.assert
 
 if self.document

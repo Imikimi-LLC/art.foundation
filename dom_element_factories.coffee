@@ -30,4 +30,4 @@ For more information:
     test/tests/art/foundation/browser/dom_element_factories.coffee
 
 ###
-module.exports = window.DomElementFactories = require "./src/Art/Foundation/Browser/DomElementFactories"
+module.exports = window.DomElementFactories = require "./source/Art/Foundation/Browser/DomElementFactories"

@@ -1,1 +1,1 @@
-module.exports = require "../src/Art/DevTools/DomConsole"
+module.exports = require "../source/Art/DevTools/DomConsole"
