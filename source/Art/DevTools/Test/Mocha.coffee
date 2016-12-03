@@ -80,8 +80,7 @@ defineSuitesByNamespaces = (namespace, rootNamespacePath) ->
   [..., relativeNamespacePath] = namespacePath.split rootNamespacePath
   for nsName, ns of namespaces
     defineSuitesByNamespaces ns, rootNamespacePath
-  for modName, mod of modules
-    mod = namespace[modName]
+  for modName, mod of modules when mod
     if isFunction mod.suite
       suite "#{relativeNamespacePath}.#{modName}", mod.suite
     else if isPlainObject mod.suite
