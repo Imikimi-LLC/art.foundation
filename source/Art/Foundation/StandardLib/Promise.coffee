@@ -1,6 +1,6 @@
 # promise-polyfill takes advantage of setImmediate for performance gains
 # This polyfil promises good setImmediate performance: https://github.com/YuzuJS/setImmediate
-Promise = require 'promise-polyfill'
+global.Promise ||= require 'promise-polyfill'
 {deepMap, deepEach, isFunction, isPlainObject} = require './Types'
 
 ###
