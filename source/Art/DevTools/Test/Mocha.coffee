@@ -1,4 +1,4 @@
-{log, isFunction, isPlainObject, merge} = require 'art-foundation'
+{log, isFunction, isPlainObject, merge, ConfigRegistry} = require 'art-foundation'
 chai = require 'art-foundation/source/Art/DevTools/Test/ArtChai'
 self.assert = chai.assert
 
@@ -95,10 +95,16 @@ defineSuitesByObjectStructure = (object, namespacePath) ->
 
 module.exports = class MyMocha
   @assert: chai.assert
+
+  @init: (options) ->
+    throw new Error "defineTests required" unless isFunction options.defineTests
+    Promise.resolve ConfigRegistry.configure options
+    .then => @run options.defineTests
+
   @run: (defineAllTests)=>
     global.testAssetRoot = "/test/assets"
 
-    self.skipKnownFailingTest = (name, f) ->
+    global.skipKnownFailingTest = (name, f) ->
       message = "SKIPPING KNOWN-FAILING TEST: #{name}"
       test message, ->
         log.error log message

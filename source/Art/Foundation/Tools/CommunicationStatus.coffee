@@ -3,36 +3,72 @@ A core set of status-codes that code can reason about easily.
 
 Goal:
 
-  Minimal set of codes so APIs can reason about network requests in a
+  Minimal set of codes so Clients can reason about network requests in a
   consistant way.
+
+Strategy:
+
+  Have a small, simple set of status codes for our programs to reason about,
+  and, if necessary, allow the communication channel to return additional
+  information in the form of a 'message' that humans can look at to get more
+  information about any failures.
+
+Summary:
+
+  3 statuses:
+      success:  yay!
+      failure:  boo! see failureType for more info
+      missing:  these are not the droids you are looking for
+
+  3 failureTypes:
+      network:  retry when network is working
+      server:   fix server code
+      client:   fix client code or user inputs
+
+Automatic actions the Client can take on behalf of the user:
+
+  status:
+    missing:
+      alert "The resoure is not available."
+
+  failureTypes:
+    network:
+      automatic retries
+      test a known-good URL to validate if there is any network connection at all
+      alert "Please check your network connection."
+
+    client:
+      assuming the client is bug-free, ask the user to fix their submission (Ex: wrong password)
+      alert "Yikes! That's not quite right. Please try again."
+
+    server:
+      alert "Ooops! We're sorry, but something went wrong on our servers.
+        We'll fix it ASAP! In the mean time, how about some tea?"
 
 Why not HTTP Status codes?
 
-  They cover so much, most of which automatic code cannot do anything about
+  1) They cover so much, most of which automatic code cannot do anything about
   other than report an error, possibly to be viewed by a human later.
 
-My strategy is to have a small, simple set of status codes for our programs to
-reason about, and, if necessary, allow the communication channel to return
-additional information in the form of a 'message' that humans can look at to
-get more information about any failures.
+  2) there is no HTTP status code for network failure.
+
+  3) 404 isn't really a client-error or a server-error, it's its own thing: status: missing
+
+    By definition:
+      a client-error means there is something the client can do to fix it.
+      a server-error means there is something the server can do to fix it.
+
+    Unless the 404-response itself was a bug, 404 fits in neither of those categories.
+
+    Example: If the client requests a resource once and it works, then
+    fires the exact same request again and the resource is now 404, it's not the client's
+    fault.
 
 Note, these status-codes are used at the core of other Art Libs:
 
   ArtFlux
   ArtEry
-
-Possible additional statuses to add:
-
-  (only add if we have a very good use-case that requires it)
-
-  temporaryFailure: code can retry in a bit and it might work then
-
-  redirect: request can only be fulfilled at the new location
-
-    Note, I don't think we should have different statuses for all the  various
-    redirect semantics. It's up to the API to determine if a redirect is
-    temporary or permanent. I could imagine an API which returns a
-    redirectAddress  string as well as a connonicalAddress.
+  Art.Foundation.RestClient
 
 ###
 module.exports = class CommunicationStatus
@@ -75,3 +111,54 @@ module.exports = class CommunicationStatus
   OUT: true if status is a valid status-string
   ###
   @validStatus: (status) -> CommunicationStatus[status] == status
+
+  @failureTypes:
+    # failureType: network
+    # - The remote-server could not be reached.
+    # - There is nothing the code running on the Client NOR Server can do to fix this.
+    # - There is something wrong with the network between the client computer and the server.
+    # - The client can attempt to retry at a later time and it might magically work.
+    # - The failure may be one of the following:
+    #   a) the local computer has no internet connection OR
+    #   b) the internet is in a shitstorm ;) OR
+    #   c) there is an outtage with our servers.
+    network:  "network"
+
+    # failureType: client
+    # - The server rejected the request.
+    # - There is something wrong with the client's request.
+    # - It's up to the client to fix the problem.
+    # - This includes mal-formed requests as well as invalid data.
+    # - all 4xx errors except 404
+    # NOTE: 404 is not necessarilly a client NOR server error, therefor it's status: missing
+    client:   "client"
+
+    # failureType: server
+    # - There is something broken on the server.
+    # - There is nothing the client can do to solve this problem
+    # - all 5xx errors
+    server:   "server"
+
+    # failureType: miscHttp
+    # - 1xx and 3xx have no translation in Art.Foundation CommunicationStatus
+    miscHttp: "miscHttp"
+
+  @validFailureType: (failureType) => !!@failureTypes[failureType]
+
+  # NOTE: no httpStatus == network failure
+  @decodeHttpStatus: (httpStatus) =>
+    unless httpStatus?
+      return status: @failure, failureType: @failureTypes.network, message: "network failure"
+
+    httpStatusCategory = httpStatus / 100 | 0
+    return {status: @missing, httpStatus} if httpStatus == 404
+    return {status: @success, httpStatus} if httpStatusCategory == 2
+    {
+      status: @failure
+      httpStatus
+      failureType: ft = switch httpStatusCategory
+        when 4 then @failureTypes.client
+        when 5 then @failureTypes.server
+        else        @failureTypes.miscHttp
+      message: "#{ft} failure (#{httpStatus})"
+    }

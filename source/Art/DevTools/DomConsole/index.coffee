@@ -6,5 +6,6 @@ module.exports = require './namespace'
 .addModules
   Chart:   require './Chart'  
   Console: require './Console'
+  Images:  require './Images' 
   ToolBar: require './ToolBar'
 require './PseudoReact'

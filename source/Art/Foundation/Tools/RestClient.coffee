@@ -3,6 +3,7 @@
 #  http://www.html5rocks.com/en/tutorials/file/xhr2/
 StandardLib = require '../StandardLib'
 {present, Promise, merge, isNumber, timeout, log, objectKeyCount, appendQuery, object} = StandardLib
+{success, failure, failureTypes, decodeHttpStatus} = require './CommunicationStatus'
 
 module.exports = class RestClient
   @legalVerbs:
@@ -54,8 +55,10 @@ module.exports = class RestClient
     event:    # the HTML event object
     request:  # the XMLHttpRequest
     options:  # the restRequest options: verb, url, data, headers, onProgress, responseType, formData
-    status:   # the HTML status code, if the request completed
+    httpStatus:   # the HTML status code, if the request completed
     response: # responseData
+    status:       a valid CommunicationStatus
+    failureType:  a valid CommunicationStatus.failureType
     error:    # Error object or string-explaination of why the request was rejected
     progress:
       a value between 0 and 1
@@ -120,7 +123,7 @@ module.exports = class RestClient
       event:    the most recent event
       response: # the processed response data, if ready
       error:    # if any
-      status:   number # HTTP status code, if the request is complete
+      httpStatus:   number # HTTP status code, if the request is complete
 
   EFFECT:
 
@@ -152,11 +155,14 @@ module.exports = class RestClient
         progress: 0
         options: options
 
-      rescuedGetResponse = ->
+      getErrorResponse = ->
         try
-          getResponse()
-        catch
-          request.response
+          response: getResponse()
+        catch error
+          status:       failure
+          failureType:  failureTypes.server
+          rawResponse:  request.response
+          message:      "Error parsing server's response: #{error}"
 
       getResponse = ->
         {response} = request
@@ -180,31 +186,15 @@ module.exports = class RestClient
 
       request.addEventListener "error", (event) ->
         requestResolved = true
-        reject merge restRequestStatus,
-          event: event
-          response: rescuedGetResponse()
-          message: "failed to connect to: #{url}"
+        reject merge restRequestStatus, {event}, decodeHttpStatus()
 
       request.addEventListener "load", (event) ->
         requestResolved = true
-        {status} = request
 
-        if (status / 100 | 0) == 2
-          try
-            resolve getResponse()
-          catch error
-            reject merge restRequestStatus,
-              event: event
-              status: status
-              response: rescuedGetResponse()
-              error: error
-              message: "#{error}"
-        else
-          reject merge restRequestStatus,
-            event: event
-            status: status
-            response: rescuedGetResponse()
-            message: "response status was #{status}"
+        decodedHttpStatus = decodeHttpStatus httpStatus = request.status
+
+        unless (decodedHttpStatus.status == success) && (try resolve getResponse(); true)
+          reject merge restRequestStatus, decodedHttpStatus, {event}, getErrorResponse()
 
       if onProgress
         initialProgressCalled = showProgressAfter <= 0
