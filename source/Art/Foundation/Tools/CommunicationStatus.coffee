@@ -15,15 +15,14 @@ Strategy:
 
 Summary:
 
-  3 statuses:
-      success:  yay!
-      failure:  boo! see failureType for more info
-      missing:  these are not the droids you are looking for
+  6 statuses:
 
-  3 failureTypes:
-      network:  retry when network is working
-      server:   fix server code
-      client:   fix client code or user inputs
+  success:        yay!
+  missing:        these are not the droids you are looking for
+  clientFailure:  fix client code or user inputs
+  serverFailure:  fix server code
+  networkFailure: retry when network is working
+  failure:        boo! Unknown failure type
 
 Automatic actions the Client can take on behalf of the user:
 
@@ -102,8 +101,7 @@ module.exports = class CommunicationStatus
   ###
   status: failure
 
-  * All network and server errors.
-  * Provide additional information in 'message' or 'error' parameter.
+  * catch-all failure
   ###
   @failure:  "failure"
 
@@ -112,53 +110,45 @@ module.exports = class CommunicationStatus
   ###
   @validStatus: (status) -> CommunicationStatus[status] == status
 
-  @failureTypes:
-    # failureType: network
-    # - The remote-server could not be reached.
-    # - There is nothing the code running on the Client NOR Server can do to fix this.
-    # - There is something wrong with the network between the client computer and the server.
-    # - The client can attempt to retry at a later time and it might magically work.
-    # - The failure may be one of the following:
-    #   a) the local computer has no internet connection OR
-    #   b) the internet is in a shitstorm ;) OR
-    #   c) there is an outtage with our servers.
-    network:  "network"
+  # status: networkFailure
+  # - The remote-server could not be reached.
+  # - There is nothing the code running on the Client NOR Server can do to fix this.
+  # - There is something wrong with the network between the client computer and the server.
+  # - The client can attempt to retry at a later time and it might magically work.
+  # - The failure may be one of the following:
+  #   a) the local computer has no internet connection OR
+  #   b) the internet is in a shitstorm ;) OR
+  #   c) there is an outtage with our servers.
+  @networkFailure:  "networkFailure"
 
-    # failureType: client
-    # - The server rejected the request.
-    # - There is something wrong with the client's request.
-    # - It's up to the client to fix the problem.
-    # - This includes mal-formed requests as well as invalid data.
-    # - all 4xx errors except 404
-    # NOTE: 404 is not necessarilly a client NOR server error, therefor it's status: missing
-    client:   "client"
+  # status: clientFailure
+  # - The server rejected the request.
+  # - There is something wrong with the client's request.
+  # - It's up to the client to fix the problem.
+  # - This includes mal-formed requests as well as invalid data.
+  # - all 4xx errors except 404
+  # NOTE: 404 is not necessarilly a client NOR server error, therefor it's status: missing
+  @clientFailure:   "clientFailure"
 
-    # failureType: server
-    # - There is something broken on the server.
-    # - There is nothing the client can do to solve this problem
-    # - all 5xx errors
-    server:   "server"
-
-    # failureType: miscHttp
-    # - 1xx and 3xx have no translation in Art.Foundation CommunicationStatus
-    miscHttp: "miscHttp"
-
-  @validFailureType: (failureType) => !!@failureTypes[failureType]
+  # status: serverFailure
+  # - There is something broken on the server.
+  # - There is nothing the client can do to solve this problem
+  # - all 5xx errors
+  @serverFailure:   "serverFailure"
 
   # NOTE: no httpStatus == network failure
   @decodeHttpStatus: (httpStatus) =>
     unless httpStatus?
-      return status: @failure, failureType: @failureTypes.network, message: "network failure"
+      return status: @networkFailure, message: "network failure"
 
     httpStatusCategory = httpStatus / 100 | 0
     return {status: @missing, httpStatus} if httpStatus == 404
     return {status: @success, httpStatus} if httpStatusCategory == 2
     {
-      status: @failure
+      status: ft = switch httpStatusCategory
+        when 4 then @clientFailure
+        when 5 then @serverFailure
+        else        @failure
       httpStatus
-      failureType: ft = switch httpStatusCategory
-        when 4 then @failureTypes.client
-        when 5 then @failureTypes.server
-        else        @failureTypes.miscHttp
-      message: "#{ft} failure (#{httpStatus})"
+      message: "#{ft} (#{httpStatus})"
     }

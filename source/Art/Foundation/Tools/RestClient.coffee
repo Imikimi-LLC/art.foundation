@@ -3,7 +3,7 @@
 #  http://www.html5rocks.com/en/tutorials/file/xhr2/
 StandardLib = require '../StandardLib'
 {present, Promise, merge, isNumber, timeout, log, objectKeyCount, appendQuery, object} = StandardLib
-{success, failure, failureTypes, decodeHttpStatus} = require './CommunicationStatus'
+{success, serverFailure, failure, failureTypes, decodeHttpStatus} = require './CommunicationStatus'
 
 module.exports = class RestClient
   @legalVerbs:
@@ -58,7 +58,6 @@ module.exports = class RestClient
     httpStatus:   # the HTML status code, if the request completed
     response: # responseData
     status:       a valid CommunicationStatus
-    failureType:  a valid CommunicationStatus.failureType
     error:    # Error object or string-explaination of why the request was rejected
     progress:
       a value between 0 and 1
@@ -159,8 +158,7 @@ module.exports = class RestClient
         try
           response: getResponse()
         catch error
-          status:       failure
-          failureType:  failureTypes.server
+          status:       serverFailure
           rawResponse:  request.response
           message:      "Error parsing server's response: #{error}"
 
