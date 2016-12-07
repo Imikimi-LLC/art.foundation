@@ -53,11 +53,11 @@ module.exports = class Iteration
       whenBlock = options.when
 
     if arrayIterableTest source
-      if whenBlock then withBlock v, k, into for v, k in source when whenBlock v, k
-      else              withBlock v, k, into for v, k in source
+      if whenBlock then withBlock v, k, into, w for v, k in source when w = whenBlock v, k
+      else              withBlock v, k, into    for v, k in source
     else
-      if whenBlock then withBlock v, k, into for k, v of source when whenBlock v, k
-      else              withBlock v, k, into for k, v of source
+      if whenBlock then withBlock v, k, into, w for k, v of source when w = whenBlock v, k
+      else              withBlock v, k, into    for k, v of source
 
     into
 
@@ -77,15 +77,15 @@ module.exports = class Iteration
 
     if arrayIterableTest source
       if whenBlock
-        for v, k in source when whenBlock v, k
-          break unless withBlock v, k, into
+        for v, k in source when w = whenBlock v, k
+          break unless withBlock v, k, into, w
       else
         for v, k in source
           break unless withBlock v, k, into
     else
       if whenBlock
-        for k, v of source when whenBlock v, k
-          break unless withBlock v, k, into
+        for k, v of source when w = whenBlock v, k
+          break unless withBlock v, k, into, w
       else
         for k, v of source
           break unless withBlock v, k, into
@@ -96,7 +96,7 @@ module.exports = class Iteration
   reduce differences from the common-api:
 
   1) The with-block has a different argument order. Into is passed first instead of last:
-    with: (into, value, key) ->
+    with: (into, value, key, whenReturnValue) ->
     This allows you to drop-in functions that take two arguments and reduce them to one like:
       Math.max
       add = (a, b) -> a + b
@@ -122,8 +122,8 @@ module.exports = class Iteration
     normalizedEach source,
       undefined,
       if intoSet = into != undefined
-            (v, k)-> into = withBlock into, v, k
-      else  (v, k)-> into = if intoSet then withBlock into, v, k else intoSet = true; v
+            (v, k, _, w)-> into = withBlock into, v, k, w
+      else  (v, k, _, w)-> into = if intoSet then withBlock into, v, k, w else intoSet = true; v
       options
 
     into
@@ -149,8 +149,8 @@ module.exports = class Iteration
     normalizedEach source,
       into = if into != undefined then into else {}
       if arrayIterableTest source
-            (v, k) -> into[v] = withBlock v, k, into
-      else  (v, k) -> into[k] = withBlock v, k, into
+            (v, k, __, w) -> into[v] = withBlock v, k, into, w
+      else  (v, k, __, w) -> into[k] = withBlock v, k, into, w
       options
 
   ###
@@ -170,7 +170,7 @@ module.exports = class Iteration
 
     normalizedEach source,
       into = if into != undefined then into else []
-      (v, k) -> into.push withBlock v, k, into
+      (v, k, __, w) -> into.push withBlock v, k, into, w
       options
 
   ##########################
@@ -191,8 +191,8 @@ module.exports = class Iteration
 
     normalizedEachWhile source,
       into = undefined
-      if options.whenBlock then (v, k) -> into = withBlock v, k; false
-      else                      (v, k) -> !(into = withBlock v, k)
+      if options.whenBlock then (v, k, __, w) -> into   = withBlock v, k, null, w; false
+      else                      (v, k, __, w) -> !(into = withBlock v, k, null, w)
       options
 
     into

@@ -295,7 +295,7 @@ module.exports = class Validator extends BaseObject
   presentFieldValid: (fields, fieldName) ->
     if fieldProps = @_fieldProps[fieldName]
       {validate} = fieldProps
-      !validate || !(value = fields[fieldName])? || value == null || value == undefined || validate value
+      !validate || !(value = fields[fieldName])? || value == null || value == undefined || validate value, fieldName, fields
     else
       !@exclusive
 

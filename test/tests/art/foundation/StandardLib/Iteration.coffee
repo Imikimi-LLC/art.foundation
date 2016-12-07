@@ -54,6 +54,15 @@ module.exports = suite:
           with: (v) -> values += v
         assert.eq values, 6
 
+      test "when return value", ->
+        out = []
+        each [{a:"foo"},{},{a:"bar"},{}],
+          when: ({a}) -> a
+          with: (v, k, o, whenResult) ->
+            out.push whenResult
+
+        assert.eq out, ["foo", "bar"]
+
     eachWhile: ->
       test "objects", ->
         values = 0
