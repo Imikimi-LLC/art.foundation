@@ -239,6 +239,19 @@ module.exports = class ArtPromise #extends Promise
   ###
   @serialize: (f) -> new ArtPromise.Serializer().serialize f
 
+  @invert: (promise) ->
+    promise.then (e) ->
+      throw e
+    , (v) -> v
+
+  @finally: (promise, action) ->
+    promise.then (v) ->
+      try action()
+      v
+    , (e) ->
+      try action()
+      throw e
+
   constructor: (_function)->
     @resolve = @reject = null
     @_nativePromise = null
