@@ -89,7 +89,7 @@ module.exports = suite:
     {max} = Math
 
     test "[1, 2, 3, 4], add", -> assert.eq 10, reduce [1, 2, 3, 4], add
-    test "[5, 2, 0, 3], max", -> assert.eq 5, reduce [5, 2, 0, 3], max
+    test "[5, 2, 0, 3], max", -> assert.eq 5, reduce [5, 2, 0, 3], (a, b) -> max a, b
     test "[1, 2, 3, 4], 100, add", -> assert.eq 110, reduce [1, 2, 3, 4], 100, add
     test "[1, 2, 3, 4], into: 100, with: add", -> assert.eq 110, reduce [1, 2, 3, 4], into: 100, with: add
     test "a: 1, b: 2, c: 3, d: 4, add",      -> assert.eq 10,  reduce a: 1, b: 2, c: 3, d: 4, add
