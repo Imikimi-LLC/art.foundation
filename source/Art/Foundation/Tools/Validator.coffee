@@ -12,6 +12,7 @@ StandardLib = require '../StandardLib'
   mergeIntoUnless
   w
   isFunction
+  clone
 } = StandardLib
 
 {validStatus} = require './CommunicationStatus'
@@ -263,6 +264,13 @@ module.exports = class Validator extends BaseObject
   ###
   preUpdate: (fields, options) -> Promise.resolve(fields).then (fields) => @preUpdateSync fields, options
 
+  ###
+  IN:
+    fields: - the object to check
+    options:
+      context: string - included in validation errors for reference
+      logErrors: false - if true, will log.error errors
+  ###
   preCreateSync: preCreateSync = (fields, options) ->
     requiredFieldsPresent = @requiredFieldsPresent fields
     presentFieldsValid = @presentFieldsValid fields
@@ -278,6 +286,7 @@ module.exports = class Validator extends BaseObject
         validationFailure: "#{options?.context || @context || "Validator"}: create: field(s) are #{status}"
       info.invalidFields = @invalidFields fields unless presentFieldsValid
       info.missingFields = @missingFields fields unless requiredFieldsPresent
+      log.error info if options?.logErrors
       throw info
   validateSync: preCreateSync
 
