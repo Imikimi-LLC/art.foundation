@@ -6,3 +6,4 @@ module.exports = (require "./configure_webpack")
       atob:               '^2.0.3'
       'promise-polyfill': '^6.0.2'
       commander:          '^2.9.0'
+      bluebird:           "^3.4.6"

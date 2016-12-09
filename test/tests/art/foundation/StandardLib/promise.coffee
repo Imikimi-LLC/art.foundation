@@ -3,73 +3,22 @@
 {WorkerRpc, BaseObject, timeout, Promise, intRand, log, deepAll} = Foundation
 
 module.exports = suite:
-  basics: ->
+  blueBirdBasics: ->
+    test "new Promise()", ->
+      new Promise (resolve) -> resolve()
 
-    test "new Promise().resolve()", ->
-      new Promise().resolve()
+  newExternallyResolvable: ->
+    test "newExternallyResolvable.resolve()", ->
+      Promise.newExternallyResolvable().resolve()
 
-    test "new Promise().reject() and .catch", ->
-      (p = new Promise()).reject 321
-      p.catch (v) -> assert.eq v, 321
-
-    test "new Promise() thrown error is caught", ->
-      p = new Promise (resolve) ->
-        throw new Error 123
-      p.then (v) ->
-        assert.fail()
-      , (error) ->
-        assert.eq error.message, "123"
-
-    test "new Promise().reject() and .then success, fail", ->
-      (p = new Promise()).reject 321
-      p.then (v) ->
-        assert.fail()
-      , (v) ->
-        assert.eq v, 321
-
-    test "new Promise() with true async", ->
-      p = new Promise
+    test "newExternallyResolvable with true async", ->
+      p = Promise.newExternallyResolvable()
       timeout 0, -> p.resolve()
       p
 
-    test "new Promise (resolve, reject)->", ->
-      new Promise (resolve, reject) ->
-        timeout 0, -> resolve()
-
-    test "new Promise().then", ->
-      new Promise (resolve, reject) ->
-        timeout 0, -> resolve 123
-      .then (v) ->
-        assert.eq v, 123
-
-    test "new Promise (resolve, reject)-> - resolved externally", ->
-      p = new Promise (resolve, reject) ->
-      timeout 0, -> p.resolve()
-      p
-
-    test "Promise.resolve", ->
-      Promise.resolve 123
-
-    test "Promise.all", ->
-      count = 0
-      Promise.all [
-        new Promise (resolve) -> timeout 0, -> count++; resolve()
-        new Promise (resolve) -> timeout 0, -> count++; resolve()
-        new Promise (resolve) -> timeout 0, -> count++; resolve()
-      ]
-      .then ->
-        assert.eq count, 3
-
-    test "Promise.race", ->
-      count = 0
-      Promise.race [
-        new Promise (resolve) -> timeout 0, -> count++; resolve()
-        new Promise (resolve) -> timeout 0, -> count++; resolve()
-        new Promise (resolve) -> timeout 0, -> count++; resolve()
-      ]
-      .then ->
-        assert.ok count >= 1
-        assert.ok count <= 3
+    test "newExternallyResolvable.reject()", ->
+      (p = Promise.newExternallyResolvable()).reject new Error
+      assert.rejects p
 
   invert: ->
     test "Promise.invert catch to then", ->
@@ -88,18 +37,17 @@ module.exports = suite:
 
     test "Promise.finally fires on error", ->
       took = false
-      assert.rejects Promise.finally Promise.reject(123), -> took = true
-      .then (v) ->
-        assert.eq v, 123
+      assert.rejects Promise.finally Promise.reject(new Error 123), -> took = true
+      .then ({message}) ->
+        assert.eq message, "123"
         assert.ok took
 
-    test "Promise.finally doesn't interrupt success", ->
-      Promise.finally Promise.resolve(123), -> throw new Error "foo"
-      .then (v) -> assert.eq v, 123
+    test "Promise.finally failure after success causes rejection", ->
+      assert.rejects Promise.finally Promise.resolve(new Error 123), -> throw new Error "foo"
 
-    test "Promise.finally doesn't interrupt error", ->
-      assert.rejects Promise.finally Promise.reject(123), -> throw new Error "foo"
-      .then (v) -> assert.eq v, 123
+    test "Promise.finally failure after failure causes new rejection", ->
+      assert.rejects Promise.finally Promise.reject(new Error "original rejection"), -> throw new Error "from finally"
+      .then ({message}) -> assert.eq message, "from finally"
 
   deepAll: ->
     test 'deepAll {}', ->
@@ -156,11 +104,15 @@ module.exports = suite:
 
     test "always", ->
       serializer = new Promise.Serializer
-      serializer.then -> throw "oh no!"
+      serializer.then -> throw new Error "oh no!"
       serializer.always -> "oh, ok!"
-      serializer.then (out)-> assert.eq out, "oh, ok!"
-      serializer.always -> "oh, ok!!!"
-      serializer.then (out)-> assert.eq out, "oh, ok!!!"
+      serializer.then (out)->
+        log "1"
+        assert.eq out, "oh, ok!"
+        log "2"
+        null
+      # serializer.always -> "oh, ok!!!"
+      # serializer.then (out)-> assert.eq out, "oh, ok!!!"; null
 
     test "serializer with forEach", ->
       count = 0

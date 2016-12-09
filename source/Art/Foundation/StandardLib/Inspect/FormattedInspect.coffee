@@ -177,13 +177,17 @@ postWhitespaceFormatting = (maxLineLength, string) ->
   outLines.join '\n'
 
 module.exports = class FormattedInspect
-  @formattedInspect: (m, options = {}) ->
-    maxLineLength = if isNumber options
-      options
-    else
-      options.maxLineLength || 80
+  @formattedInspect: (toInspect, options = {}) ->
+    try
+      maxLineLength = if isNumber options
+        options
+      else
+        options.maxLineLength || 80
 
-    out = postWhitespaceFormatting maxLineLength,
-      formattedInspectRecursive toInspectedObjects(m), maxLineLength
-    .replace /\n\n\n+/g, "\n\n"
-    .replace /\n\n$/, "\n"
+      out = postWhitespaceFormatting maxLineLength,
+        formattedInspectRecursive toInspectedObjects(toInspect), maxLineLength
+      .replace /\n\n\n+/g, "\n\n"
+      .replace /\n\n$/, "\n"
+    catch error
+      console.error out = "Error in formattedInspect", {error, toInspect, options}
+      out
