@@ -84,15 +84,11 @@ assert.rejects = (promise, context) ->
     promise
 
   p.then (v) ->
-    uniqueObject.value = v
-    Promise.reject uniqueObject
-  .catch (v) ->
-    if v == uniqueObject
-      failWithExpectedMessage context,
-        promise
-        "to be rejected. Instead, it succeeded with:"
-        v.value
-    v
+    failWithExpectedMessage context,
+      promise
+      "to be rejected. Instead, it succeeded with:"
+      v.value
+  , (v) -> v
 
 assert.rejectsWith = (promise, rejectValue, context) ->
   log.error "DEPRICATED: assert.rejectsWith. Use: assert.rejects().then (rejectValue) -> assert.eq rejectValue, expectedRejectValue"

@@ -93,12 +93,8 @@ module.exports = suite:
       assert.rejects v.preCreate {}
       .then -> v.preUpdate {}
       .then -> v.preCreate id: "123"
-      .then ->
-        assert.rejects v.preCreate(id: 123)
-        .then (v) ->
-          assert.eq v,
-            validationFailure:       "Validator: create: field(s) are invalid"
-            invalidFields: id: 123
+      .then -> assert.rejects v.preCreate(id: 123)
+      .then ({info}) -> assert.eq info.errors, id: "invalid"
 
     test "validate: ->", ->
       v = new Validator
@@ -107,12 +103,8 @@ module.exports = suite:
       v.preCreate {}
       .then -> v.preUpdate {}
       .then -> v.preCreate id: "123"
-      .then ->
-        assert.rejects v.preCreate id: 123
-        .then (rejection) ->
-          assert.eq rejection,
-            validationFailure:       "Validator: create: field(s) are invalid"
-            invalidFields: id: 123
+      .then -> assert.rejects v.preCreate id: 123
+      .then ({info}) -> assert.eq info.errors, id: "invalid"
 
     test "preprocess: ->", ->
       v = new Validator
@@ -144,22 +136,13 @@ module.exports = suite:
 
       v.preCreate id: 123
       .then -> assert.rejects v.preCreate id: null
-      .then (rejection) ->
-        assert.eq rejection,
-          validationFailure: "Validator: create: field(s) are missing"
-          missingFields: id: null
+      .then ({info}) -> assert.eq info.errors, id: "missing"
 
       .then -> assert.rejects v.preCreate id: undefined
-      .then (rejection) ->
-        assert.eq rejection,
-          validationFailure: "Validator: create: field(s) are missing"
-          missingFields: id: undefined
+      .then ({info}) -> assert.eq info.errors, id: "missing"
 
       .then -> assert.rejects v.preCreate {}
-      .then (rejection) ->
-        assert.eq rejection,
-        validationFailure: "Validator: create: field(s) are missing"
-        missingFields: id: undefined
+      .then ({info}) -> assert.eq info.errors, id: "missing"
 
       .then -> v.preCreate id: false # is OK since it's not null nor undefined
       .then -> v.preUpdate id: null
@@ -179,10 +162,7 @@ module.exports = suite:
       .then -> v.preCreate foo: null
       .then ->
         assert.rejects v.preCreate foo: {}
-      .then (rejection) ->
-        assert.eq rejection,
-          validationFailure: "Validator: create: field(s) are invalid"
-          invalidFields: foo: {}
+      .then ({info}) -> assert.eq info.errors, foo: "invalid"
 
   compoundTests:->
     test "require: validate: ->", ->
@@ -192,20 +172,10 @@ module.exports = suite:
       assert.rejects v.preCreate id: 123
       .then -> assert.rejects v.preCreate foo: "test@test.com"
       .then -> assert.rejects v.preCreate foo: "email:me@test"
-      .then ->
-        assert.rejects v.preCreate foo: "email:me"
-      .then (rejection) ->
-        assert.eq rejection,
-          validationFailure: "Validator: create: field(s) are invalid"
-          invalidFields: foo: "email:me"
-
-      .then ->
-        assert.rejects v.preUpdate foo: "email:me"
-      .then (rejection) ->
-        assert.eq rejection,
-          validationFailure: "Validator: update: field(s) are invalid"
-          invalidFields: foo: "email:me"
-
+      .then -> assert.rejects v.preCreate foo: "email:me"
+      .then ({info}) -> assert.eq info.errors, foo: "invalid"
+      .then -> assert.rejects v.preUpdate foo: "email:me"
+      .then ({info, stack}) -> assert.eq info.errors, foo: "invalid"
       .then -> v.preUpdate()
       .then -> v.preCreate foo: "email:me@test.com"
       .then -> v.preUpdate foo: "email:me@test.com"

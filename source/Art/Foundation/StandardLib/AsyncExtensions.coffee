@@ -28,7 +28,7 @@ module.exports = class AsyncExtensions
   # effectively uses setTimeout(0), which isn't very fast.
   # See promise.coffee for info about how we can speed
   # things up by including a setImmediate polyfill.
-  @nextTick: (f) => Promise.resolve().then f
+  @nextTick: (f) => Promise.resolve().then -> f?()
 
   #-------------------------------------
   # throwErrorOutOfStack

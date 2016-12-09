@@ -52,7 +52,6 @@ module.exports = class ObjectExtensions
     out[key] = undefined if key
 
   @toObject: ->
-    console.error "toObject is DEPRICATED. Use toPlainObjects."
     out = {}
     toObjectInternal arguments, out
     out

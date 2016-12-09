@@ -12,7 +12,7 @@
   compact
   plainObjectsDeepEq
   deepMerge
-  toObject
+  toPlainObjects
   select
   reduce
   setPathedProperty

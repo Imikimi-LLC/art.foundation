@@ -13,6 +13,8 @@ StandardLib = require '../StandardLib'
   w
   isFunction
   clone
+  ErrorWithInfo
+  array
 } = StandardLib
 
 {validStatus} = require './CommunicationStatus'
@@ -207,8 +209,8 @@ module.exports = class Validator extends BaseObject
 
       normalizeFieldTypeProp normalizeInstanceOfProp normalizeDepricatedProps normalizePlainObjectProps ft
 
-    else if isPlainArray array = ft
-      processed = for ft in array
+    else if isPlainArray ftArray = ft
+      processed = for ft in ftArray
         normalizeFieldProps ft
       merge processed...
 
@@ -272,31 +274,32 @@ module.exports = class Validator extends BaseObject
       logErrors: false - if true, will log.error errors
   ###
   preCreateSync: preCreateSync = (fields, options) ->
-    requiredFieldsPresent = @requiredFieldsPresent fields
-    presentFieldsValid = @presentFieldsValid fields
-    if requiredFieldsPresent && presentFieldsValid
+    if @requiredFieldsPresent(fields) && @presentFieldsValid fields
       @preprocessFields fields
-    else
-      status = if !presentFieldsValid
-        if !requiredFieldsPresent
-          "invalid and missing"
-        else "invalid"
-      else "missing"
-      info =
-        validationFailure: "#{options?.context || @context || "Validator"}: create: field(s) are #{status}"
-      info.invalidFields = @invalidFields fields unless presentFieldsValid
-      info.missingFields = @missingFields fields unless requiredFieldsPresent
-      log.error info if options?.logErrors
-      throw info
+    else @_throwError fields, true
+
   validateSync: preCreateSync
+
+  _throwError: (fields, forCreate) ->
+    info = errors: errors = {}
+    messageFields = []
+    array @invalidFields(fields), messageFields, (f) ->
+      errors[f] = "invalid"
+      "invalid #{f}"
+
+    forCreate && array @missingFields(fields), messageFields, (f) ->
+      errors[f] = "missing"
+      "missing #{f}"
+
+    log.error Validator_preCreate_errors: {logErrors: true, info} if options?.logErrors
+    message = "Invalid fields for #{options?.context || @context || "Validator"} #{if forCreate then 'create' else 'update'}: #{messageFields.join ', '}"
+    info.fields = fields #if options?.includeFieldsInErrors
+    throw new ErrorWithInfo message, info
 
   preUpdateSync: (fields, options) ->
     if @presentFieldsValid fields
       @preprocessFields fields
-    else
-      throw
-        validationFailure: "#{options?.context || @context || "Validator"}: update: field(s) are invalid"
-        invalidFields: @invalidFields fields
+    else @_throwError fields
 
   ####################
   # VALIDATION CORE
@@ -338,11 +341,13 @@ module.exports = class Validator extends BaseObject
   ####################
   # VALIDATION INFO CORE
   ####################
-  invalidFields: (fields) -> select fields, (key, value) => !@presentFieldValid fields, key
+  invalidFields: (fields) ->
+    k for k, v of fields when !@presentFieldValid fields, k
+
+
   missingFields: (fields) ->
-    # log missingFields: fields, _requiredFieldsMap:@_requiredFieldsMap, _fieldProps: @_fieldProps
     fields = merge @_requiredFieldsMap, fields
-    select fields, (key, value) => !@requiredFieldPresent fields, key
+    k for k, v of fields when !@requiredFieldPresent fields, k
 
   ###################
   # PRIVATE

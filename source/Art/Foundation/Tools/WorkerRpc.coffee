@@ -298,7 +298,7 @@ module.exports = class WorkerRpc extends BaseObject
   @_nextPromiseId = 0
 
   @_bindPromise: (f) ->
-    @_promises[promiseId = @_nextPromiseId++] = promise = new Promise
+    @_promises[promiseId = @_nextPromiseId++] = promise = Promise.newExternallyResolvable()
     f promiseId
     promise
 

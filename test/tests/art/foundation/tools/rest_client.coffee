@@ -14,16 +14,8 @@ if self.XMLHttpRequest
       .then (json) ->
         assert.eq json, number: 123, object: {a: 1, b: 2, c: 3}, array: [1, 2, 3], true: true, false: false, string: "hi mom"
 
-    test "getJson invalid json is rejected", (done) ->
-      RestClient.getJson "#{testAssetRoot}/array_buffer_rest_client_test/invalid.json"
-      .then (json) ->
-        log "here"
-        assert.fail "should not get here since json is invalid", json
-      , (error) ->
-        log "there"
-        log invalidJson:error
-        self.invalidJson = error
-        done()
+    test "getJson invalid json is rejected", ->
+      assert.rejects RestClient.getJson "#{testAssetRoot}/array_buffer_rest_client_test/invalid.json"
 
     test "getArrayBuffer", ->
       RestClient.getArrayBuffer "#{testAssetRoot}/array_buffer_rest_client_test/hello.txt"

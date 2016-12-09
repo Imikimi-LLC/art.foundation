@@ -2,7 +2,7 @@
 #  http://www.w3.org/TR/XMLHttpRequest2/
 #  http://www.html5rocks.com/en/tutorials/file/xhr2/
 StandardLib = require '../StandardLib'
-{present, Promise, merge, isNumber, timeout, log, objectKeyCount, appendQuery, object} = StandardLib
+{present, Promise, merge, isNumber, timeout, log, objectKeyCount, appendQuery, object, ErrorWithInfo} = StandardLib
 {success, serverFailure, failure, failureTypes, decodeHttpStatus} = require './CommunicationStatus'
 
 module.exports = class RestClient
@@ -184,7 +184,7 @@ module.exports = class RestClient
 
       request.addEventListener "error", (event) ->
         requestResolved = true
-        reject merge restRequestStatus, {event}, decodeHttpStatus()
+        reject new ErrorWithInfo "XMLHttpRequest error event triggered", merge restRequestStatus, {event}, decodeHttpStatus()
 
       request.addEventListener "load", (event) ->
         requestResolved = true
@@ -192,7 +192,7 @@ module.exports = class RestClient
         decodedHttpStatus = decodeHttpStatus httpStatus = request.status
 
         unless (decodedHttpStatus.status == success) && (try resolve getResponse(); true)
-          reject merge restRequestStatus, decodedHttpStatus, {event}, getErrorResponse()
+          reject new ErrorWithInfo "error processing response", merge restRequestStatus, decodedHttpStatus, {event}, getErrorResponse()
 
       if onProgress
         initialProgressCalled = showProgressAfter <= 0

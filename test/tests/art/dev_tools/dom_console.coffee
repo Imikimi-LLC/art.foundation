@@ -70,5 +70,8 @@ if self.document
         foo: Promise.resolve a:12, b:13
         bar: timeout(10).then -> 456
       testLog
-        foo: Promise.reject(123)
+        foo: p = Promise.reject new Error 123
         bar: Promise.resolve(456)
+
+      # hide uncaught warning
+      p.catch ->
