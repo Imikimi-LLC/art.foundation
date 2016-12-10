@@ -276,11 +276,16 @@ module.exports = class Validator extends BaseObject
   preCreateSync: preCreateSync = (fields, options) ->
     if @requiredFieldsPresent(fields) && @presentFieldsValid fields
       @preprocessFields fields
-    else @_throwError fields, true
+    else @_throwError fields, options, true
 
   validateSync: preCreateSync
 
-  _throwError: (fields, forCreate) ->
+  preUpdateSync: (fields, options) ->
+    if @presentFieldsValid fields
+      @preprocessFields fields
+    else @_throwError fields, options
+
+  _throwError: (fields, options, forCreate) ->
     info = errors: errors = {}
     messageFields = []
     array @invalidFields(fields), messageFields, (f) ->
@@ -291,15 +296,10 @@ module.exports = class Validator extends BaseObject
       errors[f] = "missing"
       "missing #{f}"
 
-    log.error Validator_preCreate_errors: {logErrors: true, info} if options?.logErrors
+    log.error Validator_preCreate_errors: {options, info} if options?.logErrors
     message = "Invalid fields for #{options?.context || @context || "Validator"} #{if forCreate then 'create' else 'update'}: #{messageFields.join ', '}"
     info.fields = fields #if options?.includeFieldsInErrors
     throw new ErrorWithInfo message, info
-
-  preUpdateSync: (fields, options) ->
-    if @presentFieldsValid fields
-      @preprocessFields fields
-    else @_throwError fields
 
   ####################
   # VALIDATION CORE
