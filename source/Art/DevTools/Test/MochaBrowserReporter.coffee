@@ -1,11 +1,11 @@
-if self.document
+if global.document
   {log, fastBind, Promise, findSourceReferenceUrlRegexp} = require 'art-foundation'
 
-  {mapStackTrace} = require 'sourcemapped-stacktrace'
+  # {mapStackTrace} = require 'sourcemapped-stacktrace'
 
-  promisedMapStackTrace = (stack) ->
-    deQueriedStack = stack.replace(/\?[a-zA-Z0-9]+=[^:]*/,"")
-    new Promise (resolve)-> mapStackTrace deQueriedStack, resolve
+  # promisedMapStackTrace = (stack) ->
+  #   deQueriedStack = stack.replace(/\?[a-zA-Z0-9]+=[^:]*/,"")
+  #   new Promise (resolve)-> mapStackTrace deQueriedStack, resolve
 
   class SuiteReporter
     constructor: (@suite)->
@@ -18,11 +18,12 @@ if self.document
 
     addFailure: (test, err) ->
       @failedTests.push (
-        p = if stack = err.stack
-          promisedMapStackTrace stack
-        else Promise.resolve()
-        p.then (mappedStack) ->
-          [test, err, mappedStack]
+        Promise.resolve [test, err, err.stack]
+        # p = if stack = err.stack
+        #   promisedMapStackTrace stack
+        # else Promise.resolve()
+        # p.then (mappedStack) ->
+        #   [test, err, mappedStack]
       )
 
     addPass: (test) ->
