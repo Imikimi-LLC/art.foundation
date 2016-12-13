@@ -111,7 +111,7 @@ defineModule module, class ConfigRegistry extends BaseObject
 
     @artConfigName ||= defaultArtConfigName
 
-    delete @artConfig[k] for k, v of @artConfig
+    @resetCurrentConfig()
 
     for conf in [
         @configs[@artConfigName]
@@ -141,6 +141,8 @@ defineModule module, class ConfigRegistry extends BaseObject
             artConfigFromExternalEnvironment:  externalEnvironment.artConfig
 
     @_executeCallbacks()
+
+  @resetCurrentConfig: => delete @artConfig[k] for k, v of @artConfig
 
   @reload: => @configure @configureOptions
 
