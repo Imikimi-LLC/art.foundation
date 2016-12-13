@@ -1,8 +1,8 @@
 {log, isFunction, isPlainObject, merge, ConfigRegistry} = require 'art-foundation'
 chai = require 'art-foundation/source/Art/DevTools/Test/ArtChai'
-self.assert = chai.assert
+global.assert = chai.assert
 
-if self.document
+if global.document
   document.write "<div id=\"mocha\"></div>" unless document.getElementById "mocha"
   require "!style!css!mocha/mocha.css"
   require "!script!mocha/mocha.js"
@@ -56,16 +56,17 @@ class NestedSuites
               f.call @
 
   groupTestSuites: (defineAllTests) ->
-    oldSuite = self.suite
-    self.suite = (name, f) =>
+    oldSuite = global.suite
+    global.suite = (name, f) =>
       @addSuite name, f
 
-    defineSuitesByNamespaces defineAllTests chai
+    Promise.resolve defineAllTests chai
+    .then defineSuitesByNamespaces
+    .then =>
+      global.suite = oldSuite
+      mocha?.setup 'tdd'
 
-    self.suite = oldSuite
-    mocha?.setup 'tdd'
-
-    @_createMochaSuites()
+      @_createMochaSuites()
 
 ###
 IN: rootNamespace
@@ -111,4 +112,4 @@ module.exports = class MyMocha
 
     DomConsole?.enable()
     (new NestedSuites).groupTestSuites defineAllTests
-    mocha?.run()
+    .then -> mocha?.run()
