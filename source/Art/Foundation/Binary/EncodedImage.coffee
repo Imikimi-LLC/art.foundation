@@ -1,6 +1,6 @@
 StandardLib = require '../StandardLib'
 {toDataUri} = require './DataUri'
-{Promise, readFileAsDataUrl} = StandardLib
+{Promise, readFileAsDataUrl, ErrorWithInfo} = StandardLib
 
 module.exports = class EncodedImage
 
@@ -30,7 +30,7 @@ module.exports = class EncodedImage
         data: urls break with crossOrigin in Safari
       ###
       image.onload  = -> resolve image
-      image.onerror = reject
+      image.onerror = (event) -> reject new ErrorWithInfo "image load error", event
 
       # must specify src last or crossOrigin won't get set on Safari.
       image.src = url
