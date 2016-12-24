@@ -1,9 +1,3 @@
-require '../index'
-{Mocha, Perf} = require "../dev_tools/test"
-
-self.benchmark = Perf.benchmark
-self.asyncBenchmark = Perf.asyncBenchmark
-
-Mocha.run ({assert})->
-  self.testAssetRoot = "/test/assets"
-  require './perfs'
+require '../'
+require "art-foundation/benchmark"
+.run -> require './perfs'
