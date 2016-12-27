@@ -5,11 +5,11 @@ BlueBirdPromise = require 'bluebird/js/browser/bluebird.core'
 {deepMap, deepEach, isFunction, isPlainObject} = require './Types'
 {defineModule} = require './CommonJs'
 
-# BlueBirdPromise.config
-#   warnings: false
-#   longStackTraces: false
-#   cancellation: false
-#   monitoring: false
+BlueBirdPromise.config
+  warnings: false
+  longStackTraces: false
+  cancellation: false
+  monitoring: false
 
 ErrorWithInfo = require "./ErrorWithInfo"
 
@@ -77,7 +77,7 @@ defineModule module, ->
       containsPromises
 
     @withCallback: (startPromiseBodyFunction) ->
-      new Promise (resolve, reject) ->
+      new BlueBirdPromise (resolve, reject) ->
         callback = (err, data) ->
           return reject new Error err if err
           resolve data
@@ -86,7 +86,7 @@ defineModule module, ->
 
     @newExternallyResolvable: ->
       out = {}
-      p = new Promise (resolve, reject) ->
+      p = new BlueBirdPromise (resolve, reject) ->
         out.resolve = resolve
         out.reject = reject
       p.resolve = out.resolve
