@@ -25,7 +25,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 This file is the stand-alone version of: Art.Foundation.Browser.DomElementFactories
 
 For more information:
-  https://github.com/Imikimi-LLC/art-foundation
+  https://github.com/imikimi/art-foundation
     src/art/foundation/browser/dom_element_factories.coffee
     test/tests/art/foundation/browser/dom_element_factories.coffee
 

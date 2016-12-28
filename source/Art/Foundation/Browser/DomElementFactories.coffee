@@ -71,7 +71,7 @@ VERSION HISTORY:
 #####################
 module.exports = class DomElementFactories
   @version: "1.1.1"
-  @src: "https://github.com/Imikimi-LLC/art-foundation"
+  @src: "https://github.com/imikimi/art-foundation"
   for supportLib in supportLibs
     for k, v of supportLib
       @[k] = v
