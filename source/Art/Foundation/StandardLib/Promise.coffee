@@ -5,11 +5,12 @@ BlueBirdPromise = require 'bluebird/js/browser/bluebird.core'
 {deepMap, deepEach, isFunction, isPlainObject} = require './Types'
 {defineModule} = require './CommonJs'
 
+blueBirdDebug = false
 BlueBirdPromise.config
-  warnings: false
-  longStackTraces: false
-  cancellation: false
-  monitoring: false
+  warnings:         blueBirdDebug
+  longStackTraces:  blueBirdDebug
+  cancellation:     blueBirdDebug
+  monitoring:       blueBirdDebug
 
 ErrorWithInfo = require "./ErrorWithInfo"
 
