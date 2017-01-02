@@ -11,7 +11,7 @@
     "css-loader": "^0.23.1",
     "json-loader": "^0.5.4",
     "mocha": "^2.5.3",
-    "neptune-namespaces": "^1.7.3",
+    "neptune-namespaces": "^1.7.4",
     "promise-polyfill": "^6.0.2",
     "script-loader": "^0.7.0",
     "sourcemapped-stacktrace": "^1.1.3",

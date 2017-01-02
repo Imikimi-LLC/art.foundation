@@ -18,6 +18,7 @@
   inject
   setPathedProperty
   expandPathedProperties
+  log
 } = Foundation
 
 module.exports = suite:
@@ -346,3 +347,17 @@ module.exports = suite:
           "Art.Imikimi.Auth.Server":
             testAuthEmail: "special@imikimi.com"
             testAuthCode: "107734"
+
+    test "nested objects are merged-into, not replaced", ->
+      a =
+        c:
+          a:    "abc"
+
+      b =
+        c:
+          a:    "def"
+          foo:  "123"
+
+      c = expandPathedProperties a, clone b
+      # log {a, b, c}
+      assert.eq c.c.foo, "123"

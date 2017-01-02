@@ -133,11 +133,11 @@ module.exports = class ObjectExtensions
       if propertyIsPathed k
         withPropertyPath into, k, (o, finalKey) ->
           if isPlainObject v
-            expandPathedProperties v, o[finalKey] = {}
+            expandPathedProperties v, o[finalKey] ||= {}
           else
             o[finalKey] = v
       else if isPlainObject v
-          expandPathedProperties v, into[k] = {}
+          expandPathedProperties v, into[k] ||= {}
       else
         into[k] = v
 
