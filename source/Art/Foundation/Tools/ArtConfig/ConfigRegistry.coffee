@@ -119,28 +119,35 @@ defineModule module, class ConfigRegistry extends BaseObject
         artConfigArgument
         externalEnvironment.artConfig
       ]
+      log expandPathedProperties: [conf, @artConfig]
       expandPathedProperties conf, @artConfig
 
+    {verbose} = @artConfig
+    if verbose
+      log "------------- ConfigRegistry inputs"
+      log
+        registered:
+          configs: Object.keys @configs
+          configurables: (c.namespacePath for c in @configurables)
+
+        artConfigName:
+          algorithm: "first non-null"
+          fromExternalEnvironment: externalEnvironment.artConfigName
+          fromArguments:           artConfigNameArgument
+          default:                 defaultArtConfigName
+
+        artConfig:
+          algorithm: "deep merged, last has priority"
+          "#{@artConfigName}":   @configs[@artConfigName]
+          global:                artConfigGlobal
+          arguments:             artConfigArgument
+          externalEnvironment:   externalEnvironment.artConfig
+
+    verbose && log "------------- ConfigRegistry combined config"
     log ConfigRegistry: {@artConfigName, @artConfig}
-
-    if @artConfig.verbose
-      log ConfigRegistry:
-        Verbose:
-          registered:
-            configs: Object.keys @configs
-            configurables: (c.namespacePath for c in @configurables)
-          artConfigName: firstTrue:
-            "externalEnvironment.artConfigName": externalEnvironment.artConfigName
-            artConfigNameArgument: artConfigNameArgument
-            default: defaultArtConfigName
-
-          artConfig: merge:
-            "ConfigRegistry.configs.#{@artConfigName}": @configs[@artConfigName]
-            artConfigGlobal:      artConfigGlobal
-            artConfigArgument:    artConfigArgument
-            artConfigFromExternalEnvironment:  externalEnvironment.artConfig
-
+    verbose && log "------------- ConfigRegistry individual config results"
     @_executeCallbacks()
+    verbose && log "------------- ConfigRegistry done"
 
   @resetCurrentConfig: => delete @artConfig[k] for k, v of @artConfig
 
