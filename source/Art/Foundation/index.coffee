@@ -3,6 +3,8 @@
 
 module.exports = require './namespace'
 .includeInNamespace require './Foundation'
+.addModules
+  FoundationConfig: require './FoundationConfig'
 require './Binary'
 require './Browser'
 require './ClassSystem'
