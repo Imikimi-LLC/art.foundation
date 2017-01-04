@@ -45,16 +45,44 @@ module.exports = class Log
     console.log arguments... unless @loggingHidden
 
   @rawErrorLog: =>
-    console.error arguments... unless @loggingHidden
+    return if @loggingHidden
+    if Neptune.isNode && "".red
+      str = if arguments.length > 1
+        out = (a for a in arguments)
+        out.join ' '
+      else
+        arguments[0]
+
+      console.error str.red
+    else
+      console.error arguments...
+
+  @rawWarningLog: =>
+    return if @loggingHidden
+    if Neptune.isNode && "".red
+      str = if arguments.length > 1
+        out = (a for a in arguments)
+        out.join ' '
+      else
+        arguments[0]
+
+      console.warn str.yellow
+    else
+      console.warn arguments...
 
   noOptions = {}
+  getLogger = ({isError, isWarning}) ->
+    if isError then Log.rawErrorLog
+    else if isWarning then Log.rawWarningLog
+    else Log.rawLog
+
   @logCore: (m, stack, options = noOptions) =>
-    {className, isError} = options
+    {className} = options
 
     if @alternativeLogger
       @alternativeLogger.logCore m, stack, options
 
-    logger = if isError then @rawErrorLog else @rawLog
+    logger = getLogger options
     if Neptune.isNode
       logger if isString m
         m
@@ -111,6 +139,16 @@ module.exports = class Log
       args
     stack = callStack()
     @logCore m, stack, isError: true
+    peek args
+
+
+  @log.warn = (args...) =>
+    m = if args.length == 1
+      args[0]
+    else
+      args
+    stack = callStack()
+    @logCore m, stack, isWarning: true
     peek args
 
 
