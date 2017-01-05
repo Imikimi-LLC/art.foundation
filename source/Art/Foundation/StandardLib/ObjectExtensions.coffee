@@ -128,16 +128,16 @@ module.exports = class ObjectExtensions
     withPropertyPath obj, propertyPath, (o, k) -> o[k] = value
     obj
 
-  @expandPathedProperties: expandPathedProperties = (obj, into = {}) ->
+  @expandPathedProperties: expandPathedProperties = (obj, into = {}, pathExpansionEnabled = true) ->
     for k, v of obj
-      if propertyIsPathed k
+      if pathExpansionEnabled && propertyIsPathed k
         withPropertyPath into, k, (o, finalKey) ->
           if isPlainObject v
-            expandPathedProperties v, o[finalKey] ||= {}
+            expandPathedProperties v, o[finalKey] ||= {}, true
           else
             o[finalKey] = v
       else if isPlainObject v
-          expandPathedProperties v, into[k] ||= {}
+          expandPathedProperties v, into[k] ||= {}, false
       else
         into[k] = v
 

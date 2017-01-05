@@ -319,7 +319,7 @@ module.exports = suite:
 
     test "a: b.c: 1", ->
       assert.eq
-        a:b:c: 1
+        a: "b.c": 1
         expandPathedProperties a: "b.c": 1
 
     test "a.b.c: 1", ->
