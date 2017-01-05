@@ -4,9 +4,11 @@ BlueBirdPromise = require 'bluebird/js/browser/bluebird.core'
 # global.Promise ||= require 'promise-polyfill'
 {deepMap, deepEach, isFunction, isPlainObject} = require './Types'
 {defineModule} = require './CommonJs'
-{parseQuery} = require './ParseUrl'
+{getEnv} = require './ParseUrl'
 
-promiseDebug = parseQuery().promiseDebug
+if promiseDebug = getEnv().artPromiseDebug
+  console.log "Art.Foundation.Promise: BlueBirdPromise debug ENABLED"
+
 BlueBirdPromise.config
   warnings:         promiseDebug
   longStackTraces:  promiseDebug

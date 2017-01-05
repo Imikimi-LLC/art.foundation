@@ -1,6 +1,14 @@
 # TODO: merge with StandardLib/Regexp
 module.exports = class ParseUrl
-  @parseQuery: (qs = self.location?.search || "") ->
+  @getEnv: ->
+    ret = if global.location?.search
+      ParseUrl.parseQuery()
+    else
+      global.process?.env
+
+    ret || {}
+
+  @parseQuery: (qs = global.location?.search || "") ->
     obj = {}
     for pair in qs.replace(/^\?/, '').split('&')
       i = pair.indexOf '='
