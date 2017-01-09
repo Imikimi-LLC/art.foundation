@@ -68,6 +68,18 @@ class NestedSuites
 
       @_createMochaSuites()
 
+  groupTestSuitesSync: (defineAllTests) ->
+    oldSuite = global.suite
+    global.suite = (name, f) =>
+      @addSuite name, f
+
+    defineSuitesByNamespaces defineAllTests chai
+    global.suite = oldSuite
+    mocha?.setup 'tdd'
+
+    @_createMochaSuites()
+
+
 ###
 IN: rootNamespace
 EFFECT:
@@ -98,11 +110,24 @@ module.exports = class MyMocha
   @assert: chai.assert
 
   @init: (options) ->
-    throw new Error "defineTests required" unless isFunction options.defineTests
-    Promise.resolve ConfigRegistry.configure options
-    .then => @run options.defineTests
+    {defineTests, synchronous} = options
+    throw new Error "defineTests required" unless isFunction defineTests
 
-  @run: (defineAllTests)=>
+    @defineGlobals()
+    DomConsole?.enable()
+
+    if synchronous
+      try
+        ConfigRegistry.configure options
+        @runSync defineTests
+      catch error
+        log.error "Art.Foundation.Mocha": {error}
+
+    else
+      Promise.resolve ConfigRegistry.configure options
+      .then => @run options.defineTests
+
+  @defineGlobals: ->
     global.testAssetRoot = "/test/assets"
 
     global.skipKnownFailingTest = (name, f) ->
@@ -110,6 +135,11 @@ module.exports = class MyMocha
       test message, ->
         log.error log message
 
-    DomConsole?.enable()
+  @run: (defineAllTests)=>
     (new NestedSuites).groupTestSuites defineAllTests
     .then -> mocha?.run()
+
+  # mocha in node requires a synchronous start...
+  @runSync: (defineAllTests) =>
+    (new NestedSuites).groupTestSuitesSync defineAllTests
+    mocha?.run()
