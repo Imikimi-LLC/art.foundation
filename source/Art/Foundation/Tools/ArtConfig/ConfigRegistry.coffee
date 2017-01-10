@@ -119,7 +119,6 @@ defineModule module, class ConfigRegistry extends BaseObject
         artConfigArgument
         externalEnvironment.artConfig
       ]
-      log expandPathedProperties: [conf, @artConfig]
       expandPathedProperties conf, @artConfig
 
     {verbose} = @artConfig
