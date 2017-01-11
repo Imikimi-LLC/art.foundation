@@ -10,6 +10,7 @@ Foundation = require 'art-foundation'
   inspectLean
   isPlainArray
   Promise
+  present
 } = Foundation
 
 {assert} = Chai
@@ -103,6 +104,10 @@ addTester "match",    (a) -> a.match if isString a then escapeRegExp a else a
 addTester "notMatch", (a) -> !a.match if isString a then escapeRegExp a else a
 addTester "same",     (a, b) -> a == b
 addTester "notSame",  (a, b) -> a != b
+addTester "doesNotExist", (a) -> !a?
+addTester "exists",    (a) -> a?
+addTester "isNotPresent", (a) -> !present a
+addTester "isPresent",    (a) -> present a
 
 # create a version of all tests functions that resolves all inputs first
 assert.resolved = {}
