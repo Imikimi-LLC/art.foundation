@@ -119,13 +119,13 @@ module.exports = class MyMocha
     if synchronous
       try
         ConfigRegistry.configure options
-        @runSync defineTests
+        @_runSync defineTests
       catch error
         log.error "Art.Foundation.Mocha": {error}
 
     else
       Promise.resolve ConfigRegistry.configure options
-      .then => @run options.defineTests
+      .then => @_run options.defineTests
 
   @defineGlobals: ->
     global.testAssetRoot = "/test/assets"
@@ -135,11 +135,11 @@ module.exports = class MyMocha
       test message, ->
         log.error log message
 
-  @run: (defineAllTests)=>
+  @_run: (defineAllTests)=>
     (new NestedSuites).groupTestSuites defineAllTests
     .then -> mocha?.run()
 
   # mocha in node requires a synchronous start...
-  @runSync: (defineAllTests) =>
+  @_runSync: (defineAllTests) =>
     (new NestedSuites).groupTestSuitesSync defineAllTests
     mocha?.run()
