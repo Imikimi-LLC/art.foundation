@@ -8,6 +8,7 @@ module.exports = class Iteration
   returnFirst = (a) -> a
   returnSecond = (a, b) -> b
   arrayIterableTest = (source) -> source?.length >= 0
+  emptyOptions = {}
 
   ###
   COMMON API:
@@ -115,8 +116,6 @@ module.exports = class Iteration
   normalizedInject = (source, into, withBlock, options) ->
     return into unless source?
 
-    withBlock ||= returnSecond
-
     normalizedEach source,
       undefined,
       if intoSet = into != undefined
@@ -140,8 +139,6 @@ module.exports = class Iteration
   @object: (source, a, b) -> invokeNormalizedIteration normalizedObject, source, a, b
   normalizedObject = (source, into, withBlock, options) ->
 
-    withBlock ||= returnFirst
-
     keyFunction = options.key || if arrayIterableTest source
       returnFirst
     else
@@ -163,8 +160,6 @@ module.exports = class Iteration
   @array: (source, a, b) -> invokeNormalizedIteration normalizedArray, source, a, b
   normalizedArray = (source, into, withBlock, options) ->
 
-    withBlock ||= returnFirst
-
     normalizedEach source,
       into = if into != undefined then into else []
       (v, k, __, w) -> into.push withBlock v, k, into, w
@@ -184,8 +179,6 @@ module.exports = class Iteration
   @find: (source, a, b) -> invokeNormalizedIteration normalizedFind, source, a, b
   normalizedFind = (source, into, withBlock, options) ->
 
-    withBlock ||= returnFirst
-
     normalizedEachWhile source,
       into = undefined
       if options.whenBlock then (v, k, __, w) -> into   = withBlock v, k, null, w; false
@@ -197,21 +190,51 @@ module.exports = class Iteration
   #####################
   # PRIVATE
   #####################
-  emptyOptions = {}
+  ###
+  Normalizes input params for the 'iteration' function.
+  Since this normalizes multile params, and therefor would need to return
+  an new array or new object otherwise, we pass IN the iteration function
+  and pass the params directly to it. This keeps the computed params on the
+  stack and doesn't create new objects.
+
+  IN signature 1: (iteration, source, into, withBlock) ->
+  IN signature 2: (iteration, source, into, options) ->
+  IN signature 3: (iteration, source, withBlock) ->
+  IN signature 4: (iteration, source, options) ->
+  IN signature 5: (iteration, source) ->
+
+  IN:
+    iteration: (source, into, withBlock, options) -> out
+
+      The iteration function is invoked last with the computed args.
+      Its retults are returned.
+
+      IN:
+        source:     passed directly through from inputs
+        into:       passed directly through from inputs OR from options.into
+        withBlock:  passed directly through from inputs OR from options.with
+        options:    passed direftly through from inputs OR {}
+                    (guaranteed to be set and a plainObject)
+
+    source: the source collection to be iterated over. Passed streight through.
+
+    into:       passed through to 'iteration'
+    withBlock:  passed through to 'iteration'
+    options:    passed through to 'iteration' AND:
+
+      into:     set 'into' from the options object
+      with:     set 'withBlock' from the options object
+
+  OUT: out
+  ###
   invokeNormalizedIteration = (iteration, source, a, b) ->
-    options = if b
-      into = a
-      b
-    else
-      a
+    options = if b then into = a; b else a
 
     if isPlainObject options
-      into = if options.into?
-        options.into
-
+      into      ?= options.into
       withBlock = options.with
     else
       withBlock = options if isFunction options
       options = emptyOptions
 
-    iteration source, into, withBlock, options
+    iteration source, into, withBlock || returnFirst, options
