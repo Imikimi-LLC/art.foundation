@@ -142,15 +142,20 @@ module.exports = class Iteration
   @object: (source, a, b) ->
     invokeNormalizedIteration normalizedObject, source, a, b
 
+  arrayKeyFunction = (v) -> v
+  objectKeyFunction = (v, k) -> k
   normalizedObject = (source, into, withBlock, options) ->
 
     withBlock ||= returnValueWithBlock
 
+    keyFunction = options.key || if arrayIterableTest source
+      arrayKeyFunction
+    else
+      objectKeyFunction
+
     normalizedEach source,
       into = if into != undefined then into else {}
-      if arrayIterableTest source
-            (v, k, __, w) -> into[v] = withBlock v, k, into, w
-      else  (v, k, __, w) -> into[k] = withBlock v, k, into, w
+      (v, k, __, w) -> into[keyFunction(v, k)] = withBlock v, k, into, w
       options
 
   ###
@@ -200,6 +205,7 @@ module.exports = class Iteration
   #####################
   # PRIVATE
   #####################
+  emptyOptions = {}
   invokeNormalizedIteration = (iteration, source, a, b) ->
     options = if b
       into = a
@@ -207,12 +213,13 @@ module.exports = class Iteration
     else
       a
 
-    if isFunction options
-      withBlock = options
-    else if isPlainObject options
+    if isPlainObject options
       into = if options.into?
         options.into
 
       withBlock = options.with
+    else
+      withBlock = options if isFunction options
+      options = emptyOptions
 
     iteration source, into, withBlock, options

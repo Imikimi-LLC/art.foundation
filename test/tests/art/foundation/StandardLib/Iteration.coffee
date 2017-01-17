@@ -161,6 +161,15 @@ module.exports = suite:
       test "when", ->
         assert.eq b: 2, d: 4, object {a: 1, b: 2, c: 3, d: 4}, when: (v) -> v % 2 == 0
 
+      test "key", ->
+        assert.eq
+          101: 1
+          202: 2
+          303: 3
+          404: 4
+          object {a: 1, b: 2, c: 3, d: 4},
+            key: (v) -> v * 101
+
     arrays: ->
       test "0-arg function: -> true", ->
         assert.eq a: true, b: true, object ["a", "b"], -> true
