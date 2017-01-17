@@ -473,8 +473,10 @@ module.exports = class BaseObject extends MinimalBaseObject
       OUT: extendedPropValue
 
       API 1: IN: 0 args
+        NO ADDITIONAL EFFECT - just returns the extended property
       API 2: IN: 1 or more args
-        ADDITIONAL EFFECT: calls: propExtender extendedPropValue, args...
+        In addition to extending and returning the extended property:
+        calls: propExtender extendedPropValue, args...
 
     NOTE: gthe prototype getters call the class getter for extension purposes.
       The result is each instance won't get its own version of the property.
