@@ -5,16 +5,16 @@ log = ->
   Neptune.Art.Foundation.log arguments...
 
 module.exports = class Iteration
-  returnValueWithBlock = (v) -> v
-  injectDefaultWithBlock = (memo, v) -> v
+  returnFirst = (a) -> a
+  returnSecond = (a, b) -> b
   arrayIterableTest = (source) -> source?.length >= 0
 
   ###
   COMMON API:
 
-  IN: (source, withBlock = injectDefaultWithBlock) ->
+  IN: (source, withBlock = returnSecond) ->
   IN: (source, options) ->
-  IN: (source, into, withBlock = injectDefaultWithBlock) ->
+  IN: (source, into, withBlock = returnSecond) ->
   IN: (source, into, options) ->
 
   source:
@@ -111,13 +111,11 @@ module.exports = class Iteration
   2) when withBlock is executed, into is updated:
     into = withBlock()
   ###
-  @reduce: (source, a, b) ->
-    invokeNormalizedIteration normalizedInject, source, a, b
-
+  @reduce: (source, a, b) -> invokeNormalizedIteration normalizedInject, source, a, b
   normalizedInject = (source, into, withBlock, options) ->
     return into unless source?
 
-    withBlock ||= injectDefaultWithBlock
+    withBlock ||= returnSecond
 
     normalizedEach source,
       undefined,
@@ -139,19 +137,15 @@ module.exports = class Iteration
     else
       into[k] = withBlock()
   ###
-  @object: (source, a, b) ->
-    invokeNormalizedIteration normalizedObject, source, a, b
-
-  arrayKeyFunction = (v) -> v
-  objectKeyFunction = (v, k) -> k
+  @object: (source, a, b) -> invokeNormalizedIteration normalizedObject, source, a, b
   normalizedObject = (source, into, withBlock, options) ->
 
-    withBlock ||= returnValueWithBlock
+    withBlock ||= returnFirst
 
     keyFunction = options.key || if arrayIterableTest source
-      arrayKeyFunction
+      returnFirst
     else
-      objectKeyFunction
+      returnSecond
 
     normalizedEach source,
       into = if into != undefined then into else {}
@@ -166,12 +160,10 @@ module.exports = class Iteration
   2) when withBlock is executed, into is updated:
     into.push withBlock()
   ###
-  @array: (source, a, b) ->
-    invokeNormalizedIteration normalizedArray, source, a, b
-
+  @array: (source, a, b) -> invokeNormalizedIteration normalizedArray, source, a, b
   normalizedArray = (source, into, withBlock, options) ->
 
-    withBlock ||= returnValueWithBlock
+    withBlock ||= returnFirst
 
     normalizedEach source,
       into = if into != undefined then into else []
@@ -192,7 +184,7 @@ module.exports = class Iteration
   @find: (source, a, b) -> invokeNormalizedIteration normalizedFind, source, a, b
   normalizedFind = (source, into, withBlock, options) ->
 
-    withBlock ||= returnValueWithBlock
+    withBlock ||= returnFirst
 
     normalizedEachWhile source,
       into = undefined
