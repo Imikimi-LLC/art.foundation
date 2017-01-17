@@ -170,6 +170,19 @@ module.exports = suite:
           object {a: 1, b: 2, c: 3, d: 4},
             key: (v) -> v * 101
 
+      test "key - all values passed through", ->
+        assert.eq
+          array: [1, 2, 3, 4]
+          a102: 1
+          b204: 2
+          c306: 3
+          d408: 4
+          object {a: 1, b: 2, c: 3, d: 4},
+            when: (v) -> v * 2
+            key: (v, k, into, w) ->
+              (into.array ||= []).push v
+              "#{k}#{v * 100 + w}"
+
     arrays: ->
       test "0-arg function: -> true", ->
         assert.eq a: true, b: true, object ["a", "b"], -> true

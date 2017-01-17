@@ -13,9 +13,9 @@ module.exports = class Iteration
   ###
   COMMON API:
 
-  IN: (source, withBlock = returnSecond) ->
+  IN: (source, withBlock = returnFirst) ->
   IN: (source, options) ->
-  IN: (source, into, withBlock = returnSecond) ->
+  IN: (source, into, withBlock = returnFirst) ->
   IN: (source, into, options) ->
 
   source:
@@ -28,6 +28,11 @@ module.exports = class Iteration
     with: withBlock
     when: whenBlock
     into: into
+
+  withBlock: (value, key, into, whenBlockResult) -> value
+    Generally, this generates the 'value' used for each part of the iteration.
+    When constructing a new collection, this is the value for each entry.
+    'find' and 'reduce' use this differently.
 
   OUT: into
 
@@ -119,14 +124,17 @@ module.exports = class Iteration
     normalizedEach source,
       undefined,
       if intoSet = into != undefined
-            (v, k, _, w)-> into = withBlock into, v, k, w
-      else  (v, k, _, w)-> into = if intoSet then withBlock into, v, k, w else intoSet = true; v
+            (v, k, __, w)-> into = withBlock into, v, k, w
+      else  (v, k, __, w)-> into = if intoSet then withBlock into, v, k, w else intoSet = true; v
       options
 
     into
 
   ###
   object differences from the common-api:
+
+  IN:
+    options.key: (value, key, into, whenBlockResult) -> value
 
   1) into defaults to a new object ({}) (if into == undefined)
 
@@ -145,8 +153,8 @@ module.exports = class Iteration
       returnSecond
 
     normalizedEach source,
-      into = if into != undefined then into else {}
-      (v, k, __, w) -> into[keyFunction(v, k)] = withBlock v, k, into, w
+      into ? {}
+      (v, k, into, w) -> into[keyFunction v, k, into, w] = withBlock v, k, into, w
       options
 
   ###
@@ -161,8 +169,8 @@ module.exports = class Iteration
   normalizedArray = (source, into, withBlock, options) ->
 
     normalizedEach source,
-      into = if into != undefined then into else []
-      (v, k, __, w) -> into.push withBlock v, k, into, w
+      into ? []
+      (v, k, into, w) -> into.push withBlock v, k, into, w
       options
 
   ##########################
@@ -180,12 +188,12 @@ module.exports = class Iteration
   normalizedFind = (source, into, withBlock, options) ->
 
     normalizedEachWhile source,
-      into = undefined
-      if options.whenBlock then (v, k, __, w) -> into   = withBlock v, k, null, w; false
-      else                      (v, k, __, w) -> !(into = withBlock v, k, null, w)
+      found = undefined
+      if options.whenBlock then (v, k, into, w) -> found   = withBlock v, k, null, w; false
+      else                      (v, k, into, w) -> !(found = withBlock v, k, null, w)
       options
 
-    into
+    found
 
   #####################
   # PRIVATE
