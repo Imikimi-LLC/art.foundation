@@ -38,8 +38,12 @@ module.exports = class Iteration
 
   TODO:
     - support ES6 iterables and iterators
+    - flatten: true - if source is an array, recurse into any sub-arrays
+    - compact: effectively `when: (v) -> v?` except you can also have your own when-function in addition, run after this one.
     - skip: N - skip the first N values
     - short: N - stop short N values
+    - until: () -> T/F - same args as withBlock, loop stops when true, executed after first withBlock
+    - while: () -> T/F - same args as withBlock, loop stops when false, executed before first whenBlock
     - by: N -
         N>0: only stop at every Nth value
         N<0: iterate in reverse order, only stop at every abs(N)th value
