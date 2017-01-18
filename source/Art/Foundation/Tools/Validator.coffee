@@ -275,7 +275,7 @@ module.exports = class Validator extends BaseObject
   ###
   preCreateSync: preCreateSync = (fields, options) ->
     if @requiredFieldsPresent(fields) && @presentFieldsValid fields
-      @preprocessFields fields
+      @preprocessFields fields, true
     else @_throwError fields, options, true
 
   validateSync: preCreateSync
@@ -330,12 +330,19 @@ module.exports = class Validator extends BaseObject
   ####################
   # PREPROCESS CORE
   ####################
-  preprocessFields: (fields) ->
+  preprocessFields: (fields, applyDefaults) ->
     processedFields = null
-    for fieldName, {preprocess} of @_fieldProps when preprocess && (value = fields[fieldName])?
-      if (v = preprocess oldV = fields[fieldName]) != oldV
+    fields ||= {} if applyDefaults
+    fields && for fieldName, props of @_fieldProps
+      {preprocess} = props
+
+      value = (oldValue = fields[fieldName]) ? (applyDefaults && props.default)
+      value = preprocess value if preprocess && value?
+
+      if value != oldValue
         processedFields ||= shallowClone fields
-        processedFields[fieldName] = v
+        processedFields[fieldName] = value
+
     processedFields || fields
 
   ####################
