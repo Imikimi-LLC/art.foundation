@@ -54,7 +54,7 @@ addTester = (name, tester) ->
       test "#{name} #{invoke}, #{inspect testValue}", ->
         testerFor func(args...), testValue, context
 
-maxLength = 30
+maxLength = 80
 format = (val) ->
   formattedInspect val, maxLength
 
@@ -108,6 +108,10 @@ addTester "doesNotExist", (a) -> !a?
 addTester "exists",    (a) -> a?
 addTester "isNotPresent", (a) -> !present a
 addTester "isPresent",    (a) -> present a
+addTester "selectedPropsEq", (selectedPropsAndValues, testedObject) ->
+  for k, v of selectedPropsAndValues
+    return false if !eq v, testedObject[k]
+  true
 
 # create a version of all tests functions that resolves all inputs first
 assert.resolved = {}
