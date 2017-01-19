@@ -89,7 +89,7 @@ module.exports = class ObjectExtensions
         result[k] = v for k, v of obj when a k, v
     else
       properties = compactFlatten Array.prototype.slice.call arguments, 1
-      result[prop] = v for prop in properties when v = obj[prop] || obj.hasOwnProperty prop
+      result[prop] = v for prop in properties when (v = obj[prop])? || obj.hasOwnProperty prop
     result
 
   # same as select, but ignore hasOwnProperty test

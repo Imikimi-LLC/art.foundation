@@ -218,6 +218,7 @@ module.exports = suite:
 
   select: ->
     test "select()", -> assert.eq select(), {}
+    test "select foo: 0, 'foo'", -> assert.eq select(foo: 0, 'foo'), foo: 0
     test "select foo: 1, bar: 2, 'foo'", -> assert.eq foo: 1, select foo: 1, bar: 2, 'foo'
     test "select bar: 2, 'foo'", -> assert.eq {}, select bar: 2, 'foo'
     test "select foo: 1, bar: 2, baz: 3, 'foo', 'bar'", ->
