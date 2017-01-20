@@ -129,7 +129,7 @@ module.exports = class Validator extends BaseObject
     object:   dataType: objectDataType
     array:    dataType: arrayDataType
 
-    count:    dataType: numberDataType
+    count:    dataType: numberDataType, default: 0
 
     id:
       required: true
