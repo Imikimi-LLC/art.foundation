@@ -45,7 +45,7 @@ module.exports = class StringExtensions
   @pluralize: pluralize = (a, b, pluralForm) ->
     if typeof a is "number"
       "#{a} #{if a == 1 then b else pluralForm || pluralize b}"
-    else
+    else if isString a ||= b
       a + "s" # dumb, english solution
 
   @replaceLast: (str, find, replaceWith) ->
