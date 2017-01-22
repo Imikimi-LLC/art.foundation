@@ -5,6 +5,7 @@
   isString
   isFunction
   isPlainObject
+  isPlainArray
   isClass
   isObject
   objectName
@@ -63,6 +64,17 @@ module.exports = suite:
       assert.eq false, isString {}
       assert.eq false, isString []
       assert.eq false, isString ->
+
+  isPlainArray: ->
+    test "isPlainArray []", -> assert.eq true, isPlainArray []
+    test "isPlainArray - false values", ->
+      assert.eq false, isPlainArray {}
+      assert.eq false, isPlainArray 123
+      assert.eq false, isPlainArray "abc"
+      assert.eq false, isPlainArray new Int8Array 4
+      assert.eq false, isPlainArray false
+      assert.eq false, isPlainArray null
+      assert.eq false, isPlainArray undefined
 
   isFunction: ->
     test "isFunction(->) is true", -> assert.eq true, isFunction(->)
