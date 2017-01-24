@@ -110,8 +110,8 @@ addTester "doesNotExist", (a) -> !a?
 addTester "exists",    (a) -> a?
 addTester "isNotPresent", (a) -> !present a
 addTester "isPresent",    (a) -> present a
-addTester "hasKeys", (a) -> isPlainObject(a) && objectHasKeys(a)
-addTester "doesntHaveKeys", (a) -> isPlainObject(a) && !objectHasKeys(a)
+addTester "hasKeys",    (a) -> isPlainObject(a) && objectHasKeys(a)
+addTester "hasNoKeys",  (a) -> isPlainObject(a) && !objectHasKeys(a)
 addTester "selectedPropsEq", (selectedPropsAndValues, testedObject) ->
   for k, v of selectedPropsAndValues
     return false if !eq v, testedObject[k]
