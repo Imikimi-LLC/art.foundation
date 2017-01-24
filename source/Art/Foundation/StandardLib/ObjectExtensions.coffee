@@ -1,5 +1,6 @@
 {compactFlatten, deepArrayEach, isArrayOrArguments, mergeInto} = Neptune.NeptuneLib
-{isPlainObject, isObject, isFunction, isPlainArray} = require './Types'
+{isPlainObject, isObject, isFunction, isPlainArray, present} = require './Types'
+{object} = require './Iteration'
 
 module.exports = class ObjectExtensions
   # http://jsperf.com/counting-object-properties/3
@@ -98,6 +99,10 @@ module.exports = class ObjectExtensions
     result = {}
     result[prop] = obj[prop] for prop in compactFlatten properties
     result
+
+  @objectWithDefinedValues:   (obj) -> object obj, when: (v) -> v != undefined
+  @objectWithExistingValues:  (obj) -> object obj, when: (v) -> v?
+  @objectWithPresentValues:   (obj) -> object obj, when: (v) -> present v
 
   @objectWithout: (obj, properties...) ->
     properties = properties[0] if properties.length == 1 && !(typeof properties[0] is "string")

@@ -3,6 +3,7 @@ Foundation = require 'art-foundation'
 {
   log, eq, inspect, formattedInspect, floatEq, compactFlatten, escapeRegExp, isString
   Types
+  object
   inspectedObjectLiteral
   wordsArray
   compactFlattenJoin
@@ -112,9 +113,13 @@ addTester "isNotPresent", (a) -> !present a
 addTester "isPresent",    (a) -> present a
 addTester "hasKeys",    (a) -> isPlainObject(a) && objectHasKeys(a)
 addTester "hasNoKeys",  (a) -> isPlainObject(a) && !objectHasKeys(a)
-addTester "selectedPropsEq", (selectedPropsAndValues, testedObject) ->
+
+# TODO: selectedPropsEq needs a better error message - I ALSO want to see what the actual selected values look like
+addTester "selectedPropsEq", (selectedPropsAndValues, testObject) ->
   for k, v of selectedPropsAndValues
-    return false if !eq v, testedObject[k]
+    if !eq v, testObject[k]
+      log.error "assert.selectedPropsEq failureInfo": {selectedPropsAndValues, "props selected from testObject": (object selectedPropsAndValues, (v, k) -> testObject[k]), testObject}
+      return false
   true
 
 # create a version of all tests functions that resolves all inputs first
