@@ -116,10 +116,19 @@ addTester "hasNoKeys",  (a) -> isPlainObject(a) && !objectHasKeys(a)
 
 # TODO: selectedPropsEq needs a better error message - I ALSO want to see what the actual selected values look like
 addTester "selectedPropsEq", (selectedPropsAndValues, testObject) ->
+  nonMatchingProps = []
   for k, v of selectedPropsAndValues
     if !eq v, testObject[k]
-      log.error "assert.selectedPropsEq failureInfo": {selectedPropsAndValues, "props selected from testObject": (object selectedPropsAndValues, (v, k) -> testObject[k]), testObject}
-      return false
+      nonMatchingProps.push k
+
+  if nonMatchingProps.length > 0
+    log.error "assert.selectedPropsEq failureInfo": {
+        nonMatchingProps
+        selectedPropsAndValues
+        "props selected from testObject": (object selectedPropsAndValues, (v, k) -> testObject[k])
+        testObject
+      }
+    return false
   true
 
 # create a version of all tests functions that resolves all inputs first
