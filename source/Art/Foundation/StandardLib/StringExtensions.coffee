@@ -31,10 +31,14 @@ module.exports = class StringExtensions
       b || ""
     compactFlatten(array).join joiner
 
-  @randomString: (length = 32, chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ") ->
+  @base62Characters: base62Characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+  @randomString: (length = 32, chars = base62Characters) ->
     result = ''
     charsLength = chars.length
     (chars[intRand charsLength] for i in [0...length] by 1).join ''
+
+  @randomBase62Character: -> base62Characters[intRand 62]
 
   # should really use: https://www.npmjs.org/package/pluralize
   # pluralize "food" >> "foods"
