@@ -53,6 +53,8 @@
       color: green; }
     .domConsole .logLine .errorLiteral {
       color: red; }
+    .domConsole .logLine .warningLiteral {
+      color: yellow; }
     .domConsole .logLine .object .key {
       color: #bbbb00; }
     .domConsole .logLine:hover {

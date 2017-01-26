@@ -293,6 +293,9 @@ module.exports = createWithPostCreate class Console extends BaseObject
   errorLiteralToDom: (inspectedObject) ->
     literalToDomHelper "errorLiteral", inspectedObject.toString()
 
+  warningLiteralToDom: (inspectedObject) ->
+    literalToDomHelper "warningLiteral", inspectedObject.toString()
+
   # literalWithInspectedToDom: (inspectedObject) ->
   #   literalToDomHelper "inspected literal", inspectedObject.inspected
 
@@ -321,6 +324,9 @@ module.exports = createWithPostCreate class Console extends BaseObject
       else if inspectedObject.isError
         console.error inspectedObject.literal
         @errorLiteralToDom inspectedObject.literal
+      else if inspectedObject.isWarning
+        console.warn inspectedObject.literal
+        @warningLiteralToDom inspectedObject.literal
       else
         literalToDomHelper "literal", inspectedObject.literal
     else if isHTMLImageElement inspectedObject then imgToDom inspectedObject
@@ -338,15 +344,19 @@ module.exports = createWithPostCreate class Console extends BaseObject
   noOptions = {}
   logCore: (m, callStack, options = noOptions) ->
     formatSystemMessage = (params) ->
-      {success, failure, pending} = params
+      {success, failure, pending, warning} = params
 
-      backgroundColor: if failure then "#fff0f0" else "white"
-      labelColor:
-        if success then "green"
-        else if failure then "#a00"
-        else if pending then "blue"
+      backgroundColor: switch
+        when failure then "#fee"
+        when warning then "#ffe"
 
-      label: "#{success || failure || pending}: (log ##{localLogCount})"
+      labelColor: switch
+        when success then "green"
+        when failure then "#a00"
+        when pending then "blue"
+        when warning then "#aa0"
+
+      label: "#{success || failure || pending || warning}: (log ##{localLogCount})"
 
     localLogCount = logCount
     if hasPromises = containsPromises m
@@ -354,6 +364,9 @@ module.exports = createWithPostCreate class Console extends BaseObject
 
     if options.isError
       options = merge options, formatSystemMessage failure: "ERROR"
+
+    if options.isWarning
+      options = merge options, formatSystemMessage warning: "WARNING"
 
     ret = logSerializer.then =>
 
