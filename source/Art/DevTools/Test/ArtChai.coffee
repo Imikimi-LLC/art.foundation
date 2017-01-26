@@ -63,12 +63,12 @@ format = (val) ->
 
 failWithExpectedMessage = (context, a, verb, b, verb2, c) ->
   assert.fail a, b, compactFlattenJoin("\n\n", [
+    "Context: #{context}" if context
     "expected"
     indent format a
     verb
     indent format b
     [verb2, indent format c] if verb2
-    "Context: #{context}" if context
   ]) + "\n"
 
 # generalize this if we have more assert functions with TWO binary tests
@@ -115,18 +115,18 @@ addTester "hasKeys",    (a) -> isPlainObject(a) && objectHasKeys(a)
 addTester "hasNoKeys",  (a) -> isPlainObject(a) && !objectHasKeys(a)
 
 # TODO: selectedPropsEq needs a better error message - I ALSO want to see what the actual selected values look like
-addTester "selectedPropsEq", (selectedPropsAndValues, testObject) ->
-  nonMatchingProps = []
-  for k, v of selectedPropsAndValues
-    if !eq v, testObject[k]
-      nonMatchingProps.push k
+addTester "selectedPropsEq", (expectedProps, testObject) ->
+  failures = null
+  for k, v of expectedProps
+    if !eq v, v2 = testObject[k]
+      (failures||={})[k] = expected: v, actual: v2
 
-  if nonMatchingProps.length > 0
-    log.error "assert.selectedPropsEq failureInfo": {
-        nonMatchingProps
-        selectedPropsAndValues
-        "props selected from testObject": (object selectedPropsAndValues, (v, k) -> testObject[k])
-        testObject
+  if failures
+    log.warn "assert.selectedPropsEq failureInfo": {
+        failures
+        expectedProps
+        actualProps: (object expectedProps, (v, k) -> testObject[k])
+        # testObject
       }
     return false
   true
