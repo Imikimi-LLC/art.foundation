@@ -166,7 +166,7 @@ module.exports = createWithPostCreate class Console extends BaseObject
     # domEl = wrapDomElement domEl, "<#{options.tag}/>" if options && options.tag
     if label
       domEl = Div
-        style: backgroundColor: backgroundColor || "yellow"
+        style: backgroundColor: backgroundColor
         Div label, style: color: labelColor, fontWeight: "bold"
         Div
           style: paddingLeft: "10px"
