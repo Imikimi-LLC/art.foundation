@@ -123,30 +123,39 @@ defineModule module, class ConfigRegistry extends BaseObject
 
     {verbose} = @artConfig
     if verbose
-      log "------------- ConfigRegistry inputs"
+      log "------------- ConfigRegistry: inputs"
       log
-        registered:
+        ConfigRegistry:
           configs: Object.keys @configs
           configurables: (c.namespacePath for c in @configurables)
 
-        artConfigName:
-          algorithm: "first non-null"
-          fromExternalEnvironment: externalEnvironment.artConfigName
-          fromArguments:           artConfigNameArgument
-          default:                 defaultArtConfigName
+          artConfigName:
+            algorithm: "select first non-null"
+            inputs:
+              fromExternalEnvironment: externalEnvironment.artConfigName
+              fromArguments:           artConfigNameArgument
+              default:                 defaultArtConfigName
 
-        artConfig:
-          algorithm: "deep merged, last has priority"
-          "#{@artConfigName}":   @configs[@artConfigName]
-          global:                artConfigGlobal
-          arguments:             artConfigArgument
-          externalEnvironment:   externalEnvironment.artConfig
+          artConfig:
+            algorithm: "deep merge all, last has priority"
+            inputs:
+              selected_config:      "#{@artConfigName}":   @configs[@artConfigName]
+              "global.artConfig":   artConfigGlobal
+              arguments:            artConfigArgument
+              environment:          externalEnvironment.artConfig
 
-    verbose && log "------------- ConfigRegistry combined config"
+    verbose && log "------------- ConfigRegistry: combined config"
     log ConfigRegistry: {@artConfigName, @artConfig}
-    verbose && log "------------- ConfigRegistry individual config results"
-    @_executeCallbacks()
-    verbose && log "------------- ConfigRegistry done"
+
+    verbose && log "------------- ConfigRegistry: configuring Configurables..."
+    @_configureAllConfigurables()
+
+    verbose && log "------------- ConfigRegistry: Configurables configured"
+    if verbose
+      for {name, config} in @configurables
+        log "#{name}": config
+
+    verbose && log "------------- ConfigRegistry: done"
 
   @resetCurrentConfig: => delete @artConfig[k] for k, v of @artConfig
 
@@ -194,5 +203,9 @@ defineModule module, class ConfigRegistry extends BaseObject
   ###############################
   # PRIVATE
   ###############################
-  @_executeCallbacks: ->
+  @_configureAllConfigurables: ->
     configurable.configure @artConfig for configurable in @configurables
+
+    for configurable in @configurables
+      configurable.configured()
+

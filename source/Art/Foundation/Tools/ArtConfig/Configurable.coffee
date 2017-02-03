@@ -27,12 +27,13 @@ defineModule module, class Configurable extends BaseObject
   @abstractClass()
 
   # call this to initialize default values for your config
-  @defaults: (@defaultConfig) ->
+  @defaults: (defaults...) ->
+    @defaultConfig = merge defaults...
 
   @getDefaults: -> @defaultConfig
 
   # reset @config
-  # NOTE: the goal is leave all direct references to @config intact; just update the props.
+  # NOTE: Intentionally doesn't replace @config. Instead, it leaves all direct references to @config intact. It just updates the @config object.
   @reset: ->
     if @config
       delete @config[k] for k, v of @config
@@ -45,22 +46,18 @@ defineModule module, class Configurable extends BaseObject
   @getInspectedObjects: ->
     "#{@getConfigurationPath().join '.'}": @config
 
+  # updates config
+  @configure: (config) ->
+    @reset()
+    for k, v of @getPathedConfiguration config when k.match /^[^A-Z]/
+      @config[k] = v
 
   #####################################
   # OVERRIDES
   #####################################
 
-  # updates config
-  @configure: (config) ->
-    mergeInto @reset(), @getPathedConfiguration config
-    if config.verbose
-      log ConfigRegistry:
-        configured: @
-    @configured()
-
   # called after @config has been updated
   @configured: ->
-    @config.configured = true
 
   #####################################
   # HELPERS
