@@ -80,6 +80,16 @@ defineModule module, ->
       deepEach plainStructure, (v) -> containsPromises ||= isPromise v
       containsPromises
 
+    ###
+    For use with Node-style callbacks:
+      IN: (error, data) ->
+        error: null or set if there was an error
+        data: set if error is null
+
+    Example:
+      Promise.withCallback (callback) ->
+        doAsyncStuff -> callback()
+    ###
     @withCallback: (startPromiseBodyFunction) ->
       new BlueBirdPromise (resolve, reject) ->
         callback = (err, data) ->
