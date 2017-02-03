@@ -105,6 +105,7 @@ module.exports = class ObjectExtensions
   @objectWithPresentValues:   (obj) -> object obj, when: (v) -> present v
 
   @objectWithout: (obj, properties...) ->
+    return {} unless obj
     properties = properties[0] if properties.length == 1 && !(typeof properties[0] is "string")
     anythingToDo = false
     for prop in properties
