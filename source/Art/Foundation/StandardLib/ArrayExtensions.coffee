@@ -166,8 +166,10 @@ module.exports = class ArrayExtensions
     array
 
   # same as insert, except doesn't modify input array; returns new array
-  @withInserted: (array, index, item) =>
+  @arrayWithInsertedValue: arrayWithInsertedValue = (array, index, item) =>
     @insert array.slice(), index, item
+
+  @withInserted: arrayWithInsertedValue
 
   # returns a new, sorted array
   @withSort: (array, sortFunction) ->
