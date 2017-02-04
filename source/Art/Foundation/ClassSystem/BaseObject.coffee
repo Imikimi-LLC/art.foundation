@@ -399,6 +399,7 @@ module.exports = class BaseObject extends MinimalBaseObject
       mergeInto @, mapOrKey
     else
       throw new Error "first value argument must be a plain object or string"
+    @
 
   ###
   arrayPropertyExtender
@@ -423,6 +424,7 @@ module.exports = class BaseObject extends MinimalBaseObject
       concatInto @, arrayOrValue
     else
       @push arrayOrValue
+    @
 
   ###
   Extendable Properties
@@ -451,7 +453,10 @@ module.exports = class BaseObject extends MinimalBaseObject
   IN: propertyExtender = (args...) ->
     IN: @ is propValue
     IN: 1 or more args
-    EFFECT: modifies propValue (passed as @), extending it, based on args...
+    OUT: new property value
+    EFFECT:
+      Can optionaly modify @ directly. If you do, just return @.
+      @ is always the a unique clone for the current Class or Instance.
 
   EFFECT: for each {foo: defaultValue} in map, extendableProperty:
     defines standard getters:
@@ -502,12 +507,12 @@ module.exports = class BaseObject extends MinimalBaseObject
 
         @[extenderName] = (value) ->
           propValue = getOwnProperty @prototype, internalName, defaultValue
-          propExtender.apply propValue, arguments if arguments.length > 0
+          @prototype[internalName] = propExtender.apply propValue, arguments if arguments.length > 0
           propValue
 
         @prototype[extenderName] = (value) ->
           propValue = getOwnProperty @, internalName, defaultValue
-          propExtender.apply propValue, arguments if arguments.length > 0
+          @[internalName] = propExtender.apply propValue, arguments if arguments.length > 0
           propValue
 
   ######################################################
