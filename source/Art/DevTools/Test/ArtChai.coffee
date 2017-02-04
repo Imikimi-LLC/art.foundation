@@ -103,8 +103,8 @@ assert.rejectsWith = (promise, rejectValue, context) ->
 addTester name, tester for name, tester of Types when name.match /^is/
 addTester name, Foundation[name] for name in wordsArray "gt gte lte lt eq neq floatEq"
 addTester "instanceof", (klass, obj) -> obj instanceof klass
-addTester "match",    (a) -> a.match if isString a then escapeRegExp a else a
-addTester "notMatch", (a) -> !a.match if isString a then escapeRegExp a else a
+addTester "match",    (a, b) -> a.match  if isString b then escapeRegExp b else b
+addTester "notMatch", (a, b) -> !a.match if isString b then escapeRegExp b else b
 addTester "same",     (a, b) -> a == b
 addTester "notSame",  (a, b) -> a != b
 addTester "doesNotExist", (a) -> !a?
