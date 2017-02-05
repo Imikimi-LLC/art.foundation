@@ -31,10 +31,9 @@ module.exports = suite:
     testFI ((a)->123), '(a) -> { return 123; }'
     testFI a:1, "a: 1"
     testFI /hi/, "/hi/"
-    testFI inspect:(->'inspectOutput'), ///
-      inspect.*function
-      (.|\n)*
-      inspectOutput
+    testFI inspect:(->'myInspectOutput'), ///
+      inspect.*
+      myInspectOutput
       ///
     testFI [], "[]"
     testFI ['string', foo: 'bar'], '"string", foo: "bar"'

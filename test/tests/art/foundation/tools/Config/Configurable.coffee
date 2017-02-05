@@ -45,4 +45,3 @@ defineModule module, class TestConfigurable extends Configurable
         name: "TestName"
         foo: 1
         verbose: false
-        configured: true
