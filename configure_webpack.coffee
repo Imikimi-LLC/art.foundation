@@ -34,7 +34,7 @@ TODO
 
 
 require './index'
-{inspect, peek, deepMerge, consistentJsonStringify, log, merge} = Neptune.Art.Foundation
+{defineModule, inspect, peek, deepMerge, consistentJsonStringify, log, merge} = Neptune.Art.Foundation
 
 [executable, firstArg] = process.argv
 isWebpackDevServer = !!(executable.match(/\/node$/) &&
@@ -59,20 +59,20 @@ getStandardNpmPackageProps = ->
     'json-loader': '^0.5.4'
     'mocha': '^2.5.3'
     'script-loader': '^0.7.0'
-    'sourcemapped-stacktrace': '^1.1.3'
+    'sourcemapped-stacktrace': '^1.1.5'
     'style-loader': '^0.13.1'
-    'webpack': '^1.13.2'
-    'webpack-dev-server': '^1.16.2'
+    'webpack': '^2.2.1'
+    'webpack-dev-server': '^2.3.0'
     'case-sensitive-paths-webpack-plugin': '^1.1.4'
   scripts:
     # https://docs.npmjs.com/misc/scripts#description
     # standard life-cycle scripts
-    test:     'nn -s; webpack-dev-server -d --progress'
-    start:    'nn -s; webpack-dev-server --hot --inline --progress'
+    test:     'webpack-dev-server -d --progress'
+    start:    'webpack-dev-server --hot --inline --progress'
 
     # ArtSuite scripts
     nodeTest: 'nn -s; mocha -u tdd --compilers coffee:coffee-script/register'
-    build:    'nn -s; webpack --progress'
+    build:    'webpack --progress'
     # dev:      'nn -s; webpack-dev-server -d --progress'
     # hot:      'nn -s; webpack-dev-server --hot --inline --progress'
     # nn:       'nn -s'
@@ -124,12 +124,13 @@ createPackageJson = (npmPackage) ->
   fs.writeFileSync "package.json", contents + "\n"
 
 createWebpackConfig = (options) ->
-  {dirname, outputPath, rest} = options
+  {dirname, outputPath, rest, entry} = options
   log "generating and returning: ".gray + "webpack.config".green
-  result = merge options,
+  result = merge {
+    entry
 
     resolve:
-      extensions: ["", ".webpack.js", ".web.js", ".js", ".coffee"]
+      extensions: [".webpack.js", ".web.js", ".js", ".coffee"]
 
     output:
       path: path.join dirname, outputPath
@@ -141,14 +142,15 @@ createWebpackConfig = (options) ->
     ]
 
     module:
-      loaders: [
-        { test: /\.coffee$/, loader: "coffee-loader" }
-        { test: /\.(coffee\.md|litcoffee)$/, loader: "coffee-loader?literate" }
-        { test: /\.css$/, loader: "style-loader!css-loader" }
-        { test: /\.png$/, loader: "url-loader?limit=100000" }
-        { test: /\.jpg$/, loader: "file-loader" }
-        { test: /\.json$/, loader: "json-loader" }
+      rules: [
+        { test: /\.coffee$/,                  loader: "coffee-loader" }
+        { test: /\.(coffee\.md|litcoffee)$/,  loader: "coffee-loader?literate" }
+        { test: /\.css$/,                     loader: "style-loader!css-loader" }
+        { test: /\.png$/,                     loader: "url-loader?limit=100000" }
+        { test: /\.jpg$/,                     loader: "file-loader" }
+        { test: /\.json$/,                    loader: "json-loader" }
       ]
+  }
 
   if rest.length > 0
     [result].concat rest
@@ -164,11 +166,7 @@ module.exports = (options, rest...) ->
   log "-------------------------------------------------------------------------".gray
 
   entry = ArtWebpackConfigurator._transformEntries entries
-  webpackOptions = merge options,
-    dirname: dirname
-    outputPath: outputPath
-    entry: entry
-    rest: rest
+  webpackOptions =
 
   log ""
   if npmPackage = options.package
@@ -177,9 +175,17 @@ module.exports = (options, rest...) ->
   # NOTE: webpack is fine with us returning a promise from config, but webpack-dev-server ISN'T
   # DETAILS: https://github.com/webpack/webpack-dev-server/pull/419
   #   looks like it's in the upcoming 2.0 release, but not in 1.x - which is the current stable release
-  if isWebpackDevServer
-    runNeptuneNamespaces dirname, isWebpackDevServer
-    createWebpackConfig webpackOptions
-  else
-    runNeptuneNamespaces dirname, isWebpackDevServer
-    .then -> createWebpackConfig webpackOptions
+  # if isWebpackDevServer
+  #   runNeptuneNamespaces dirname, isWebpackDevServer
+  #   createWebpackConfig webpackOptions
+  # else
+  runNeptuneNamespaces dirname, isWebpackDevServer
+  .then ->
+    config = createWebpackConfig merge options,
+      dirname: dirname
+      outputPath: outputPath
+      entry: entry
+      rest: rest
+
+    log "ArtFoundation webpackConfig": config
+    config

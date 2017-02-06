@@ -4,8 +4,8 @@ global.assert = chai.assert
 
 if global.document
   document.write "<div id=\"mocha\"></div>" unless document.getElementById "mocha"
-  require "!style!css!mocha/mocha.css"
-  require "!script!mocha/mocha.js"
+  require "mocha/mocha.css"
+  require "!script-loader!mocha/mocha.js"
 
   DomConsole = require '../DomConsole'
   mocha.setup reporter: require './MochaBrowserReporter'

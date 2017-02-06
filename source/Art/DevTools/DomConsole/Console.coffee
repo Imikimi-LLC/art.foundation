@@ -4,7 +4,7 @@ To customize how an object shows up in the DOM console, add
 getInspectedObjects member method. For more info, see base_object.coffee
 ###
 
-require "!style!css!./style.css" if self.document
+require "./style.css" if self.document
 
 Foundation = require 'art-foundation'
 Atomic = require 'art-atomic'
