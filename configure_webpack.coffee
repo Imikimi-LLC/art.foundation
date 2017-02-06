@@ -51,19 +51,20 @@ getStandardNpmPackageProps = ->
   version: JSON.parse(fs.readFileSync("package.json").toString()).version
   author: "Shane Brinkman-Davis Delamore, Imikimi LLC"
   dependencies:
-    'neptune-namespaces': '^1.7.4'
-    'chai': '^3.5.0'
-    'coffee-loader': '^0.7.2'
-    'coffee-script': '^1.11.1'
-    'css-loader': '^0.23.1'
-    'json-loader': '^0.5.4'
-    'mocha': '^3.2.0'
-    'script-loader': '^0.7.0'
-    'sourcemapped-stacktrace': '^1.1.5'
-    'style-loader': '^0.13.1'
-    'webpack': '^2.2.1'
-    'webpack-dev-server': '^2.3.0'
-    'case-sensitive-paths-webpack-plugin': '^1.1.4'
+    'neptune-namespaces':                   '^1.7.4'
+    'chai':                                 '^3.5.0'
+    'coffee-loader':                        '^0.7.2'
+    'coffee-script':                        '^1.12.3'
+    'css-loader':                           '^0.26.1'
+    'json-loader':                          '^0.5.4'
+    'mocha':                                '^3.2.0'
+    'script-loader':                        '^0.7.0'
+    'sourcemapped-stacktrace':              '^1.1.5'
+    'style-loader':                         '^0.13.1'
+    'webpack':                              '^2.2.1'
+    'webpack-dev-server':                   '^2.3.0'
+    'case-sensitive-paths-webpack-plugin':  '^1.1.4'
+    'bluebird':                             '^3.4.7'
   scripts:
     # https://docs.npmjs.com/misc/scripts#description
     # standard life-cycle scripts
