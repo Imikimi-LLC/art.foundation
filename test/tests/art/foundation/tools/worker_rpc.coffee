@@ -19,13 +19,14 @@ if self.document
   suite "Art.Foundation.Tools.WorkerRpc", ->
 
     suite "using mocks in main thread", ->
-      test "one-way messaging with data", (done) ->
-        {browser, worker} = ThreadMock.createPair()
-        sThread = new WorkerRpc browser, register: MyClass: myFunction: (value)->
-          assert.eq value, 123
-          done()
-        wThread = new WorkerRpc worker, bind:  MyClass: ["myFunction"]
-        wThread.MyClass.myFunction 123
+      test "one-way messaging with data", ->
+        new Promise (resolve) ->
+          {browser, worker} = ThreadMock.createPair()
+          sThread = new WorkerRpc browser, register: MyClass: myFunction: (value)->
+            assert.eq value, 123
+            resolve()
+          wThread = new WorkerRpc worker, bind:  MyClass: ["myFunction"]
+          wThread.MyClass.myFunction 123
 
       test "messaging with promises", ->
         {browser, worker} = ThreadMock.createPair()
@@ -35,19 +36,20 @@ if self.document
         .then (result) ->
           assert.eq result, 123
 
-      test "two-way messaging with data", (done) ->
-        {browser, worker} = ThreadMock.createPair()
-        sThread = new WorkerRpc browser,
-          register: MyServerClass: myServerFunction: (value) ->
-            assert.eq value, 123
-            WorkerRpc.lastMessageReceivedFrom.MyWorkerClass.myWorkerFunction value
-          bind:  MyWorkerClass: ["myWorkerFunction"]
-        wThread = new WorkerRpc worker,
-          bind:  MyServerClass: ["myServerFunction"]
-          register: MyWorkerClass: myWorkerFunction: (value) ->
-            assert.eq value, 123
-            done()
-        wThread.MyServerClass.myServerFunction 123
+      test "two-way messaging with data", ->
+        new Promise (resolve) ->
+          {browser, worker} = ThreadMock.createPair()
+          sThread = new WorkerRpc browser,
+            register: MyServerClass: myServerFunction: (value) ->
+              assert.eq value, 123
+              WorkerRpc.lastMessageReceivedFrom.MyWorkerClass.myWorkerFunction value
+            bind:  MyWorkerClass: ["myWorkerFunction"]
+          wThread = new WorkerRpc worker,
+            bind:  MyServerClass: ["myServerFunction"]
+            register: MyWorkerClass: myWorkerFunction: (value) ->
+              assert.eq value, 123
+              resolve()
+          wThread.MyServerClass.myServerFunction 123
 
     suite "using real worker thread", ->
       workerRpc = null

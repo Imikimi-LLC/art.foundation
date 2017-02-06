@@ -10,6 +10,7 @@ suite "Art.Foundation.Tools.BatchLoader", ->
     loader.load "one", (assets) ->
       assert.eq assets["one"], true
       done()
+    null
 
   test "addAsset", ->
     al = new Foundation.BatchLoader
@@ -31,6 +32,7 @@ suite "Art.Foundation.Tools.BatchLoader", ->
       assert.eq assets["two"], true
       assert.eq loaderInvocations, 1
       done()
+    null
 
   test "two overlapping simultanious listloads", (done)->
     loaderInvocations = 0
@@ -56,4 +58,5 @@ suite "Art.Foundation.Tools.BatchLoader", ->
       count += 1 if assets["two"]
       count += 1 if assets["three"]
       finish() if count == 6
+    null
 

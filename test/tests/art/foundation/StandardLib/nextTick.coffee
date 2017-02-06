@@ -5,6 +5,7 @@
 suite "Art.Foundation.StandardLib.nextTick", ->
   test "one nextTick", (done)->
     nextTick done
+    null
 
   test "nextTick with Promise", ->
     nextTick()
@@ -16,13 +17,12 @@ suite "Art.Foundation.StandardLib.nextTick", ->
     p.then ->
       assert.eq nextTickHappened, true
 
-  test "two nextTicks", (done)->
+  test "two nextTicks", ->
     count = 0
     nextTick ->
       count++
     nextTick ->
       assert.equal count, 1
-      done()
 
   test "nested nextTicks", (done) ->
     sequence = ""
@@ -34,3 +34,4 @@ suite "Art.Foundation.StandardLib.nextTick", ->
         assert.equal sequence, "abcd"
         done()
     nextTick -> sequence += "c"
+    null

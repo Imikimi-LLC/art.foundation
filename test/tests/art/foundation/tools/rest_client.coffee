@@ -1,4 +1,3 @@
-
 {binary, log, RestClient} = Neptune.Art.Foundation
 
 if self.XMLHttpRequest
@@ -34,10 +33,5 @@ if self.XMLHttpRequest
         assert.equal progress, 1
         assert.equal event.loaded, event.total
 
-    test "get 404 is rejected", (done)->
-      RestClient.get "#{testAssetRoot}/array_buffer_rest_client_test/doesnotexist.txt"
-      .then (string) ->
-        assert.equal "hello in a file.", string.toString()
-      , (error) ->
-        done()
-
+    test "get 404 is rejected", ->
+      assert.rejects RestClient.get "#{testAssetRoot}/array_buffer_rest_client_test/doesnotexist.txt"
