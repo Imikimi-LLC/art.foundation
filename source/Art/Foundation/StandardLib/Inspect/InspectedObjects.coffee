@@ -15,7 +15,12 @@ module.exports = class InspectedObjects
     else if isPlainObject(m) || isPlainArray(m)
       deepMap m, (v) -> toInspectedObjects v
     else if m instanceof Error
-      inspectedObjectLiteral m.stack || m.toString(), true
+      literal = inspectedObjectLiteral m.stack || m.toString(), true
+      if m.info
+        toInspectedObjects Error: info: m.info, stack: literal
+      else
+        Error: stack: literal
+
     # else if isString m
     #   inspectedObjectLiteral if m.match /\n/
     #     [
