@@ -68,7 +68,7 @@ getStandardNpmPackageProps = ->
   scripts:
     # https://docs.npmjs.com/misc/scripts#description
     # standard life-cycle scripts
-    test:     'webpack-dev-server -d --progress'
+    test:     'webpack-dev-server --progress'
     start:    'webpack-dev-server --hot --inline --progress'
 
     # ArtSuite scripts
