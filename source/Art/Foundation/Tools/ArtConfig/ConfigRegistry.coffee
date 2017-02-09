@@ -145,7 +145,7 @@ defineModule module, class ConfigRegistry extends BaseObject
               environment:          externalEnvironment.artConfig
 
     verbose && log "------------- ConfigRegistry: combined config"
-    log ConfigRegistry: {@artConfigName, @artConfig}
+    verbose && log ConfigRegistry: {@artConfigName, @artConfig}
 
     verbose && log "------------- ConfigRegistry: configuring Configurables..."
     @_configureAllConfigurables()
