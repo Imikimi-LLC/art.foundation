@@ -119,19 +119,26 @@ class ArtWebpackConfigurator
 
 createPackageJson = (npmPackage) ->
   npmPackage = deepMerge getStandardNpmPackageProps(), npmPackage
+  if npmPackage.exclusiveDependencies
+    npmPackage.dependencies = npmPackage.exclusiveDependencies
+    delete npmPackage.exclusiveDependencies
+
   contents = consistentJsonStringify npmPackage, "  "
   log "generating and writing: ".gray + "package.json".green
   # log npmPackage: npmPackage, contents: contents
   fs.writeFileSync "package.json", contents + "\n"
 
 createWebpackConfig = (options) ->
-  {dirname, outputPath, rest, entry} = options
+  {dirname, outputPath, rest, entry, target, externals, resolve} = options
   log "generating and returning: ".gray + "webpack.config".green
   result = merge {
     entry
+    target
+    externals
 
-    resolve:
+    resolve: deepMerge
       extensions: [".webpack.js", ".web.js", ".js", ".coffee"]
+      resolve
 
     output:
       path: path.join dirname, outputPath
