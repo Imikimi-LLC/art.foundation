@@ -149,7 +149,7 @@ module.exports = class ArrayExtensions
     fromFirstN = array.length unless fromFirstN?
     array[Math.random() * fromFirstN | 0]
 
-  @randomSort: (array) ->
+  @randomSort: randomSort = (array) ->
     len = array.length
     for i in [len-1..0] by -1
       j = intRand i
@@ -157,6 +157,14 @@ module.exports = class ArrayExtensions
       array[i] = array[j]
       array[j] = a
     array
+
+  # new array, randomly sorted
+  # null/undefined > []
+  @arrayWithRandomSort: (array) ->
+    if array
+      randomSort array.slice()
+    else
+      []
 
   # insert -1 => add to end of array
   # insert -2 => insert one before the last element of the array
