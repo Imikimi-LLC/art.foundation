@@ -73,7 +73,7 @@ module.exports = class DomElementFactories
   @version: "1.1.1"
   @src: "https://github.com/imikimi/art-foundation"
   for supportLib in supportLibs
-    for k, v of supportLib
+    for k, v of supportLib when supportLib.hasOwnProperty(k) && k.match /^[^_]/
       @[k] = v
 
   @isString: isString = (obj) => typeof obj == "string"

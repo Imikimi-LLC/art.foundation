@@ -10,13 +10,13 @@ DomConsole = require './namespace'
 
 {
   BaseObject
-  createWithPostCreate
+  defineModule
   wordsArray
 } = Foundation
 
 {Div, A} = Foundation.Browser.DomElementFactories
 
-module.exports = createWithPostCreate class ToolBar extends Component
+defineModule module, class ToolBar extends Component
 
   render: ->
     {shown} = @state

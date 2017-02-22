@@ -4,7 +4,7 @@
 module.exports = require './namespace'
 .includeInNamespace require './Foundation'
 .addModules
-  FoundationConfig: require './FoundationConfig'
+  ArtFoundationConfig: require './ArtFoundationConfig'
 require './Binary'
 require './Browser'
 require './ClassSystem'
