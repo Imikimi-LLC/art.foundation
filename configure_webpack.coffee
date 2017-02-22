@@ -72,7 +72,7 @@ getStandardNpmPackageProps = ->
     start:    'webpack-dev-server --hot --inline --progress'
 
     # ArtSuite scripts
-    nodeTest: 'nn -s; mocha -u tdd --compilers coffee:coffee-script/register'
+    # nodeTest: 'nn -s; mocha -u tdd --compilers coffee:coffee-script/register'
     build:    'webpack --progress'
     # dev:      'nn -s; webpack-dev-server -d --progress'
     # hot:      'nn -s; webpack-dev-server --hot --inline --progress'
@@ -166,7 +166,7 @@ createWebpackConfig = (options) ->
     result
 
 module.exports = (options, rest...) ->
-  {entries, outputPath, dirname} = options
+  {entries, outputPath, dirname, noNeptuneNamespaces} = options
   dirname ||= process.cwd()
   outputPath ||= "build"
   log "\n-------------------------------------------------------------------------".gray
@@ -187,8 +187,11 @@ module.exports = (options, rest...) ->
   #   runNeptuneNamespaces dirname, isWebpackDevServer
   #   createWebpackConfig webpackOptions
   # else
-  runNeptuneNamespaces dirname, isWebpackDevServer
-  .then ->
+  p = if noNeptuneNamespaces
+    Promise.resolve()
+  else
+    runNeptuneNamespaces dirname, isWebpackDevServer
+  p.then ->
     config = createWebpackConfig merge options,
       dirname: dirname
       outputPath: outputPath
