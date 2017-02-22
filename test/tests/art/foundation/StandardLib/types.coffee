@@ -16,7 +16,10 @@
   hasOwnKeys
   hasProperties
   hasOwnProperties
+  isArrayIterable
+  getSuper
   Map
+  BaseObject
 } = Neptune.Art.Foundation
 
 module.exports = suite:
@@ -42,17 +45,18 @@ module.exports = suite:
     test "isPromise 1 is false", -> assert.eq false, isPromise 1
     test "isPromise {} is false", -> assert.eq false, isPromise {}
 
-  isArray: ->
-    test "isArray [] is true", -> assert.eq true, isArray []
-    test "isArray Int8Array is true", -> assert.eq true, isArray new Int8Array(4)
-    test "isArray arguments is false", -> assert.eq false, isArray arguments
-    test "isArray - non arrays are false", ->
-      assert.eq false, isArray()
-      assert.eq false, isArray null
-      assert.eq false, isArray undefined
-      assert.eq false, isArray {}
-      assert.eq false, isArray "foo"
-      assert.eq false, isArray 123
+  isArrayIterable: ->
+    test "isArrayIterable [] is true", -> assert.eq true, isArrayIterable []
+    test "isArrayIterable Int8Array is true", -> assert.eq true, isArrayIterable new Int8Array(4)
+    test "isArrayIterable arguments is true", -> assert.eq true, isArrayIterable arguments
+    test "isArrayIterable string is true", -> assert.eq true, isArrayIterable "hi"
+    test "isArrayIterable {length: 10} is true", -> assert.eq true, isArrayIterable length: 10
+    test "isArrayIterable - non arrays are false", ->
+      assert.eq false, isArrayIterable()
+      assert.eq false, isArrayIterable null
+      assert.eq false, isArrayIterable undefined
+      assert.eq false, isArrayIterable {}
+      assert.eq false, isArrayIterable 123
 
   isString: ->
     test "isString 'foo' is true", -> assert.eq true, isString "foo"
@@ -66,6 +70,7 @@ module.exports = suite:
       assert.eq false, isString ->
 
   isPlainArray: ->
+    test "isPlainArray is isArray", -> assert.eq isPlainArray, isArray
     test "isPlainArray []", -> assert.eq true, isPlainArray []
     test "isPlainArray - false values", ->
       assert.eq false, isPlainArray {}
@@ -215,3 +220,27 @@ module.exports = suite:
       assert.eq true, present false, "hi"
       assert.eq "hi", present "", "hi"
 
+  getSuper: ->
+    class MyExtendedClass extends BaseObject
+      mySpecialProtoProp: 123
+
+    myExtendedInstance = new MyExtendedClass
+
+    MyEs6ExtendedClass = `class MyEs6ExtendedClass extends BaseObject {}`
+
+    global.MyExtendedClass = MyExtendedClass
+    global.myExtendedInstance = myExtendedInstance
+
+    test "{}", -> assert.eq null, getSuper {}
+    test "[]", -> assert.eq {}, getSuper []
+    test "->", -> assert.eq Function.__proto__, getSuper ->
+    test "MyEs6ExtendedClass -> BaseObject", ->
+      # only works with ES6 classes - which will be available in CoffeeScript 2 and CaffeineScript
+      assert.eq BaseObject, getSuper MyEs6ExtendedClass
+
+    test "myExtendedInstance -> BaseObject.prototype", ->
+      assert.eq Object.getPrototypeOf(myExtendedInstance), MyExtendedClass.prototype
+      assert.eq Object.getPrototypeOf(Object.getPrototypeOf(myExtendedInstance)), Neptune.Art.Foundation.BaseObject.prototype
+      assert.eq getSuper(myExtendedInstance), BaseObject.prototype
+      # assert.instanceof BaseObject, getSuper myExtendedInstance
+      # assert.eq MyExtendedClass.prototype, getSuper myExtendedInstance
