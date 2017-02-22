@@ -522,7 +522,7 @@ module.exports = class BaseObject extends MinimalBaseObject
     if !@namespacePath
       # no namespacePath
       @namespacePath = "#{@getName()} extends #{@__super__.class.getNamespacePath()}"
-    else if @__super__?.class.namespacePath == @namespacePath
+    else if @__super__?.class?.namespacePath == @namespacePath
       # namespacePath was inherited
       @namespacePath = "#{@getName()} extends #{@__super__.class.getNamespacePath()}"
     else
