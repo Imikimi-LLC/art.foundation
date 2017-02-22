@@ -3,6 +3,6 @@
 
 module.exports = require './namespace'
 .addModules
-  ConfigRegistry: require './ConfigRegistry'
-  Configurable:   require './Configurable'  
-  TestConfig:     require './TestConfig'    
+  ConfigRegistry:   require './ConfigRegistry'  
+  TestConfig:       require './TestConfig'      
+  TestConfigurable: require './TestConfigurable'
