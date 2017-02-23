@@ -90,7 +90,7 @@ formattedInspectString = (m) ->
   if m.length > 10 && m.match(/\n/) && !m.match /\ (\n|$)/
     [
       '"""'
-      m.replace /"""/g, '""\\"'
+      m.replace(/"""/g, '""\\"').replace /\\/g, '\\\\'
       '"""'
     ].join '\n'
   else
