@@ -291,6 +291,12 @@ module.exports = class ArrayExtensions
     array[index] = value
     array
 
+  @arrayWithAllButLast: (array, amount = 1) ->
+    if array
+      array.slice 0, array.length - amount
+    else
+      []
+
   # array.sort is not guaranteed to be stable
   @stableSort: (array, compare) ->
     compare ||= (a, b) -> a - b
