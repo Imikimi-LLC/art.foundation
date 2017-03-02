@@ -3,7 +3,7 @@
   isFunction
   fastBind
   log
-} = require '../StandardLib'
+} = require 'art-standard-lib'
 
 defineModule module, ->
   (superClass) -> class InstanceFunctionBindingMixin extends superClass

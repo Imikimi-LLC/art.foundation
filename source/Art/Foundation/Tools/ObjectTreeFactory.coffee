@@ -1,11 +1,10 @@
-{compactFlatten, upperCamelCase} = require 'neptune-namespaces/NeptuneLib'
+{compactFlatten, upperCamelCase} = require 'art-standard-lib/Core'
 
 mergeIntoBasic = (into, source) ->
   into[k] = v for k, v of source
   into
 
-{isFunction} = require '../StandardLib/Types'
-{fastBind} = require '../StandardLib/Function'
+{isFunction, fastBind} = require 'art-standard-lib'
 
 module.exports = class ObjectTreeFactory
   deepArgsProcessing = (array, children) ->

@@ -1,4 +1,4 @@
-{log, Promise, isNumber} = require '../StandardLib'
+{log, Promise, isNumber} = require 'art-standard-lib'
 ClassSystem = require '../ClassSystem'
 AsyncLocalStorage = require './AsyncLocalStorage'
 {BaseObject} = ClassSystem

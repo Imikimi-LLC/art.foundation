@@ -1,4 +1,4 @@
-StandardLib = require '../StandardLib'
+StandardLib = require 'art-standard-lib'
 ClassSystem = require '../ClassSystem'
 
 {Map, cloneByStructure, removeFirstMatch, eq, inspect, rubyTrue}  = StandardLib

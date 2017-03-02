@@ -1,4 +1,4 @@
-StandardLib = require '../StandardLib'
+StandardLib = require 'art-standard-lib'
 WebpackHotLoader = require './WebpackHotLoader'
 
 {

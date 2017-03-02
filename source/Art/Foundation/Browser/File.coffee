@@ -1,4 +1,4 @@
-StandardLib = require '../StandardLib'
+StandardLib = require 'art-standard-lib'
 {createElementFromHtml} = require './Dom'
 
 {Promise} = StandardLib

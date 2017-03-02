@@ -1,4 +1,4 @@
-StandardLib = require '../StandardLib'
+StandardLib = require 'art-standard-lib'
 {Promise} = StandardLib
 BinaryString = require './BinaryString'
 # Uint8Array - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays/Uint8Array

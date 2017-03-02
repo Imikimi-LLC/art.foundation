@@ -1,7 +1,7 @@
 # uses XMLHttpRequest2
 #  http://www.w3.org/TR/XMLHttpRequest2/
 #  http://www.html5rocks.com/en/tutorials/file/xhr2/
-StandardLib = require '../StandardLib'
+StandardLib = require 'art-standard-lib'
 {present, Promise, merge, isNumber, timeout, log, objectKeyCount, appendQuery, object, ErrorWithInfo} = StandardLib
 {success, serverFailure, failure, failureTypes, decodeHttpStatus} = require './CommunicationStatus'
 

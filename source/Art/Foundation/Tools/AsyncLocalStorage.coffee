@@ -1,4 +1,4 @@
-{defineModule, Promise, log, objectKeyCount} = require '../StandardLib'
+{defineModule, Promise, log, objectKeyCount} = require 'art-standard-lib'
 {isWebWorker} = require './WebWorker'
 {workerRpc} = require './WorkerRpc'
 

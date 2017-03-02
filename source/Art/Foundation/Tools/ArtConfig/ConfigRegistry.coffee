@@ -13,7 +13,7 @@
   isString
   upperCamelCase
   expandPathedProperties
-} = require '../../StandardLib'
+} = require 'art-standard-lib'
 {BaseObject} = require '../../ClassSystem'
 
 defineModule module, class ConfigRegistry extends BaseObject

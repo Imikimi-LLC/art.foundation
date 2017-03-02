@@ -1,6 +1,5 @@
 supportLibs = [
-  Neptune.NeptuneLib
-  require "../StandardLib/ObjectDiff"
+  require "art-standard-lib"
   require "../Tools/ObjectTreeFactory"
 ]
 ###

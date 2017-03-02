@@ -2,7 +2,7 @@
 Binary = require "./namespace"
 Utf8 = require   "./Utf8"
 
-StandardLib = require '../StandardLib'
+StandardLib = require 'art-standard-lib'
 ClassSystem = require '../ClassSystem'
 {
   isString, isFunction, isPlainArray, log, min, inspect, readFileAsDataUrl, readFileAsArrayBuffer, compactFlatten, pad

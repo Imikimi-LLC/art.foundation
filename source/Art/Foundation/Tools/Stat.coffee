@@ -1,4 +1,4 @@
-StandardLib = require '../StandardLib'
+StandardLib = require 'art-standard-lib'
 ClassSystem = require '../ClassSystem'
 {BaseObject} = ClassSystem
 {min, max, round, inspect} = StandardLib

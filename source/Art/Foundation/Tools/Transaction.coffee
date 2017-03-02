@@ -57,7 +57,7 @@ Example initializers:
     to:   noo:4, mar:5
 ###
 
-StandardLib = require '../StandardLib'
+StandardLib = require 'art-standard-lib'
 ClassSystem = require '../ClassSystem'
 SingleObjectTransaction = require './SingleObjectTransaction'
 

@@ -1,4 +1,4 @@
-module.exports = (require "./configure_webpack")
+module.exports = (require "art-build-configurator/configure_webpack")
   entries: "index, test, perf, worker_for_worker_rpc_tests, dom_element_factories"
   # target: "node"
   # output: libraryTarget: "commonjs2"

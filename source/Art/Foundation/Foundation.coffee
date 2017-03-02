@@ -1,6 +1,6 @@
 
 module.exports = [
-  require "./StandardLib"
+  require 'art-standard-lib'
   require "./Binary"
   require "./ClassSystem"
 

@@ -2,7 +2,7 @@
   defineModule
   log
   merge
-} = require '../../StandardLib'
+} = require 'art-standard-lib'
 {BaseObject} = require '../../ClassSystem'
 
 ConfigRegistry = require './ConfigRegistry'
