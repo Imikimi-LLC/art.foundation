@@ -2,6 +2,4 @@
 # file: tests/art/foundation/ClassSystem/index.coffee
 
 module.exports = require './namespace'
-.addModules
-  Clone: require './clone'
 require './BaseObject'
