@@ -129,7 +129,7 @@ createPackageJson = (npmPackage) ->
   fs.writeFileSync "package.json", contents + "\n"
 
 createWebpackConfig = (options) ->
-  {dirname, outputPath, rest, entry, target, externals, resolve} = options
+  {dirname, outputPath, output, rest, entry, target, externals, resolve} = options
   log "generating and returning: ".gray + "webpack.config".green
   result = merge {
     entry
@@ -140,7 +140,7 @@ createWebpackConfig = (options) ->
       extensions: [".webpack.js", ".web.js", ".js", ".coffee"]
       resolve
 
-    output:
+    output: merge output,
       path: path.join dirname, outputPath
       filename: "[name].js"
       # pathinfo: true - use --output-pathinfo commandline option
@@ -174,7 +174,6 @@ module.exports = (options, rest...) ->
   log "-------------------------------------------------------------------------".gray
 
   entry = ArtWebpackConfigurator._transformEntries entries
-  webpackOptions =
 
   log ""
   if npmPackage = options.package
