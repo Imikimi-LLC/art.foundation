@@ -1,5 +1,5 @@
 {w, Validator, defineModule, mergeInto, Promise} = require 'art-standard-lib'
-{Configurable} = require './Tools'
+{Configurable} = require 'art-config'
 
 defineModule module, class ArtFoundationConfig extends Configurable
   ;

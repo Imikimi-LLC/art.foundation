@@ -2,6 +2,7 @@
 module.exports = [
   require 'art-standard-lib'
   require "art-class-system"
+  require "art-config"
 
   require "./Binary"
   require "./Tools"
