@@ -33,9 +33,9 @@ suiteLength = (length) ->
         for b in array
           assert.eq array[0], b
 
-    asyncBenchmark "toBase64", -> binaryString.toBase64()
-    asyncBenchmark "toBase64Custom", -> binaryString.toBase64Custom()
-    asyncBenchmark "toBase64ToDataUri", -> binaryString.toBase64ToDataUri()
+    benchmark "toBase64", -> binaryString.toBase64()
+    benchmark "toBase64Custom", -> binaryString.toBase64Custom()
+    benchmark "toBase64ToDataUri", -> binaryString.toBase64ToDataUri()
     # asyncBenchmark "toBase64Btoa", -> binaryString.toBase64Btoa()
 
 suiteLength 16

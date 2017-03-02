@@ -1,3 +1,3 @@
 require '../'
-require "art-foundation/benchmark"
-.run -> require './perfs'
+require "art-testbench/benchmark"
+.init defineTests: -> require './perfs'
