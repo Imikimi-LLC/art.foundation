@@ -1,1 +1,1 @@
-module.exports = require "art-test/benchmark"
+module.exports = require "art-suite-test/benchmark"

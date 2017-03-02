@@ -1,1 +1,1 @@
-require 'art-test'
+require 'art-suite-test'
