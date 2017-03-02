@@ -1,5 +1,5 @@
 {log, Promise, isNumber} = require 'art-standard-lib'
-ClassSystem = require '../ClassSystem'
+ClassSystem = require 'art-class-system'
 AsyncLocalStorage = require './AsyncLocalStorage'
 {BaseObject} = ClassSystem
 module.exports = class JsonStore extends BaseObject

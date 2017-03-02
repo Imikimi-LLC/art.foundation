@@ -1,9 +1,9 @@
 
 module.exports = [
   require 'art-standard-lib'
-  require "./Binary"
-  require "./ClassSystem"
+  require "art-class-system"
 
+  require "./Binary"
   require "./Tools"
 
   package: _package = require "art-foundation/package.json"

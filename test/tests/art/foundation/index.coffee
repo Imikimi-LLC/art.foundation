@@ -2,7 +2,6 @@
 # file: tests/art/foundation/index.coffee
 
 module.exports = require './namespace'
-require './ClassSystem'
 require './binary'
 require './browser'
 require './tools'

@@ -81,7 +81,7 @@ EXAMPLES:
 
 ###
 
-{BaseObject} = require '../ClassSystem'
+{BaseObject} = require 'art-class-system'
 
 isId = (v) -> isString(v) && v.match ///^[-_a-z0-9]+$///i
 isHexColor = (v) -> isString(v) && v.match /^#([a-f0-9]{3})|([a-f0-9]{6})/i

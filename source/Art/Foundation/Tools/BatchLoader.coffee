@@ -1,5 +1,5 @@
 StandardLib = require 'art-standard-lib'
-ClassSystem = require '../ClassSystem'
+ClassSystem = require 'art-class-system'
 {BaseObject} = ClassSystem
 
 {log, inspect, nextTick, timeout} = StandardLib

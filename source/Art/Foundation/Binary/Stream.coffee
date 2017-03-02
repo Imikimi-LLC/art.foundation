@@ -1,4 +1,4 @@
-ClassSystem = require '../ClassSystem'
+ClassSystem = require 'art-class-system'
 Binary   = require "./namespace"
 {BaseObject} = ClassSystem
 {binary} = require "./BinaryString"

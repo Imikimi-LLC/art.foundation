@@ -1,6 +1,6 @@
 Foundation = require '../namespace'
 StandardLib = require 'art-standard-lib'
-ClassSystem = require '../ClassSystem'
+ClassSystem = require 'art-class-system'
 
 {BaseObject} = ClassSystem
 {inspect, Promise, requestAnimationFrame, evalAndThrowErrorsOutOfStack} = StandardLib

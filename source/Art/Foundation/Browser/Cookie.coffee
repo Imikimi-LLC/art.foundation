@@ -1,7 +1,7 @@
 # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input
 
 StandardLib = require 'art-standard-lib'
-ClassSystem = require '../ClassSystem'
+ClassSystem = require 'art-class-system'
 
 {log, isString, isPlainArray, isPlainObject} = StandardLib
 {BaseObject} = ClassSystem

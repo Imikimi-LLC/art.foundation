@@ -5,7 +5,7 @@
   isPlainObject
   mergeInto
 } = require 'art-standard-lib'
-{BaseObject} = require '../../ClassSystem'
+{BaseObject} = require 'art-class-system'
 
 ConfigRegistry = require './ConfigRegistry'
 

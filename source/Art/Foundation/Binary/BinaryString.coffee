@@ -3,7 +3,7 @@ Binary = require "./namespace"
 Utf8 = require   "./Utf8"
 
 StandardLib = require 'art-standard-lib'
-ClassSystem = require '../ClassSystem'
+ClassSystem = require 'art-class-system'
 {
   isString, isFunction, isPlainArray, log, min, inspect, readFileAsDataUrl, readFileAsArrayBuffer, compactFlatten, pad
   InspectedObjectLiteral

@@ -1,5 +1,5 @@
 StandardLib = require 'art-standard-lib'
-ClassSystem = require '../ClassSystem'
+ClassSystem = require 'art-class-system'
 WebWorker = require './WebWorker'
 
 {Promise, log, isPlainArray, isFunction, isString, mergeInto} = StandardLib

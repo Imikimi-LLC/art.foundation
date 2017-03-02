@@ -14,7 +14,7 @@
   upperCamelCase
   expandPathedProperties
 } = require 'art-standard-lib'
-{BaseObject} = require '../../ClassSystem'
+{BaseObject} = require 'art-class-system'
 
 defineModule module, class ConfigRegistry extends BaseObject
 

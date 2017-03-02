@@ -58,7 +58,7 @@ Example initializers:
 ###
 
 StandardLib = require 'art-standard-lib'
-ClassSystem = require '../ClassSystem'
+ClassSystem = require 'art-class-system'
 SingleObjectTransaction = require './SingleObjectTransaction'
 
 {rubyTrue, eq, inspect, Map, cloneByStructure} = StandardLib
