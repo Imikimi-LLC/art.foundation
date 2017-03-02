@@ -272,6 +272,8 @@ module.exports = class Validator extends BaseObject
     options:
       context: string - included in validation errors for reference
       logErrors: false - if true, will log.error errors
+
+  OUT: preprocessed fields - if they pass, otherwise error is thrown
   ###
   preCreateSync: preCreateSync = (fields, options) ->
     if @requiredFieldsPresent(fields) && @presentFieldsValid fields
@@ -280,6 +282,9 @@ module.exports = class Validator extends BaseObject
 
   validateSync: preCreateSync
 
+  ###
+  OUT: preprocessed fields - if they pass, otherwise error is thrown
+  ###
   preUpdateSync: (fields, options) ->
     if @presentFieldsValid fields
       @preprocessFields fields
