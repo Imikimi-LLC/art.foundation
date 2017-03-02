@@ -4,7 +4,10 @@ Utf8 = require   "./Utf8"
 
 StandardLib = require '../StandardLib'
 ClassSystem = require '../ClassSystem'
-{isString, isFunction, isPlainArray, log, min, inspect, readFileAsDataUrl, readFileAsArrayBuffer, compactFlatten, pad} = StandardLib
+{
+  isString, isFunction, isPlainArray, log, min, inspect, readFileAsDataUrl, readFileAsArrayBuffer, compactFlatten, pad
+  InspectedObjectLiteral
+} = StandardLib
 {BaseObject, inspect} = ClassSystem
 
 encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
@@ -82,6 +85,16 @@ module.exports = class BinaryString extends BaseObject
     blob: -> new Blob [@bytes]
     plainArray: -> b for b in @bytes
     byteLength: -> @length
+    inspectedObjects: ->
+      lenStr = if @length >= 10 * 1024 * 1024
+        "#{Math.floor @length / 1024 * 1024}m"
+      else if @length >= 10 * 1024
+        "#{Math.floor @length / 1024}k"
+      else
+        "#{@length}b"
+
+      new InspectedObjectLiteral "<BinaryString length: #{lenStr}>"
+
     inspectedString: (stride = 8, maxBytes = 64)->
       count = 0
       characters = []
