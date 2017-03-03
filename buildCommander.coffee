@@ -34,7 +34,7 @@ What I want:
 5) I want a sane and automatic way of handling "help"
 
 ###
-{lowerCamelCase, getCodeWords} = require 'neptune-namespaces/NeptuneLib'
+{lowerCamelCase, getCodeWords} = require 'art-standard-lib'
 
 module.exports = buildCommander = (options) ->
   {actions, beforeActions} = options
