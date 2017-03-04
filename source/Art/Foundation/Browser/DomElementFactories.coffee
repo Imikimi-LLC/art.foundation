@@ -1,6 +1,6 @@
 supportLibs = [
   require "art-standard-lib"
-  require "../Tools/ObjectTreeFactory"
+  require "art-object-tree-factory"
 ]
 ###
 DomElementFactories allows for Art.React-style creation of DOM elements.
