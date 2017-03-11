@@ -4,6 +4,7 @@ module.exports =
     dependencies:
       atob:                       '^2.0.3'
       "art-object-tree-factory":  '^1.0.0'
+      xhr2: "^0.1.4"
     description: "Foundation classes for the Art framework. Javascript extensions.",
 
   webpack:

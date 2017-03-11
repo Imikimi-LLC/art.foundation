@@ -5,6 +5,16 @@ StandardLib = require 'art-standard-lib'
 {present, Promise, merge, isNumber, timeout, log, objectKeyCount, appendQuery, object, ErrorWithInfo} = StandardLib
 {success, serverFailure, failure, failureTypes, decodeHttpStatus} = require './CommunicationStatus'
 
+# So this works in NODE:
+# TODO: we could maybe solve this better:
+#   require './xhr'
+# with:
+#   xhr.js:     global.XMLHttpRequest ||= require 'xhr2'
+#   xhr.coffee: # empty
+# realRequire = eval 'require'
+# global.XMLHttpRequest ||= realRequire 'xhr2'
+require './.xhr2'
+
 module.exports = class RestClient
   @legalVerbs:
     get: "GET"
