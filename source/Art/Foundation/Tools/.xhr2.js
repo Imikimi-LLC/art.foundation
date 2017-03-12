@@ -1,1 +1,3 @@
-module.exports = global.XMLHttpRequest ||= require 'xhr2'
+module.exports = global.XMLHttpRequest
+  ? global.XMLHttpRequest
+  : global.XMLHttpRequest = require('xhr2');
