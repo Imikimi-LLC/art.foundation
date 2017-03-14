@@ -15,6 +15,8 @@ StandardLib = require 'art-standard-lib'
   clone
   ErrorWithInfo
   array
+  object
+  isDate
 } = StandardLib
 
 {validStatus} = require './CommunicationStatus'
@@ -141,8 +143,8 @@ module.exports = class Validator extends BaseObject
 
     timestamp: # milliseconds since 1970; to get the current timestamp: Date.now()
       dataType: numberDataType
-      validate:   (v) -> isNumber(v) || (v instanceof Date)
-      preprocess: (v) -> if v instanceof Date then v - 0 else v
+      validate:   (v) -> isNumber(v) || isDate v
+      preprocess: (v) -> if isNumber then v else v - 0
 
     color:
       validate: (v) -> isHexColor v
@@ -167,6 +169,7 @@ module.exports = class Validator extends BaseObject
 
   # apply defaults
   for k, v of fieldTypes
+    v.fieldType = k
     v.dataType ||= stringDataType
     v.validate ||= dataTypes[v.dataType].validate
 
@@ -204,6 +207,9 @@ module.exports = class Validator extends BaseObject
     else
       ft
 
+  @normalizeFields: (fields) ->
+    object fields, normalizeFieldProps
+
   @normalizeFieldProps: normalizeFieldProps = (ft) ->
     ft = if isPlainObject ft
 
@@ -218,13 +224,14 @@ module.exports = class Validator extends BaseObject
       ft = {}
       for string in w strings
         if subFt = fieldTypes[string]
+          ft.fieldType = string
           mergeIntoUnless ft, subFt
         else
           ft[string] = true
       ft
 
     else
-      throw new Error "fieldType must be a string or plainObject: #{formattedInspect ft}"
+      throw new Error "fieldType must be a string or plainObject. Was: #{formattedInspect ft}"
 
     merge fieldTypes[ft.fieldType], ft
 
@@ -240,8 +247,12 @@ module.exports = class Validator extends BaseObject
   addFields: (fieldDeclarationMap) ->
     for field, fieldOptions of fieldDeclarationMap
       fieldOptions = @_addField field, fieldOptions
-      @_requiredFieldsMap[field] = undefined if fieldOptions.required
+      @_requiredFieldsMap[field] = undefined if fieldOptions.required || fieldOptions.present
     null
+
+  @getter
+    inspectedObjects: ->
+      Validator: @_fieldProps
 
 
   ###
@@ -293,6 +304,7 @@ module.exports = class Validator extends BaseObject
   _throwError: (fields, options, forCreate) ->
     info = errors: errors = {}
     messageFields = []
+
     array @invalidFields(fields), messageFields, (f) ->
       errors[f] = "invalid"
       "invalid #{f}"
