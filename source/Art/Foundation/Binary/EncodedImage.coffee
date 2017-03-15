@@ -1,7 +1,7 @@
 StandardLib = require 'art-standard-lib'
 {toDataUri} = require './DataUri'
 {log, Promise, readFileAsDataUrl, ErrorWithInfo, isString} = StandardLib
-{isBinary} = require './BinaryString'
+{isBinary, binary} = require './BinaryString'
 
 module.exports = class EncodedImage
 
@@ -14,7 +14,11 @@ module.exports = class EncodedImage
   @get: get = (urlOrBinary, options) ->
     Promise.then ->
       if isBinary urlOrBinary
-        toDataUri urlOrBinary
+        if Neptune.isNode
+          # node canvas can load directly from a "Buffer" object
+          binary(urlOrBinary).nodeBuffer
+        else
+          toDataUri urlOrBinary
       else if isString urlOrBinary
         if options
           Neptune.Art.Foundation.RestClient.getArrayBuffer urlOrBinary, options
@@ -24,7 +28,7 @@ module.exports = class EncodedImage
 
     .then (url) -> new Promise (resolve, reject) ->
       image = new Image
-      image.crossOrigin = "Anonymous" unless url.match /^(file|data)\:/i
+      image.crossOrigin = "Anonymous" if url.match? /^(file|data)\:/i
       ###
       crossOrigin = "Anonymous" required to getImageData and avoid this error
         "The canvas has been tainted by cross-origin data."

@@ -22,7 +22,7 @@ module.exports = class DataUri
   ###
   @toDataUri: (data) ->
     throw new Error "data not set" unless data
-    return readAsDataURL data if data instanceof self.File
+    return readAsDataURL data if global.File && data instanceof global.File
     return Promise.resolve data if isDataUri data
     binary(data).toBase64()
     .then (base64) ->
