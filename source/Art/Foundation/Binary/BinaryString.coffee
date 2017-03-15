@@ -13,6 +13,13 @@ ClassSystem = require 'art-class-system'
 encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 
 module.exports = class BinaryString extends BaseObject
+  @isBinary: (arg) ->
+    arg && (
+      (arg instanceof BinaryString) ||
+      arg.constructor == ArrayBuffer ||
+      arg.buffer?.constructor == ArrayBuffer
+    )
+
   @binary: binary = (arg) ->
     if arg instanceof BinaryString
       arg
