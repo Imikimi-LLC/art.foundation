@@ -89,6 +89,7 @@ module.exports = class BinaryString extends BaseObject
   @getter
     uint8Array: -> @bytes
     arrayBuffer: -> @bytes.buffer
+    nodeBuffer: -> new Buffer @bytes
     blob: -> new Blob [@bytes]
     plainArray: -> b for b in @bytes
     byteLength: -> @length
