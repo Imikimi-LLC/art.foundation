@@ -2,6 +2,7 @@ StandardLib = require 'art-standard-lib'
 {toDataUri} = require './DataUri'
 {log, Promise, readFileAsDataUrl, ErrorWithInfo, isString} = StandardLib
 {isBinary, binary} = require './BinaryString'
+require 'art-rest-client'
 
 module.exports = class EncodedImage
 
@@ -21,7 +22,7 @@ module.exports = class EncodedImage
           toDataUri urlOrBinary
       else if isString urlOrBinary
         if options
-          Neptune.Art.Foundation.RestClient.getArrayBuffer urlOrBinary, options
+          Neptune.Art.RestClient.getArrayBuffer urlOrBinary, options
           .then (arrayBuffer) -> readFileAsDataUrl new Blob [arrayBuffer]
         else urlOrBinary
       else throw new Error "expected arg #1 to be string or binary"

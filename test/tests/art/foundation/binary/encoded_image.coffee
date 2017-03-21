@@ -1,5 +1,6 @@
 
-{EncodedImage, binary, RestClient} = Neptune.Art.Foundation
+{EncodedImage, binary} = Neptune.Art.Foundation
+{RestClient} = Neptune.Art
 
 if self.Image
   suite "Art.Foundation.Binary.EncodedImage", ->

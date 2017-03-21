@@ -1,4 +1,5 @@
-{binary, log, RestClient} = Neptune.Art.Foundation
+{binary, log} = Neptune.Art.Foundation
+{RestClient} = Neptune.Art
 
 if self.XMLHttpRequest
   suite "Art.Foundation.Tools.RestClient", ->

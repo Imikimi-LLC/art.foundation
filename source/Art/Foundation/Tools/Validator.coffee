@@ -19,7 +19,7 @@ StandardLib = require 'art-standard-lib'
   isDate
 } = StandardLib
 
-{validStatus} = require './CommunicationStatus'
+{validStatus} = require 'art-communication-status'
 
 ###
 NOTES:
