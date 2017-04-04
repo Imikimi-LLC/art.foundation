@@ -103,12 +103,15 @@ module.exports = class Validator extends BaseObject
     object:     validate: (a) -> isPlainObject a
     array:      validate: (a) -> isPlainArray a
     function:   validate: (a) -> isFunction a
+    date:       validate: (a) -> isDate a
 
-  booleanDataType = "boolean"
-  numberDataType =  "number"
-  stringDataType =  "string"
-  objectDataType =  "object"
-  arrayDataType =   "array"
+  booleanDataType   = "boolean"
+  numberDataType    = "number"
+  stringDataType    = "string"
+  objectDataType    = "object"
+  arrayDataType     = "array"
+  functionDataType  = "function"
+  dateDataType      = "date"
 
   ###
   standard FieldType props:
@@ -140,6 +143,7 @@ module.exports = class Validator extends BaseObject
     date:
       validate:   (v) -> isString(v) || (v instanceof Date)
       preprocess: (v) -> if isString(v) then new Date v else v
+      dataType: dateDataType
 
     timestamp: # milliseconds since 1970; to get the current timestamp: Date.now()
       dataType: numberDataType
@@ -165,7 +169,7 @@ module.exports = class Validator extends BaseObject
       preprocess: (v) -> v.trim()
 
     function:
-      dataType: "function"
+      dataType: functionDataType
 
   # apply defaults
   for k, v of fieldTypes
