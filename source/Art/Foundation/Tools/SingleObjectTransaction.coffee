@@ -1,7 +1,7 @@
 StandardLib = require 'art-standard-lib'
 ClassSystem = require 'art-class-system'
 
-{Map, cloneByStructure, removeFirstMatch, eq, inspect, rubyTrue}  = StandardLib
+{cloneByStructure, removeFirstMatch, eq, inspect, rubyTrue}  = StandardLib
 {BaseObject} = ClassSystem
 
 module.exports = class SingleObjectTransaction extends BaseObject

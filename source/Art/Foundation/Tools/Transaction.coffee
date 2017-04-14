@@ -57,14 +57,13 @@ Example initializers:
     to:   noo:4, mar:5
 ###
 
-StandardLib = require 'art-standard-lib'
-ClassSystem = require 'art-class-system'
+{
+  rubyTrue, eq, inspect, Map, cloneByStructure, mapToKeysArray, mapToValuesArray
+} = require 'art-standard-lib'
+{BaseClass} = require 'art-class-system'
 SingleObjectTransaction = require './SingleObjectTransaction'
 
-{rubyTrue, eq, inspect, Map, cloneByStructure} = StandardLib
-{BaseObject} = ClassSystem
-
-module.exports = class Transaction extends BaseObject
+module.exports = class Transaction extends BaseClass
   @SingleObjectTransaction: SingleObjectTransaction
 
   # "objects" can be:
@@ -103,21 +102,21 @@ module.exports = class Transaction extends BaseObject
   ###########################################
 
   # return array of objects in the transaction
-  @getter objects: -> @_objects.keys
+  @getter objects: -> mapToKeysArray @_objects
 
   # return the properties, from or two values for a specific object
   properties: (obj) -> @_objects.get(obj).properties
-  from: (obj) -> @_objects.get(obj).from
-  to: (obj) -> @_objects.get(obj).to
+  from:       (obj) -> @_objects.get(obj).from
+  to:         (obj) -> @_objects.get(obj).to
 
   # set all values using "from" values
-  rollBack: -> @_objects.forEach (oi) => oi.rollBack()
+  rollBack:         -> @_objects.forEach (oi) => oi.rollBack()
 
   # set all values using "to" values
-  rollForward: -> @_objects.forEach (oi) => oi.rollForward()
+  rollForward:      -> @_objects.forEach (oi) => oi.rollForward()
 
   # set all values according to this formula: (to - from) * p + from
-  interpolate: (p) -> @_objects.forEach (oi) => oi.interpolate p
+  interpolate: (p)  -> @_objects.forEach (oi) => oi.interpolate p
 
   # remove any non-changing properties and non-changing objects
   optimize: ->
@@ -130,6 +129,7 @@ module.exports = class Transaction extends BaseObject
       result = false
       @_objects.forEach (oi) => result = true if oi.hasToValues
       result
+
     valuesChanged: ->
       result = false
       @_objects.forEach (object) =>
@@ -151,13 +151,13 @@ module.exports = class Transaction extends BaseObject
     oi = new SingleObjectTransaction obj
     @_objects.set oi.object, oi
 
-  addObjects: (objects)-> @addObject obj for obj in objects
+  addObjects: (objects) -> @addObject obj for obj in objects
 
-  saveFromValues: -> @_objects.forEach (oi) => oi.saveFromValues()
-  saveToValues:   -> @_objects.forEach (oi) => oi.saveToValues()
+  saveFromValues:       -> @_objects.forEach (oi) => oi.saveFromValues()
+  saveToValues:         -> @_objects.forEach (oi) => oi.saveToValues()
 
   # call this after saving To and From values to eliminate any non-changing properties
-  optimizeProperties: -> @_objects.forEach (oi) => oi.optimizeProperties()
+  optimizeProperties:   -> @_objects.forEach (oi) => oi.optimizeProperties()
 
   # removes any objects with no property changes
   optimizeObjects: ->

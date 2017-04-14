@@ -12,7 +12,7 @@ ToolBar = require './ToolBar'
 
 {rgbColor, Color, point, point0} = Atomic
 {
-  BaseObject, inspect, clone, merge, Map, nextTick, timeout, flatten,
+  BaseObject, inspect, clone, merge, nextTick, timeout, flatten,
   isArray, isString, isFunction
   isNumber
   createWithPostCreate

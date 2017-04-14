@@ -13,7 +13,7 @@ module.exports =
     common: {}
     targets:
       merge
-        index: target: "node"
+        index: {}
         object w("
           test
           perf
