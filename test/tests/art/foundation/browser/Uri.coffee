@@ -32,6 +32,12 @@ module.exports = suite:
     test 'uri query',         -> assert.eq 'http://foo.com?foo=bar', encodeUri uri: 'http://foo.com', query: foo: "bar"
     test 'host query',        -> assert.eq '://foo.com?foo=bar', encodeUri host: 'foo.com', query: foo: "bar"
     test 'protocol and path', -> assert.eq "mailto:shanebdavis@gmail.com", encodeUri protocol: 'mailto', path: 'shanebdavis@gmail.com'
+  regressions: ->
+    test 'facebook share', ->
+      assert.eq 'https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fimikimi.com%2Fpost%2F0HWIhYdO9rzg%2F', encodeUri
+        uri: "https://www.facebook.com/sharer/sharer.php"
+        query:
+          u: "https://imikimi.com/post/0HWIhYdO9rzg/"
 
   encodeMailto: ->
     test 'nothing', -> assert.eq 'mailto:', encodeMailto {}
