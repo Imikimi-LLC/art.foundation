@@ -49,12 +49,13 @@ USAGE:
         validate: (v) -> true/false
           whenever this field is included in an update OR create operation,
             validate() must return true
-          NOTE: is evaluated BEFORE preprocess
+          NOTE: validate is evaluated BEFORE preprocess
 
         preprocess: (v1) -> v2
           whenever this field is included in an update OR create operation,
             after validation succeeds,
             value = preprocess value
+          NOTE: validate is evaluated BEFORE preprocess
 
         required: true/false/string
           if true/string
