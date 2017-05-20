@@ -17,6 +17,7 @@ StandardLib = require 'art-standard-lib'
   array
   object
   isDate
+  pushIfNotPresent
 } = StandardLib
 
 {validStatus} = require 'art-communication-status'
@@ -242,7 +243,7 @@ module.exports = class Validator extends BaseObject
 
   constructor: (fieldDeclarationMap, options) ->
     @_fieldProps = {}
-    @_requiredFieldsMap = {}
+    @_requiredFields = []
     @addFields fieldDeclarationMap
     if options
       {@exclusive, @context} = options
@@ -252,7 +253,8 @@ module.exports = class Validator extends BaseObject
   addFields: (fieldDeclarationMap) ->
     for field, fieldOptions of fieldDeclarationMap
       fieldOptions = @_addField field, fieldOptions
-      @_requiredFieldsMap[field] = undefined if fieldOptions.required || fieldOptions.present
+      if fieldOptions.required || fieldOptions.present
+        pushIfNotPresent @_requiredFields, field
     null
 
   @getter
@@ -373,10 +375,8 @@ module.exports = class Validator extends BaseObject
   invalidFields: (fields) ->
     k for k, v of fields when !@presentFieldValid fields, k
 
-
   missingFields: (fields) ->
-    fields = merge @_requiredFieldsMap, fields
-    k for k, v of fields when !@requiredFieldPresent fields, k
+    k for k in @_requiredFields when !@requiredFieldPresent fields, k
 
   ###################
   # PRIVATE

@@ -142,12 +142,12 @@ module.exports = suite:
       .then -> assert.rejects v.preCreate id: undefined
       .then ({info}) -> assert.eq info.errors, id: "missing"
 
-      .then -> assert.rejects v.preCreate {}
-      .then ({info}) -> assert.eq info.errors, id: "missing"
+      # .then -> assert.rejects v.preCreate {}
+      # .then ({info}) -> assert.eq info.errors, id: "missing"
 
-      .then -> v.preCreate id: false # is OK since it's not null nor undefined
-      .then -> v.preUpdate id: null
-      .then -> v.preUpdate id: 123
+      # .then -> v.preCreate id: false # is OK since it's not null nor undefined
+      # .then -> v.preUpdate id: null
+      # .then -> v.preUpdate id: 123
 
     test "instanceof: Foo", ->
       class Foo
