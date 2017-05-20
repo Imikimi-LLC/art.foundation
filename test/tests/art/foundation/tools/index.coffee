@@ -11,7 +11,6 @@ module.exports
   RestClient:              require './rest_client'                
   Stat:                    require './stat'                       
   Transaction:             require './transaction'                
-  Validator:               require './validator'                  
   WebWorker:               require './web_worker'                 
   WorkerForWorkerRpcTests: require './worker_for_worker_rpc_tests'
   WorkerRpc:               require './worker_rpc'                 

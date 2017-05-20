@@ -6,6 +6,7 @@ module.exports =
       "art-object-tree-factory":  '^1.0.0'
       'art-communication-status': '^1.0.0'
       'art-rest-client':          '^1.0.0'
+      'art-validator':            '^1.0.0'
 
     description: "Foundation classes for the Art framework. Javascript extensions."
 

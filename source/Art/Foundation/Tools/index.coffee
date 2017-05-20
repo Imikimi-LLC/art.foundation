@@ -16,6 +16,5 @@ module.exports
   SingleObjectTransaction:      require './SingleObjectTransaction'     
   Stat:                         require './Stat'                        
   Transaction:                  require './Transaction'                 
-  Validator:                    require './Validator'                   
   WebWorker:                    require './WebWorker'                   
   WorkerRpc:                    require './WorkerRpc'                   
