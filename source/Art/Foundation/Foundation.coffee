@@ -3,6 +3,7 @@ module.exports = [
   require 'art-standard-lib'
   require "art-class-system"
   require "art-config"
+  Epoch: require('art-epoched-state').EpochClass
 
   require "./Binary"
   require "./Tools"

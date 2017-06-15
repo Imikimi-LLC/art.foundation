@@ -8,7 +8,6 @@ module.exports
   Analytics:                    require './Analytics'                   
   AsyncLocalStorage:            require './AsyncLocalStorage'           
   BatchLoader:                  require './BatchLoader'                 
-  Epoch:                        require './Epoch'                       
   GlobalCounts:                 require './GlobalCounts'                
   InstanceFunctionBindingMixin: require './InstanceFunctionBindingMixin'
   JsonStore:                    require './JsonStore'                   
