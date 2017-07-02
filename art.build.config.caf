@@ -4,7 +4,7 @@ package:
     art-object-tree-factory:  :*
     art-communication-status: :*
     art-rest-client:          :*
-    art-validator:            :*
+    art-validation:           :*
     art-epoched-state:        :*
 
   description: "Foundation classes for the Art framework. Javascript extensions."

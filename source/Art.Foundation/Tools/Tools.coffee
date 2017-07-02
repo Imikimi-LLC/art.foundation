@@ -5,5 +5,5 @@ module.exports = [
   require 'art-object-tree-factory'
   CommunicationStatus:  require "art-communication-status"
   RestClient:           require "art-rest-client"
-  Validator:            require 'art-validator'
+  Validator:            require('art-validation').Validator
 ]

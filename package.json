@@ -10,7 +10,7 @@
     "art-rest-client": "*",
     "art-standard-lib": "*",
     "art-testbench": "*",
-    "art-validator": "*",
+    "art-validation": "*",
     "atob": "^2.0.3",
     "bluebird": "^3.5.0",
     "caffeine-script": "*",
