@@ -64,7 +64,11 @@ module.exports = buildCommander = (options) ->
       commandName = lowerCamelCase k
       action = if v.constructor == Object
         {params, action, help} = v
-        command = "--#{commandName} #{params}" if params
+        command =
+          if params
+            "--#{commandName} #{params}"
+          else
+            "--#{commandName}"
         action
       else
         command = "--#{commandName}"
