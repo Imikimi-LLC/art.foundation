@@ -59,6 +59,8 @@ module.exports = buildCommander = (options) ->
       assignLetters offset + 1
   assignLetters()
 
+  actionMap = {}
+
   for k, v of actions
     do (k, v) ->
       commandName = lowerCamelCase k
@@ -74,26 +76,32 @@ module.exports = buildCommander = (options) ->
         command = "--#{commandName}"
         v
 
-
       if letter = actionsToLetters[k]
         command = "-#{letter}, #{baseCommand = command}"
 
-      commander
-      .option command, help
-      .on commandName, (a...)->
-        console.log "exec: #{commandName}..."
-        {log, merge} = require 'art-foundation'
+      commander.option command, help
+
+      actionMap[commandName] = (arg)->
+        {log, merge, isString} = require 'art-standard-lib'
+        arg = null if arg == true
+        log if arg
+          "#{commandName}": arg
+        else
+          commandName
         actionTaken = true
 
         Promise.resolve beforeActions? commander
-        .then (beforeActionsOptions) -> action merge beforeActionsOptions, args: a
+        .then (beforeActionsOptions) -> action merge beforeActionsOptions, args: [arg]
         .then  (out) -> log success: out
         .catch (err) ->
           log error: err
           console.error err
 
-  commander
+  parsed = commander
   .parse process.argv
+
+  for command, action of actionMap when arg = parsed[command]
+    action arg
 
   unless actionTaken
     console.error "No command given."
