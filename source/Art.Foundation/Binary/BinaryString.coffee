@@ -7,6 +7,7 @@ ClassSystem = require 'art-class-system'
 {
   isString, isFunction, isPlainArray, log, min, inspect, readFileAsDataUrl, readFileAsArrayBuffer, compactFlatten, pad
   InspectedObjectLiteral
+  Promise
 } = StandardLib
 {BaseObject, inspect} = ClassSystem
 

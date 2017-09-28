@@ -1,4 +1,4 @@
-{hasProperties, defineModule, log, present, array} = require 'art-standard-lib'
+{hasProperties, defineModule, log, present, array, Promise} = require 'art-standard-lib'
 
 defineModule module, class Browser
   isMobileBrowserRegExp1 = /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i
@@ -10,6 +10,17 @@ defineModule module, class Browser
     check = false
     agent = (navigator.userAgent||navigator.vendor||window.opera);
     browserIsMobile = !!(isMobileBrowserRegExp1.test(agent) || isMobileBrowserRegExp2.test(agent.substr(0,4)))
+
+  # resolves when the DOM is anything other than 'loading'
+  @getDomReadyPromise: ->
+    new Promise (resolve) =>
+      {document} = global
+      if !document || document.readyState != "loading"
+        resolve()
+      else
+        document.addEventListener "readystatechange", =>
+          if document.readyState == "interactive"
+            resolve()
 
   @openLink: openLink = (link) ->
     global.open link, '_blank'

@@ -1,7 +1,7 @@
 StandardLib = require 'art-standard-lib'
 ClassSystem = require 'art-class-system'
 {BaseObject} = ClassSystem
-{isNumber, isFunction, isArray, log, max, min} = StandardLib
+{isNumber, isFunction, isArray, log, max, min, Promise} = StandardLib
 
 module.exports = class ProgressAdapter extends BaseObject
 
