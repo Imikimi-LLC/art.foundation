@@ -1,5 +1,4 @@
-
-{EncodedImage, binary} = Neptune.Art.Foundation
+{EncodedImage, log, binary} = Neptune.Art.Foundation
 {RestClient} = Neptune.Art
 
 if self.Image
@@ -26,11 +25,29 @@ if self.Image
         assert.equal image.width, 256
         assert.equal image.height, 256
 
-    test "EncodedImage.get", ->
+    test "EncodedImage.get url", ->
       EncodedImage.get "#{testAssetRoot}/array_buffer_image_test/sample.jpg"
       .then (image) ->
         assert.equal image.width, 256
         assert.equal image.height, 256
+
+    test "EncodedImage.get img imeediate load", ->
+      img = new Image
+      img.src = "#{testAssetRoot}/array_buffer_image_test/sample.jpg"
+      EncodedImage.get img
+      .then (image) ->
+        log {image}
+        assert.equal image.width, 256
+        assert.equal image.height, 256
+
+    test "EncodedImage.get img delayed load", ->
+      img = new Image
+      img.src = "#{testAssetRoot}/asset_loader_test/image1.png"
+      EncodedImage.get img
+      .then (image) ->
+        log {image}
+        assert.equal image.width, 48
+        assert.equal image.height, 58
 
     test "png toImage", ->
       RestClient.getArrayBuffer "#{testAssetRoot}/array_buffer_image_test/sample.png"

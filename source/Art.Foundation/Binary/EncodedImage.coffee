@@ -3,46 +3,66 @@ StandardLib = require 'art-standard-lib'
 {log, Promise, readFileAsDataUrl, ErrorWithInfo, isString} = StandardLib
 {isBinary, binary} = require './BinaryString'
 require 'art-rest-client'
+{Image, HTMLImageElement} = global
 
 module.exports = class EncodedImage
 
   ###
+  IN:
+    String: url
+    or
+    Binary: image data
+    or
+    HTMLImageElement
+
   OUT:
     promise.then (fullyLoadedHtmlImage) ->
     , (htmlImageOnerrorEvent) ->
 
   ###
-  @get: get = (urlOrBinary, options) ->
-    Promise.then ->
-      if isBinary urlOrBinary
-        if Neptune.isNode
-          # node canvas can load directly from a "Buffer" object
-          binary(urlOrBinary).nodeBuffer
+  @get: get = (source, options) ->
+    return Promise.reject() unless source?
+    if source.constructor == HTMLImageElement || source.constructor == Image
+      image = source
+      {complete, naturalWidth} = source
+      new Promise (resolve, reject) ->
+        if complete && naturalWidth > 0
+          resolve source
         else
-          toDataUri urlOrBinary
-      else if isString urlOrBinary
-        if options
-          Neptune.Art.RestClient.getArrayBuffer urlOrBinary, options
-          .then (arrayBuffer) -> readFileAsDataUrl new Blob [arrayBuffer]
-        else urlOrBinary
-      else throw new Error "expected arg #1 to be string or binary"
+          image.onload  = -> resolve image
+          image.onerror = (event) -> reject new ErrorWithInfo "image load error", event
+    else
+      Promise.then ->
 
-    .then (url) -> new Promise (resolve, reject) ->
-      image = new Image
-      image.crossOrigin = "Anonymous" if url.match? /^(file|data)\:/i
-      ###
-      crossOrigin = "Anonymous" required to getImageData and avoid this error
-        "The canvas has been tainted by cross-origin data."
+        if isBinary source
+          if Neptune.isNode
+            # node canvas can load directly from a "Buffer" object
+            binary(source).nodeBuffer
+          else
+            toDataUri source
 
-      NOTE:
-        file: urls break with crossOrigin in WkWebKit
-        data: urls break with crossOrigin in Safari
-      ###
-      image.onload  = -> resolve image
-      image.onerror = (event) -> reject new ErrorWithInfo "image load error", event
+        else if isString source
+          if options
+            Neptune.Art.RestClient.getArrayBuffer source, options
+            .then (arrayBuffer) -> readFileAsDataUrl new Blob [arrayBuffer]
+          else source
+        else throw new Error "expected arg #1 to be string or binary"
 
-      # must specify src last or crossOrigin won't get set on Safari.
-      image.src = url
+      .then (url) ->
+        image = new Image
+        image.src = url
+
+        ###
+        crossOrigin = "Anonymous" required to getImageData and avoid this error
+          "The canvas has been tainted by cross-origin data."
+
+        NOTE:
+          file: urls break with crossOrigin in WkWebKit
+          data: urls break with crossOrigin in Safari
+        ###
+        image.crossOrigin = "Anonymous" if url.match? /^(file|data)\:/i
+
+        get image
 
   # DEPRICATED
   @loadImage: (url) ->
