@@ -9,11 +9,16 @@ module.exports = class EncodedImage
 
   ###
   IN:
-    String: url
-    or
-    Binary: image data
-    or
-    HTMLImageElement
+    first arg:
+      String: url
+      or
+      Binary: image data
+      or
+      HTMLImageElement
+    options: options for RestClient.getArrayBuffer
+      NOTE: if options is provided, image-data is fetched using
+        RestClient.getArrayBuffer
+      This seems to work to endrun TAINT.
 
   OUT:
     promise.then (fullyLoadedHtmlImage) ->
@@ -63,11 +68,6 @@ module.exports = class EncodedImage
         image.crossOrigin = "Anonymous" if url.match? /^(file|data)\:/i
 
         get image
-
-  # DEPRICATED
-  @loadImage: (url) ->
-    console.warn "#{@namespacePath}#loadImage DEPRICATED. Use #get"
-    get url
 
   # IN: encodedImageData is
   #   - image-data encoded in a browser-compatible format (jpg, png, etc)
