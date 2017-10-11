@@ -34,7 +34,11 @@ module.exports = class Dom
     0
 
   @domElementOffset: (element) ->
-    box = element.getBoundingClientRect()
+    try
+      box = element.getBoundingClientRect()
+    catch e
+      # if the element has not been added yet, IE11 throws an error
+      return top: 0, left: 0
 
     {body, documentElement} = document
 
