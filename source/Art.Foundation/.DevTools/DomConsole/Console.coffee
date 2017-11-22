@@ -30,6 +30,7 @@ ToolBar = require './ToolBar'
   deepMap
   inspectLean
   escapeJavascriptString
+  findColorRegExp
 } = Foundation
 
 {containsImages, resolveImages, isHTMLImageElement, imgToDom} = require './Images'
@@ -301,8 +302,9 @@ module.exports = createWithPostCreate class Console extends BaseObject
 
   colorToDom: (clr) ->
     displayString = if isString clrString = clr
-      clr = rgbColor clr
-      "'#{clrString}'"
+      [c] = clr.match findColorRegExp
+      clr = rgbColor c
+      clrString
     else
       clr.toString()
 
@@ -315,7 +317,7 @@ module.exports = createWithPostCreate class Console extends BaseObject
       "#{displayString}"
 
   isColor = (obj) ->
-    (obj instanceof Color) || (isString(obj) && obj.match colorRegex)
+    (obj instanceof Color) || (isString(obj) && obj.match findColorRegExp)
 
   toDom: (inspectedObject, options={}) ->
     unless inspectedObject? then @literalToDom inspectedObject
