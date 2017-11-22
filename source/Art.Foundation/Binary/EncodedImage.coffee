@@ -1,6 +1,6 @@
 StandardLib = require 'art-standard-lib'
 {toDataUri} = require './DataUri'
-{log, Promise, readFileAsDataUrl, ErrorWithInfo, isString} = StandardLib
+{isNode, log, Promise, readFileAsDataUrl, ErrorWithInfo, isString} = StandardLib
 {isBinary, binary} = require './BinaryString'
 require 'art-rest-client'
 {Image, HTMLImageElement} = global
@@ -31,7 +31,7 @@ module.exports = class EncodedImage
       image = source
       {complete, naturalWidth} = source
       new Promise (resolve, reject) ->
-        if complete && naturalWidth > 0
+        if complete && (naturalWidth > 0 || isNode)
           resolve source
         else
           image.onload  = -> resolve image
