@@ -38,7 +38,8 @@ module.exports = class BinaryString extends BaseObject
     dstU8A
 
   constructor: (arg) ->
-    @bytes = if arg instanceof BinaryString   then BinaryString.cloneUint8Array(arg.bytes)
+    @bytes = unless arg?                      then new Uint8Array
+    else if arg instanceof BinaryString       then BinaryString.cloneUint8Array(arg.bytes)
     else if isFunction arg?.uint8Array        then arg.uint8Array()
     else if isPlainArray arg                  then new Uint8Array arg
     else if arg instanceof ArrayBuffer        then new Uint8Array arg
@@ -72,6 +73,7 @@ module.exports = class BinaryString extends BaseObject
     @fromBase64 base64encoding
 
   toString: -> Utf8.toString @bytes
+  getString: -> @toString()
   toArrayBuffer: -> @bytes.buffer
   toBlob: -> new Blob [@bytes]
 
