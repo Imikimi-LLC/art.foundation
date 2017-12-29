@@ -12,9 +12,9 @@ defineModule module, ->
       if @hasOwnProperty "_functionsToBindList"
         @_functionsToBindList
       else
-        @_functionsToBindList = @getFunctionsToBindList()
+        @_functionsToBindList = @_getFunctionsToBindList()
 
-    @getFunctionsToBindList: ->
+    @_getFunctionsToBindList: ->
       k for k, v of @prototype when k != "constructor" &&
         isFunction(v) &&
         @propertyIsConcrete(k) &&
