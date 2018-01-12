@@ -16,7 +16,7 @@ ToolBar = require './ToolBar'
   isArray, isString, isFunction
   isNumber
   createWithPostCreate
-  colorRegex
+  colorRegExp
   Promise
   containsPromises
   deepAll
@@ -317,7 +317,7 @@ module.exports = createWithPostCreate class Console extends BaseObject
       "#{displayString}"
 
   isColor = (obj) ->
-    (obj instanceof Color) || (isString(obj) && obj.match findColorRegExp)
+    (obj instanceof Color) || (isString(obj) && colorRegExp.test obj)
 
   toDom: (inspectedObject, options={}) ->
     unless inspectedObject? then @literalToDom inspectedObject
@@ -376,7 +376,7 @@ module.exports = createWithPostCreate class Console extends BaseObject
       {maxDepth} = options
       maxDepth = 20 unless isNumber maxDepth
 
-      if typeof m is "string" && !m.match colorRegex
+      if typeof m is "string" && !colorRegExp.test m
         @appendLog @format Pre(m), options
       else
         Promise.then =>
