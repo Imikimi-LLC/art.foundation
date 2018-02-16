@@ -6,20 +6,7 @@ defineModule module, class Browser
 
   @getAgent: getAgent = -> navigator.userAgent || navigator.vendor || window.opera || ""
 
-  # browserIsMobile = null
-  # lastMobileBrowserAgent = null
-  @isMobileBrowser: ->
-    isMobileBrowserRegExp1.test(getAgent())
-    # if lastMobileBrowserAgent != agent = getAgent() # for testing mostly; chrome changes the agent when you simulate different mobile devices
-    #   lastMobileBrowserAgent = agent
-    # else
-    #   return browserIsMobile if browserIsMobile?
-    # browserIsMobile = !!(
-    #   isMobileBrowserRegExp1.test(agent) ||
-    #   isMobileBrowserRegExp2.test(agent.substr(0,4))
-    # )
-
-  @isIOS: -> throw new Error "isIOS DEPRICATED - use iOSDetect"
+  @isMobileBrowser: -> isMobileBrowserRegExp1.test(getAgent())
 
   # these names are consistent with my lowerCamelCase scheme (they parse with codeWords), and make sense
   @iOSDetect: -> /ipad|ipod|iphone/i.test getAgent()
