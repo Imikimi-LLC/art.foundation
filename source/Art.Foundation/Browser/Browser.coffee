@@ -9,9 +9,11 @@ defineModule module, class Browser
   @isMobileBrowser: -> isMobileBrowserRegExp1.test(getAgent())
 
   # these names are consistent with my lowerCamelCase scheme (they parse with codeWords), and make sense
-  @iOSDetect: -> /ipad|ipod|iphone/i.test getAgent()
-  @iPhoneDetect: -> /iphone/i.test getAgent()
-  @isTouchDevice: -> document.documentElement.ontouchstart != undefined
+  @iOSDetect:       -> /ipad|ipod|iphone/i.test getAgent()
+  @iPhoneDetect:    -> /iphone|ipod/i.test getAgent()
+  @iPadDetect:      -> /ipad/i.test getAgent()
+  @nativeAppDetect: -> !!global.cordova
+  @isTouchDevice:   -> document.documentElement.ontouchstart != undefined
 
   @getOrientationAngle: -> global.screen?.orientation?.angle ? global.orientation
 
