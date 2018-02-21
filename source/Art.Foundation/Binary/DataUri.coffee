@@ -20,10 +20,9 @@ module.exports = class DataUri
     promise.then (dataUri) ->
     , (errorEventOrErrorObject) ->
   ###
-  @toDataUri: (data) ->
+  @toDataUri: (data, mimeType = 'image/png') ->
     throw new Error "data not set" unless data
     return readAsDataURL data if global.File && data instanceof global.File
     return Promise.resolve data if isDataUri data
     binary(data).toBase64()
-    .then (base64) ->
-      "data:image/png;base64,#{base64}"
+    .then (base64) -> "data:#{mimeType};base64,#{base64}"
