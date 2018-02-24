@@ -5,6 +5,7 @@ Utf8 = require   "./Utf8"
 StandardLib = require 'art-standard-lib'
 ClassSystem = require 'art-class-system'
 {
+  merge
   isString, isFunction, isPlainArray, log, min, inspect, readFileAsDataUrl, readFileAsArrayBuffer, compactFlatten, pad
   InspectedObjectLiteral
   Promise
@@ -75,7 +76,10 @@ module.exports = class BinaryString extends BaseObject
   toString: -> Utf8.toString @bytes
   getString: -> @toString()
   toArrayBuffer: -> @bytes.buffer
-  toBlob: (mimeType) -> new Blob [@bytes], mimeType && type: mimeType
+  toBlob: (mimeType) ->
+    # NOTE: IE and Edge crash if we pass 'null' as the second parameter'
+    # empty {} is OK
+    new Blob [@bytes], merge type: mimeType
 
   eq: (b) -> @compare(b) == 0
 
