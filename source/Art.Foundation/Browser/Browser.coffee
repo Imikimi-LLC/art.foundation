@@ -89,3 +89,21 @@ defineModule module, class Browser
 
   @sendEmail: (options) ->
     openLink encodeMailto options
+
+  # the 'download' attribute doesn't seem to be well supported
+  # It may work better if it is the same-domain
+  #   https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#Attributes
+  # CanIUse has a slightly different take - see known-issues
+  #   https://caniuse.com/#search=download
+  # Currently, only Chrome seems to automatically start a download
+  @startHtmlFileDownload: (filename, url) ->
+    element = document.createElement 'a'
+    element.setAttribute 'target', '_blank'
+    element.setAttribute 'href', url
+    element.setAttribute 'download', filename
+
+    element.style.display = 'none'
+    document.body.appendChild element
+    element.click()
+    document.body.removeChild element
+    console.log {element}
