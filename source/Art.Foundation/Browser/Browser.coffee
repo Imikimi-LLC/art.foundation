@@ -10,6 +10,7 @@ defineModule module, class Browser
 
   # these names are consistent with my lowerCamelCase scheme (they parse with codeWords), and make sense
   @iOSDetect:       -> /ipad|ipod|iphone/i.test getAgent()
+  @androidDetect:   -> /android/i.test getAgent()
   @iPhoneDetect:    -> /iphone|ipod/i.test getAgent()
   @iPadDetect:      -> /ipad/i.test getAgent()
   @nativeAppDetect: -> !!global.cordova
