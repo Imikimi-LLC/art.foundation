@@ -1,6 +1,9 @@
 StandardLib = require 'art-standard-lib'
 {toDataUri} = require './DataUri'
-{isNode, log, Promise, readFileAsDataUrl, ErrorWithInfo, isString} = StandardLib
+{
+  isNode, log, Promise, readFileAsDataUrl, ErrorWithInfo, isString, escapeRegExp
+  isObject
+} = StandardLib
 {isBinary, binary} = require './BinaryString'
 require 'art-rest-client'
 {Image, HTMLImageElement} = global
@@ -15,10 +18,19 @@ module.exports = class EncodedImage
       Binary: image data
       or
       HTMLImageElement
-    options: options for RestClient.getArrayBuffer
-      NOTE: if options is provided, image-data is fetched using
-        RestClient.getArrayBuffer
-      This seems to work to endrun TAINT.
+
+    second arg:
+      object: options for RestClient.getArrayBuffer
+        NOTE: if options is provided, image-data is fetched using
+          RestClient.getArrayBuffer
+        This seems to work to endrun TAINT.
+
+      true: make crossorigin request, if necessary,
+        so the returned image is not tainted.
+
+    CORS/TAINT
+      To avoid taint, either set the second option to {} or true.
+      AND - make sure the server is returning the correct headers.
 
   OUT:
     promise.then (fullyLoadedHtmlImage) ->
@@ -47,7 +59,7 @@ module.exports = class EncodedImage
             toDataUri source
 
         else if isString source
-          if options
+          if isObject options
             Neptune.Art.RestClient.getArrayBuffer source, options
             .then (arrayBuffer) -> readFileAsDataUrl new Blob [arrayBuffer]
           else source
@@ -55,17 +67,30 @@ module.exports = class EncodedImage
 
       .then (url) ->
         image = new Image
+
+        if options == true
+          ###
+          crossOrigin = "Anonymous" required to getImageData and avoid this error
+            "The canvas has been tainted by cross-origin data."
+
+          NOTE:
+            file: urls break with crossOrigin in WkWebKit
+            data: urls break with crossOrigin in Safari
+          ###
+          sameOrigin = (origin = global.document?.location?.origin) &&
+            ///
+            ^
+            (
+              (#{escapeRegExp origin})
+              |
+              (?![a-z]+\:)
+            )
+            ///i.test url
+
+          if !sameOrigin && /^https?:/i.test url
+            image.crossOrigin = "anonymous"
+
         image.src = url
-
-        ###
-        crossOrigin = "Anonymous" required to getImageData and avoid this error
-          "The canvas has been tainted by cross-origin data."
-
-        NOTE:
-          file: urls break with crossOrigin in WkWebKit
-          data: urls break with crossOrigin in Safari
-        ###
-        image.crossOrigin = "Anonymous" if url.match? /^(file|data)\:/i
 
         get image
 
