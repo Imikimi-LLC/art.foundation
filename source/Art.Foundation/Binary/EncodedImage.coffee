@@ -3,6 +3,7 @@ StandardLib = require 'art-standard-lib'
 {
   isNode, log, Promise, readFileAsDataUrl, ErrorWithInfo, isString, escapeRegExp
   isObject
+  sameOrigin
 } = StandardLib
 {isBinary, binary} = require './BinaryString'
 require 'art-rest-client'
@@ -20,13 +21,17 @@ module.exports = class EncodedImage
       HTMLImageElement
 
     second arg:
-      object: options for RestClient.getArrayBuffer
+      options: (object)
+        options for RestClient.getArrayBuffer
         NOTE: if options is provided, image-data is fetched using
           RestClient.getArrayBuffer
         This seems to work to endrun TAINT.
 
-      true: make crossorigin request, if necessary,
-        so the returned image is not tainted.
+      crossOrigin: true/false/null/undefined
+        false: DO NOT make crossorigin request
+        null/undefined: AUTO
+          crossOrigin is set to 'anonymous' if the request is indeed cross-origin
+        true: crossOrigin is always set to 'anonymous'
 
     CORS/TAINT
       To avoid taint, either set the second option to {} or true.
@@ -36,8 +41,29 @@ module.exports = class EncodedImage
     promise.then (fullyLoadedHtmlImage) ->
     , (htmlImageOnerrorEvent) ->
 
+
+  CORS NOTES
+    crossOrigin = "Anonymous" required to getImageData and avoid this error
+      "The canvas has been tainted by cross-origin data."
+
+    performance???
+      I don't think there is a performance hit for making the crossOrigin request.
+      - SBD March-2018
+
+    crossOrigin should only be set for HTTP requests - since it can only be
+    fulfilled with HTTP response headers. Some browsers (safari) get cranky
+    if you use it with file or data URIs:
+
+      file: urls break with crossOrigin in WkWebKit
+      data: urls break with crossOrigin in Safari
+
   ###
-  @get: get = (source, options) ->
+  @get: get = (source, b) ->
+    if isObject b
+      options = b
+    else
+      crossOrigin = if b? then !!b # true, false, or undefined
+
     return Promise.reject() unless source?
     if source.constructor == HTMLImageElement || source.constructor == Image
       image = source
@@ -68,26 +94,8 @@ module.exports = class EncodedImage
       .then (url) ->
         image = new Image
 
-        if options == true
-          ###
-          crossOrigin = "Anonymous" required to getImageData and avoid this error
-            "The canvas has been tainted by cross-origin data."
-
-          NOTE:
-            file: urls break with crossOrigin in WkWebKit
-            data: urls break with crossOrigin in Safari
-          ###
-          sameOrigin = (origin = global.document?.location?.origin) &&
-            ///
-            ^
-            (
-              (#{escapeRegExp origin})
-              |
-              (?![a-z]+\:)
-            )
-            ///i.test url
-
-          if !sameOrigin && /^https?:/i.test url
+        unless isNode
+          if crossOrigin ? !sameOrigin(url) && /^https?:/i.test url
             image.crossOrigin = "anonymous"
 
         image.src = url

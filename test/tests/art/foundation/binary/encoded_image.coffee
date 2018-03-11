@@ -1,6 +1,16 @@
 {EncodedImage, log, binary} = Neptune.Art.Foundation
 {RestClient} = Neptune.Art
 
+isTainted = (image)->
+  canvas = document.createElement 'canvas'
+  context = canvas.getContext "2d"
+  context.drawImage image, 0, 0
+  try
+    context.getImageData 0, 0, 1, 1
+    false
+  catch
+    true
+
 if self.Image
   module.exports = suite:
     basics: ->
@@ -58,37 +68,50 @@ if self.Image
             assert.equal image.width, 256
             assert.equal image.height, 256
 
-    taint: ->
-      isTainted = (image)->
-        canvas = document.createElement 'canvas'
-        context = canvas.getContext "2d"
-        context.drawImage image, 0, 0
-        try
-          context.getImageData 0, 0, 1, 1
-          false
-        catch
-          true
+    taint:
+      crossOriginRequest: ->
+        crossOriginUrl = "http://zoimages.imikimi.com/emiIg9qZtv252plK.png?w=100"
 
-      crossOriginUrl = "http://zoimages.imikimi.com/emiIg9qZtv252plK.png?w=100"
+        test "EncodedImage.get(crossOriginUrl, false) IS TAINTED", ->
+          EncodedImage.get crossOriginUrl, false
+          .then (image) ->
+            assert.true isTainted image
 
-      test "EncodedImage.get(crossOriginUrl) is tainted", ->
-        EncodedImage.get crossOriginUrl
-        .then (image) ->
-          assert.true isTainted image
+        test "EncodedImage.get(crossOriginUrl, true) is not tainted", ->
+          EncodedImage.get crossOriginUrl, true
+          .then (image) ->
+            assert.false isTainted image
 
-      test "EncodedImage.get(sameOriginUrl) is not tainted", ->
-        EncodedImage.get "#{testAssetRoot}/array_buffer_image_test/sample.png"
-        .then (image) ->
-          assert.false isTainted image
+        test "EncodedImage.get(crossOriginUrl, {}) is not tainted", ->
+          EncodedImage.get crossOriginUrl, verbose:true
+          .then (image) ->
+            assert.false isTainted image
 
-      test "EncodedImage.get(crossOriginUrl, true) is not tainted", ->
-        EncodedImage.get crossOriginUrl, true
-        .then (image) ->
-          assert.false isTainted image
+        test "EncodedImage.get(crossOriginUrl) is not tainted", ->
+          EncodedImage.get crossOriginUrl
+          .then (image) ->
+            assert.false isTainted image
 
-      test "EncodedImage.get(crossOriginUrl, {}) is not tainted", ->
-        EncodedImage.get crossOriginUrl, verbose:true
-        .then (image) ->
-          assert.false isTainted image
+      sameOriginRequest: ->
+        sameOriginUrl = "#{testAssetRoot}/array_buffer_image_test/sample.png"
 
+        test "EncodedImage.get(sameOriginUrl, false) is not tainted", ->
+          EncodedImage.get sameOriginUrl, false
+          .then (image) ->
+            assert.false isTainted image
+
+        test "EncodedImage.get(sameOriginUrl, true) is not tainted", ->
+          EncodedImage.get sameOriginUrl, false
+          .then (image) ->
+            assert.false isTainted image
+
+        test "EncodedImage.get(sameOriginUrl, {}) is not tainted", ->
+          EncodedImage.get sameOriginUrl, false
+          .then (image) ->
+            assert.false isTainted image
+
+        test "EncodedImage.get(sameOriginUrl) is not tainted", ->
+          EncodedImage.get sameOriginUrl
+          .then (image) ->
+            assert.false isTainted image
 
