@@ -7,6 +7,12 @@ StandardLib = require 'art-standard-lib'
 } = StandardLib
 {isBinary, binary} = require './BinaryString'
 require 'art-rest-client'
+
+# Node.js support - be sure to "npm install canvas"
+unless global.Image
+  try
+    global.HTMLImageElement = global.Image = (global.HTMLCanvasElement = eval('require') "canvas").Image
+
 {Image, HTMLImageElement} = global
 
 module.exports = class EncodedImage
