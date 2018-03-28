@@ -9,6 +9,7 @@ ClassSystem = require 'art-class-system'
   isString, isFunction, isPlainArray, log, min, inspect, readFileAsDataUrl, readFileAsArrayBuffer, compactFlatten, pad
   InspectedObjectLiteral
   Promise
+  isNode
 } = StandardLib
 {BaseObject, inspect} = ClassSystem
 
@@ -66,7 +67,10 @@ module.exports = class BinaryString extends BaseObject
 
   # OUT: promise.then (dataUri) ->
   toDataUri: (mimeType)->
-    readFileAsDataUrl @toBlob mimeType
+    if isNode
+      "data:#{mimeType ? ''};base64,#{@toBase64()}"
+    else
+      readFileAsDataUrl @toBlob mimeType
 
   @fromDataUri: (dataURI)->
     splitDataURI = dataURI.split ','
@@ -154,8 +158,12 @@ module.exports = class BinaryString extends BaseObject
     # 2016-2-14 benchmark based results for cut-over-to-toBase64ToDataUri length
     # FF:                 4 * 1024
     # Safari and Chrome:  16 * 1024
-    if @length > 16 * 1024
+    if isNode
+      new Buffer(@bytes).toString 'base64'
+
+    else if @length > 16 * 1024
       @toBase64ToDataUri()
+
     else
       @toBase64Custom()
 
