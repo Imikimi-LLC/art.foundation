@@ -3,6 +3,7 @@ ClassSystem = require 'art-class-system'
 AsyncLocalStorage = require './AsyncLocalStorage'
 {BaseObject} = ClassSystem
 module.exports = class JsonStore extends BaseObject
+  @singletonClass()
   # store: localStorage or sessionStorage
   #   OR anything that implements the Async Storage interface (localStorage but returns promises):
   #     length
@@ -13,13 +14,28 @@ module.exports = class JsonStore extends BaseObject
   #     clear()
   constructor: (store = AsyncLocalStorage) -> @store = store
 
-  setItem:    (k, v) -> Promise.then => @store.setItem k, JSON.stringify v
-  getItem:    (key)    ->
-    Promise.resolve(@store.getItem key).then (jsonValue) =>
-      Promise.then -> jsonValue && JSON.parse jsonValue
-      .catch (error) ->
-        log.error JsonStore: {key, jsonValue, error}
-        throw error
+  # returns the string-value written or null if non written (for example, if nothing changed)
+  setItem: (key, value) ->
+    json = null
+    @store.getItem key
+    .then (oldJson) =>
+      if oldJson != json = JSON.stringify value
+        @store.setItem key, json
+        .then ->
+          log JsonStore_setItem: {key, json}
+          json
+
+      null
+    .catch (error) ->
+      log.error JsonStore_setItem: {key, value, json, error}
+      throw error
+
+  getItem: (key) ->
+    Promise.then    => @store.getItem key
+    .then (json)    => json && JSON.parse json
+    .catch (error) ->
+      log.error JsonStore_getItem: {key, json, error}
+      throw error
 
   removeItem: (k)    -> Promise.then => @store.removeItem k
   clear:             -> Promise.then => @store.clear()
