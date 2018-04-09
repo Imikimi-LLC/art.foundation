@@ -7,6 +7,7 @@ defineModule module, class Browser
   @getAgent: getAgent = -> navigator.userAgent || navigator.vendor || window.opera || ""
 
   @isMobileBrowser: -> isMobileBrowserRegExp1.test(getAgent())
+  @isSafari: -> /^((?!chrome|android).)*safari/i.test getAgent()
 
   # these names are consistent with my lowerCamelCase scheme (they parse with codeWords), and make sense
   @iOSDetect:       -> /ipad|ipod|iphone/i.test getAgent()
