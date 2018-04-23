@@ -21,9 +21,7 @@ module.exports = class JsonStore extends BaseObject
     .then (oldJson) =>
       if oldJson != json = JSON.stringify value
         @store.setItem key, json
-        .then ->
-          log JsonStore_setItem: {key, json}
-          json
+        .then -> json
 
       null
     .catch (error) ->
