@@ -3,6 +3,5 @@
 
 module.exports = require './namespace'
 module.exports
-require './binary'
 require './browser'
 require './tools'

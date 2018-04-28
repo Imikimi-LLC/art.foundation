@@ -6,6 +6,6 @@ module.exports
 .includeInNamespace require './Foundation'
 .addModules
   ArtFoundationConfig: require './ArtFoundationConfig'
-require './Binary'
+  Binary:              require './Binary'             
 require './Browser'
 require './Tools'

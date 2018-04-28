@@ -5,10 +5,8 @@ module.exports = require './namespace'
 module.exports
 .addModules
   BatchLoader:             require './batch_loader'               
-  Epoch:                   require './epoch'                      
   JsonStore:               require './json_store'                 
   ProgressAdapter:         require './ProgressAdapter'            
-  RestClient:              require './rest_client'                
   Stat:                    require './stat'                       
   Transaction:             require './transaction'                
   WebWorker:               require './web_worker'                 

@@ -2,6 +2,5 @@
 # file: tests/art/foundation/namespace.coffee
 
 module.exports = (require '../namespace').addNamespace('Foundation', class Foundation extends Neptune.PackageNamespace)
-require './binary/namespace';
 require './browser/namespace';
 require './tools/namespace'
