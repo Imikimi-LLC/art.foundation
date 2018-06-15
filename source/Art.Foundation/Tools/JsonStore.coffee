@@ -23,7 +23,9 @@ module.exports = class JsonStore extends BaseObject
         @store.setItem key, json
         .then -> json
 
-      null
+      else
+        null
+
     .catch (error) ->
       log.error JsonStore_setItem: {key, value, json, error}
       throw error
