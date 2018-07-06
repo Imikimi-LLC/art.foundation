@@ -26,8 +26,8 @@ module.exports = class File
       body.appendChild @hiddenDivForFileInput
       fileInput.onchange = (e) ->
         fileList = (file for file in fileInput.files)
-        fileTypes = (file.type for file in fileList)
-        fileSizes = (file.size for file in fileList)
+        # fileTypes = (file.type for file in fileList)
+        # fileSizes = (file.size for file in fileList)
         if fileList.length > 0 && fileList[0]
           onChange && onChange fileList
           resolve fileList

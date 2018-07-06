@@ -8,4 +8,5 @@ module.exports
   Cookie:              require './Cookie'             
   Dom:                 require './Dom'                
   DomElementFactories: require './DomElementFactories'
+  Download:            require './Download'           
   File:                require './File'               
