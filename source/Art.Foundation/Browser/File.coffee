@@ -15,8 +15,8 @@ module.exports = class File
   #   multiple: if set to true, allow the user to select multiple files
   #   onChange: ([files]) -> ... # function called when the user makes a selection. Returns an array of HTML File objects
   #     https://developer.mozilla.org/en-US/docs/Web/API/File
-  @request: (options={}) ->
-    new Promise (resolve, reject) ->
+  @request: (options={}) =>
+    new Promise (resolve, reject) =>
       {accept, multiple, onChange} = options
       @hiddenDivForFileInput?.parentNode.removeChild @hiddenDivForFileInput
       @hiddenDivForFileInput = createElementFromHtml "<div style='height: 0px;width: 0px; overflow:hidden; position:absolute;'/>"
