@@ -1,4 +1,4 @@
-{hasProperties, defineModule, log, present, array, Promise, mergeInto} = require 'art-standard-lib'
+{hasProperties, defineModule, getEnv, log, present, array, Promise, mergeInto} = require 'art-standard-lib'
 
 defineModule module, class Browser
   isMobileBrowserRegExp1 = /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i
@@ -15,8 +15,9 @@ defineModule module, class Browser
   @androidDetect:   -> /android/i.test getAgent()
   @iPhoneDetect:    -> /iphone|ipod/i.test getAgent()
   @iPadDetect:      -> /ipad/i.test getAgent()
-  @nativeAppDetect: -> !!global.cordova
+  @nativeAppDetect: -> !!(getEnv().fakeNativeApp || global.cordova)
   @isTouchDevice:   -> document.documentElement.ontouchstart != undefined
+  @isIe11:          -> !!window.MSInputMethodContext && !!document.documentMode # https://stackoverflow.com/questions/21825157/internet-explorer-11-detection
 
   @getOrientationAngle: -> global.screen?.orientation?.angle ? global.orientation
 
