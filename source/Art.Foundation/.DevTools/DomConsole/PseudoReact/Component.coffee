@@ -38,7 +38,7 @@ module.exports = class Component extends BaseObject
 
   @toComponentFactory: ->
     createObjectTreeFactory (props, children) =>
-      props.children ||= children
+      props.children ||= children if props?
       (new @ props).rerender()
 
   #######################

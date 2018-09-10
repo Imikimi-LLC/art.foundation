@@ -137,8 +137,8 @@ module.exports = class DomElementFactories
       list
       (nodeName, props, children) =>
         element = document.createElement nodeName
-        @setDomElementProps element, props
-        @setDomElementChildren element, children
+        @setDomElementProps element, props if props?
+        @setDomElementChildren element, children if children?
 
         element
 
