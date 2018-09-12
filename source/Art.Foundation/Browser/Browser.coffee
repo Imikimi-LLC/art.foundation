@@ -7,17 +7,43 @@ defineModule module, class Browser
 
   @getAgent: getAgent = -> navigator.userAgent || navigator.vendor || window.opera || ""
 
-  @isMobileBrowser: -> isMobileBrowserRegExp1.test(getAgent())
-  @isSafari: -> /^((?!chrome|android).)*safari/i.test getAgent()
+  artBrowserUserAgent: artBrowserUserAgent = getAgent()
+
+  @simpleBrowserInfo: simpleBrowserInfo =
+    os: switch
+      when iOS     = /ipad|ipod|iphone/i.test artBrowserUserAgent then 'iOS'
+      when android = /android/i.test artBrowserUserAgent then 'android'
+      when windows = /windows/i.test artBrowserUserAgent then 'windows'
+      when osx     = /mac os x/i.test artBrowserUserAgent then 'osx'
+      else 'other'
+
+    browser: switch
+      when ie11    = !!window.MSInputMethodContext && !!document.documentMode then 'ie11'
+      when safari  = iOS || /^((?!chrome|android).)*safari/i.test artBrowserUserAgent then 'safari'
+      when edge    = /Edge/.test artBrowserUserAgent then 'edge'
+      when opera   = window.opera? || /\ OPR\//.test artBrowserUserAgent then 'opera'
+      when chrome  = window.chrome? && /Chrome\/\d/i.test artBrowserUserAgent then 'chrome'
+      when firefox = !!window.InstallTrigger then 'firefox'
+      else 'other'
+
+    touch:  document.documentElement.ontouchstart != undefined
+    native: !!(getEnv().fakeNativeApp || global.cordova)
+    device: switch
+      when iPhone = /iphone|ipod/i.test artBrowserUserAgent then 'iPhone'
+      when iPad   = /ipad/i.test artBrowserUserAgent        then 'iPad'
+      else 'other'
+
+  @isMobileBrowser: -> isMobileBrowserRegExp1.test artBrowserUserAgent
+  @isSafari:        -> !!safari
 
   # these names are consistent with my lowerCamelCase scheme (they parse with codeWords), and make sense
-  @iOSDetect:       -> /ipad|ipod|iphone/i.test getAgent()
-  @androidDetect:   -> /android/i.test getAgent()
-  @iPhoneDetect:    -> /iphone|ipod/i.test getAgent()
-  @iPadDetect:      -> /ipad/i.test getAgent()
-  @nativeAppDetect: -> !!(getEnv().fakeNativeApp || global.cordova)
-  @isTouchDevice:   -> document.documentElement.ontouchstart != undefined
-  @isIe11:          -> !!window.MSInputMethodContext && !!document.documentMode # https://stackoverflow.com/questions/21825157/internet-explorer-11-detection
+  @iOSDetect:       -> !!iOS
+  @androidDetect:   -> !!android
+  @iPhoneDetect:    -> !!iPhone
+  @iPadDetect:      -> !!iPad
+  @nativeAppDetect: -> !!simpleBrowserInfo.native
+  @isTouchDevice:   -> !!simpleBrowserInfo.touch
+  @isIe11:          -> !!ie11 # https://stackoverflow.com/questions/21825157/internet-explorer-11-detection
 
   @getOrientationAngle: -> global.screen?.orientation?.angle ? global.orientation
 
