@@ -14,6 +14,42 @@ defineModule module, class Browser
 
   artBrowserUserAgent: artBrowserUserAgent = getAgent()
 
+  _safeAreaInsetCssKey = null
+  @getSafeAreaInsetCssKey: ->
+    _safeAreaInsetCssKey ?= if CSS.supports 'padding-bottom: env(safe-area-inset-bottom)'
+      'env'
+    else if CSS.supports 'padding-bottom: constant(safe-area-inset-bottom)'
+      'constant'
+    else
+      false
+
+  # SEE: https://webkit.org/blog/7929/designing-websites-for-iphone-x/
+  @getCssSafeAreaInset: =>
+    if key = @getSafeAreaInsetCssKey()
+      div = document.createElement 'div'
+      div.style.paddingTop    = "#{key}(safe-area-inset-top)"
+      div.style.paddingLeft   = "#{key}(safe-area-inset-left)"
+      div.style.paddingRight  = "#{key}(safe-area-inset-right)"
+      div.style.paddingBottom = "#{key}(safe-area-inset-bottom)"
+
+      document.body.appendChild div
+      computedStyle = window.getComputedStyle div
+      result =
+        top   : parseInt(computedStyle.paddingTop)    | 0
+        left  : parseInt(computedStyle.paddingLeft)   | 0
+        right : parseInt(computedStyle.paddingRight)  | 0
+        bottom: parseInt(computedStyle.paddingBottom) | 0
+
+      document.body.removeChild div
+
+      result
+
+    else
+      top:    0
+      left:   0
+      right:  0
+      bottom: 0
+
   @simpleBrowserInfo: simpleBrowserInfo = if global.navigator
     os: switch
       when iOS     = /ipad|ipod|iphone/i.test artBrowserUserAgent then 'iOS'
