@@ -1,4 +1,4 @@
-{hasProperties, defineModule, getEnv, log, present, array, Promise, mergeInto} = require 'art-standard-lib'
+{merge, hasProperties, defineModule, isNumber, getEnv, log, present, array, Promise, mergeInto} = require 'art-standard-lib'
 
 defineModule module, class Browser
   isMobileBrowserRegExp1 = /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i
@@ -23,6 +23,15 @@ defineModule module, class Browser
     else
       false
 
+  # optionally provide the current viewSize as a fallback if getOrientationAngle is not available.
+  @getOrientationIsPortrait: (viewSize) =>
+    if isNumber o = @getOrientationAngle()
+      (o % 180) == 0
+    else if viewSize?
+      viewSize.x <= viewSize.y
+    else
+      true
+
   # SEE: https://webkit.org/blog/7929/designing-websites-for-iphone-x/
   @getCssSafeAreaInset: =>
     if key = @getSafeAreaInsetCssKey()
@@ -42,21 +51,33 @@ defineModule module, class Browser
 
       document.body.removeChild div
 
+    else
+      result =
+        top:    0
+        left:   0
+        right:  0
+        bottom: 0
+
+    if result.top == 0 && iOS && nativeApp && (iPad || @getOrientationIsPortrait())
+      merge result, top: 20
+    else
       result
 
-    else
-      top:    0
-      left:   0
-      right:  0
-      bottom: 0
 
+  ###
+  regression userAgents:
+    Mozilla/5.0 (Windows Phone 10.0; Android 6.0.1; Microsoft; Lumia 650 Dual SIM) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Mobile Safari/537.36 Edge/15.15254
+
+  Compare with: http://www.whatsmyua.info/
+  ###
   @simpleBrowserInfo: simpleBrowserInfo = if global.navigator
     os: switch
-      when iOS     = /ipad|ipod|iphone/i.test artBrowserUserAgent then 'iOS'
-      when android = /android/i.test artBrowserUserAgent then 'android'
-      when windows = /windows/i.test artBrowserUserAgent then 'windows'
-      when osx     = /mac os x/i.test artBrowserUserAgent then 'osx'
-      when linux   = /linux/.test artBrowserUserAgent then 'linux'
+      when iOS          = /ipad|ipod|iphone/i.test artBrowserUserAgent then 'iOS'
+      when windowsPhone = /Windows Phone/i.test artBrowserUserAgent then 'windowsPhone'
+      when windows      = /windows/i.test artBrowserUserAgent then 'windows'
+      when osx          = /mac os x/i.test artBrowserUserAgent then 'osx'
+      when android      = /android/i.test artBrowserUserAgent then 'android'
+      when linux        = /linux/.test artBrowserUserAgent then 'linux'
       else 'other'
 
     browser: switch
@@ -70,7 +91,7 @@ defineModule module, class Browser
       else 'other'
 
     touch:  document.documentElement.ontouchstart != undefined
-    native: !!(getEnv().fakeNativeApp || global.cordova)
+    native: nativeApp = !!(getEnv().fakeNativeApp || global.cordova)
     device: switch
       when iPhone = /iphone|ipod/i.test artBrowserUserAgent then 'iPhone'
       when iPad   = /ipad/i.test artBrowserUserAgent        then 'iPad'
