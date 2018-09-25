@@ -8,6 +8,9 @@ defineModule module, class Browser
   # https://www.keycdn.com/blog/web-crawlers/
   @isWebSpiderRegExp: isWebSpiderRegExp = /Googlebot|Google Web Preview|Google Page Speed Insights|Bingbot|Yahoo. *Slurp|DuckDuckBot|Baiduspider|YandexBot|Exabot|facebot|facebookexternalhit|alexa.com/i
 
+  @getClientWidth: -> (document.documentElement ? document.body).clientWidth
+  @getClientHeight: -> (document.documentElement ? document.body).clientWidth
+
   @getAgent: getAgent = ->
     navigator = global.navigator ? ""
     navigator?.userAgent || navigator?.vendor || global.opera || ""
@@ -16,9 +19,10 @@ defineModule module, class Browser
 
   _safeAreaInsetCssKey = null
   @getSafeAreaInsetCssKey: ->
-    _safeAreaInsetCssKey ?= if CSS.supports 'padding-bottom: env(safe-area-inset-bottom)'
+    {CSS} = global
+    _safeAreaInsetCssKey ?= if CSS?.supports 'padding-bottom: env(safe-area-inset-bottom)'
       'env'
-    else if CSS.supports 'padding-bottom: constant(safe-area-inset-bottom)'
+    else if CSS?.supports 'padding-bottom: constant(safe-area-inset-bottom)'
       'constant'
     else
       false
@@ -91,7 +95,7 @@ defineModule module, class Browser
       else 'other'
 
     touch:  document.documentElement.ontouchstart != undefined
-    native: nativeApp = !!(getEnv().fakeNativeApp || global.cordova)
+    native: nativeApp = !!(getEnv().fakeNativeApp || getEnv().fakeNative || global.cordova)
     device: switch
       when iPhone = /iphone|ipod/i.test artBrowserUserAgent then 'iPhone'
       when iPad   = /ipad/i.test artBrowserUserAgent        then 'iPad'
