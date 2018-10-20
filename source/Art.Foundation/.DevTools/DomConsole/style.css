@@ -7,9 +7,13 @@
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
     -ms-interpolation-mode: nearest-neighbor;
-    border: 1px solid rgba(255, 255, 255, 0); }
-    .domConsole img:hover {
-      border: 1px solid #bbbbbb; }
+    background-image: linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%, transparent 75%, transparent);
+    background-color: red;
+    background-size: 50px 50px;
+    border: 1px solid rgba(255, 255, 255, 255);
+  }
+  .domConsole img:hover {
+    border: 1px solid #bbbbbb; }
   .domConsole ul {
     list-style-type: none; }
   .domConsole .collapsable {
