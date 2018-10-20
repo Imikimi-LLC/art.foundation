@@ -1,4 +1,4 @@
-{merge, hasProperties, defineModule, isNumber, getEnv, log, present, array, Promise, mergeInto} = require 'art-standard-lib'
+{max, min, merge, hasProperties, defineModule, isNumber, getEnv, log, present, array, Promise, mergeInto} = require 'art-standard-lib'
 
 defineModule module, class Browser
   isMobileBrowserRegExp1 = /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i
@@ -94,12 +94,31 @@ defineModule module, class Browser
       when chrome  = /Chrome\/\d/i.test artBrowserUserAgent then 'chrome'
       else 'other'
 
-    touch:  document.documentElement.ontouchstart != undefined
-    native: nativeApp = !!(getEnv().fakeNativeApp || getEnv().fakeNative || global.cordova)
+    touch:  touch = document.documentElement.ontouchstart != undefined
+    nativeApp: nativeApp = !!(getEnv().fakeNativeApp || global.cordova) # NOTE: 'native' is a javascript reserve-word
     device: switch
       when iPhone = /iphone|ipod/i.test artBrowserUserAgent then 'iPhone'
       when iPad   = /ipad/i.test artBrowserUserAgent        then 'iPad'
       else 'other'
+    deviceMajorScreenSize: deviceMajorScreenSize = max screen.availWidth, screen.availHeight
+    deviceMinorScreenSize: deviceMinorScreenSize = min screen.availWidth, screen.availHeight
+    deviceType:
+      if touch
+        ###
+        Why 600?
+
+        Tablets
+          >= 600: The Nexus 7 is the smallest 'tablet-like' touch device I've found
+
+        Phones
+          <= 414: iPhones: iPhone8+, iPhoneXSMax are -= 414
+          <= 480: Android: Ex: Samsung Galaxy Note 5
+        ###
+        if deviceMinorScreenSize < 600
+          "phone"
+        else
+          "tablet"
+      else "desktop"
 
   @isMobileBrowser: -> isMobileBrowserRegExp1.test artBrowserUserAgent
   @isSafari:        -> !!safari
@@ -109,8 +128,8 @@ defineModule module, class Browser
   @androidDetect:   -> !!android
   @iPhoneDetect:    -> !!iPhone
   @iPadDetect:      -> !!iPad
-  @nativeAppDetect: -> !!simpleBrowserInfo.native
-  @isTouchDevice:   -> !!simpleBrowserInfo.touch
+  @nativeAppDetect: -> !!nativeApp
+  @isTouchDevice:   -> !!touch
   @isIe11:          -> !!ie11 # https://stackoverflow.com/questions/21825157/internet-explorer-11-detection
 
   @getOrientationAngle: -> global.screen?.orientation?.angle ? global.orientation
