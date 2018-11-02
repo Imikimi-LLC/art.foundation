@@ -306,7 +306,7 @@ module.exports = createWithPostCreate class Console extends BaseObject
       clr = rgbColor c
       clrString
     else
-      clr.toString()
+      clr.inspect?() ? clr.toString()
 
     Span
       class: "inspected"
