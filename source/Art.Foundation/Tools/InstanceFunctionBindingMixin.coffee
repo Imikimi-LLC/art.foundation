@@ -8,11 +8,11 @@
 defineModule module, ->
   (superClass) -> class InstanceFunctionBindingMixin extends superClass
 
-    @getFunctionsToBindList: ->
-      if @hasOwnProperty "_functionsToBindList"
+    @getFunctionsToBindList: (hotReload) ->
+      if !hotReload && @hasOwnProperty "_functionsToBindList"
         @_functionsToBindList
       else
-        @_functionsToBindList = @_getFunctionsToBindList()
+        @_functionsToBindList = @_getFunctionsToBindList().sort()
 
     @_getFunctionsToBindList: ->
       k for k, v of @prototype when k != "constructor" &&
@@ -22,14 +22,32 @@ defineModule module, ->
 
     getBoundFunctionList: -> @_boundFunctionList
 
-    bindFunctionsToInstance: ->
-      functionsToBindList = @class.getFunctionsToBindList()
+    hotReloadDebug: (functionsToBindList) ->
+      newMethods = []
+      existingMethods = []
+      removedMethods = for k in @_boundFunctionList when k not in functionsToBindList
+        k
+      for k in functionsToBindList
+        if k in @_boundFunctionList
+          existingMethods.push k
+        else
+          newMethods.push k
+
+      log HotReloadBind: {existingMethods, newMethods, removedMethods}
+
+    bindFunctionsToInstance: (hotReload) ->
+      functionsToBindList = @class.getFunctionsToBindList hotReload
+
+      # @hotReloadDebug functionsToBindList if hotReload
 
       if @_boundFunctionList
-        delete @[k] for k in @_boundFunctionList when k not in functionsToBindList
+        for k in @_boundFunctionList when k not in functionsToBindList
+          delete @[k]
 
       {prototype} = @class
+
       for k in functionsToBindList
-        @[k] = fastBind prototype[k], @
+        @[k] = if prototypeMethod = prototype[k]
+          fastBind prototypeMethod, @
 
       @_boundFunctionList = functionsToBindList
