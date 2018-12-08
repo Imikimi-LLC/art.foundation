@@ -96,6 +96,8 @@ defineModule module, class Browser
 
     touch:  touch = document.documentElement.ontouchstart != undefined
     nativeApp: nativeApp = !!(getEnv().fakeNativeApp || global.cordova) # NOTE: 'native' is a javascript reserve-word
+    devicePixelRatio: window.devicePixelRatio ? 1
+    pixelsPerPoint: window.devicePixelRatio ? 1
     device: switch
       when iPhone = /iphone|ipod/i.test artBrowserUserAgent then 'iPhone'
       when iPad   = /ipad/i.test artBrowserUserAgent        then 'iPad'
