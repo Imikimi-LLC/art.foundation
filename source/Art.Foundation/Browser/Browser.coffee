@@ -95,7 +95,7 @@ defineModule module, class Browser
       else 'other'
 
     touch:  touch = document.documentElement.ontouchstart != undefined
-    nativeApp: nativeApp = !!(getEnv().fakeNativeApp || global.cordova) # NOTE: 'native' is a javascript reserve-word
+    nativeApp: nativeApp = !!(getEnv().fakeNative || getEnv().fakeNativeApp || global.cordova) # NOTE: 'native' is a javascript reserve-word
     devicePixelRatio: window.devicePixelRatio ? 1
     pixelsPerPoint: window.devicePixelRatio ? 1
     device: switch
