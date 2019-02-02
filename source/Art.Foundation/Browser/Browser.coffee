@@ -1,4 +1,4 @@
-{max, min, merge, hasProperties, defineModule, isNumber, getEnv, log, present, array, Promise, mergeInto} = require 'art-standard-lib'
+{max, min, merge, hasProperties, object, defineModule, isNumber, getEnv, log, present, array, Promise, mergeInto} = require 'art-standard-lib'
 
 defineModule module, class Browser
   isMobileBrowserRegExp1 = /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i
@@ -10,6 +10,42 @@ defineModule module, class Browser
 
   @getClientWidth: -> (document.documentElement ? document.body).clientWidth
   @getClientHeight: -> (document.documentElement ? document.body).clientWidth
+
+  @iPhoneDeviceInformation:
+
+    iPhonePointSizes: iPhonePointSizes =
+      iPhone4:      [320,   480]
+      iPhone5:      [320,   568]
+      iPhone6:      [375,   667]
+      iPhoneX:      [375,   812]
+      iPhone6Plus:  [414,   736]
+      iPhoneXSMax:  [414,   896]
+
+    iPhoneDisplayScales: iPhoneDisplayScales =
+      iPhone4:      2
+      iPhone5:      2
+      iPhone6:      2
+      iPhone6Plus:  3
+      iPhoneX:      3
+      iPhoneXSMax:  3
+
+    iPhoneDiagonalSizeInches: iPhoneDiagonalSizeInches =
+      iPhone4:      3.5
+      iPhone5:      4
+      iPhone6:      4.7
+      iPhone6Plus:  5.5
+      iPhoneX:      5.8
+      iPhoneXSMax:  6.5
+      iPhoneXR:     6.1
+
+    iPhonePixelSizes: object iPhoneDisplayScales, (pixelsPerPoint, model) ->
+      [x, y] = iPhonePointSizes[model]
+      [x * pixelsPerPoint, y * pixelsPerPoint]
+
+    iPhonePointsPerInch: object iPhonePointSizes, ([x, y], model) ->
+      diagPointLength = Math.sqrt x * x + y * y
+      diagInchLength  = iPhoneDiagonalSizeInches[model]
+      diagPointLength / diagPointLength
 
   @getAgent: getAgent = ->
     navigator = global.navigator ? ""
@@ -62,77 +98,101 @@ defineModule module, class Browser
         right:  0
         bottom: 0
 
-    if result.top == 0 && iOS && nativeApp && (iPad || @getOrientationIsPortrait())
+    if result.top == 0 && @iOSDetect() && @nativeAppDetect() && (@iPadDetect() || @getOrientationIsPortrait())
       merge result, top: 20
     else
       result
-
 
   ###
   regression userAgents:
     Mozilla/5.0 (Windows Phone 10.0; Android 6.0.1; Microsoft; Lumia 650 Dual SIM) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Mobile Safari/537.36 Edge/15.15254
 
   Compare with: http://www.whatsmyua.info/
+
+  getSimpleBrowserInfo()  recomputes it every time - useful for testing in Chrome where it can change the userAgent dynamically
+  simpleBrowserInfo:      computed at load
   ###
-  @simpleBrowserInfo: simpleBrowserInfo = if global.navigator
-    os: switch
-      when iOS          = /ipad|ipod|iphone/i.test artBrowserUserAgent then 'iOS'
-      when windowsPhone = /Windows Phone/i.test artBrowserUserAgent then 'windowsPhone'
-      when windows      = /windows/i.test artBrowserUserAgent then 'windows'
-      when osx          = /mac os x/i.test artBrowserUserAgent then 'osx'
-      when android      = /android/i.test artBrowserUserAgent then 'android'
-      when linux        = /linux/.test artBrowserUserAgent then 'linux'
-      else 'other'
+  @getSimpleBrowserInfo:
+    unless global.navigator
+      -> {}
+    else ->
 
-    browser: switch
-      when webSpider = isWebSpiderRegExp.test artBrowserUserAgent then 'webSpider'
-      when ie11    = !!window.MSInputMethodContext && !!document.documentMode then 'ie11'
-      when firefox = !!window.InstallTrigger then 'firefox'
-      when safari  = iOS || /^((?!chrome|android).)*safari/i.test artBrowserUserAgent then 'safari'
-      when edge    = /Edge/.test artBrowserUserAgent then 'edge'
-      when opera   = window.opera? || /\ OPR\//.test artBrowserUserAgent then 'opera'
-      when chrome  = /Chrome\/\d/i.test artBrowserUserAgent then 'chrome'
-      else 'other'
+      os: switch
+        when iOS          = /ipad|ipod|iphone/i.test artBrowserUserAgent then 'iOS'
+        when windowsPhone = /Windows Phone/i.test artBrowserUserAgent then 'windowsPhone'
+        when windows      = /windows/i.test artBrowserUserAgent then 'windows'
+        when osx          = /mac os x/i.test artBrowserUserAgent then 'osx'
+        when android      = /android/i.test artBrowserUserAgent then 'android'
+        when linux        = /linux/.test artBrowserUserAgent then 'linux'
+        else 'other'
 
-    touch:  touch = document.documentElement.ontouchstart != undefined
-    nativeApp: nativeApp = !!(getEnv().fakeNative || getEnv().fakeNativeApp || global.cordova) # NOTE: 'native' is a javascript reserve-word
-    devicePixelRatio: window.devicePixelRatio ? 1
-    pixelsPerPoint: window.devicePixelRatio ? 1
-    device: switch
-      when iPhone = /iphone|ipod/i.test artBrowserUserAgent then 'iPhone'
-      when iPad   = /ipad/i.test artBrowserUserAgent        then 'iPad'
-      else 'other'
-    deviceMajorScreenSize: deviceMajorScreenSize = max screen.availWidth, screen.availHeight
-    deviceMinorScreenSize: deviceMinorScreenSize = min screen.availWidth, screen.availHeight
-    deviceType:
-      if touch
-        ###
-        Why 600?
+      browser: switch
+        when webSpider = isWebSpiderRegExp.test artBrowserUserAgent then 'webSpider'
+        when ie11    = !!window.MSInputMethodContext && !!document.documentMode then 'ie11'
+        when firefox = !!window.InstallTrigger then 'firefox'
+        when safari  = iOS || /^((?!chrome|android).)*safari/i.test artBrowserUserAgent then 'safari'
+        when edge    = /Edge/.test artBrowserUserAgent then 'edge'
+        when opera   = window.opera? || /\ OPR\//.test artBrowserUserAgent then 'opera'
+        when chrome  = /Chrome\/\d/i.test artBrowserUserAgent then 'chrome'
+        else 'other'
 
-        Tablets
-          >= 600: The Nexus 7 is the smallest 'tablet-like' touch device I've found
+      touch:          touch = document.documentElement.ontouchstart != undefined
+      fakeNativeApp:  fakeNativeApp = !!(getEnv().fakeNative || getEnv().fakeNativeApp)
+      nativeApp:      nativeApp = !!(fakeNativeApp || global.cordova) # NOTE: 'native' is a javascript reserve-word
 
-        Phones
-          <= 414: iPhones: iPhone8+, iPhoneXSMax are -= 414
-          <= 480: Android: Ex: Samsung Galaxy Note 5
-        ###
-        if deviceMinorScreenSize < 600
-          "phone"
-        else
-          "tablet"
-      else "desktop"
+      devicePixelRatio: window.devicePixelRatio ? 1
+      pixelsPerPoint: window.devicePixelRatio ? 1
+
+      device: device = switch
+        when iPhone = /iphone|ipod/i.test artBrowserUserAgent then 'iPhone'
+        when iPad   = /ipad/i.test artBrowserUserAgent        then 'iPad'
+        else 'other'
+
+      deviceMajorScreenSize: deviceMajorScreenSize = max screen.availWidth, screen.availHeight
+      deviceMinorScreenSize: deviceMinorScreenSize = min screen.availWidth, screen.availHeight
+
+      subDevice:
+        switch device
+          when "iPhone"
+            found = null
+            for k, [w, h] of iPhonePointSizes
+              if w == deviceMinorScreenSize && h == deviceMajorScreenSize
+                found = k
+                break
+            found ? 'other'
+          else 'other'
+
+      deviceType:
+        if touch
+          ###
+          Why 600?
+
+          Tablets
+            >= 600: The Nexus 7 is the smallest 'tablet-like' touch device I've found
+
+          Phones
+            <= 414: iPhones: iPhone8+, iPhoneXSMax are -= 414
+            <= 480: Android: Ex: Samsung Galaxy Note 5
+          ###
+          if deviceMinorScreenSize < 600
+            "phone"
+          else
+            "tablet"
+        else "desktop"
+
+  @simpleBrowserInfo: simpleBrowserInfo = @getSimpleBrowserInfo()
 
   @isMobileBrowser: -> isMobileBrowserRegExp1.test artBrowserUserAgent
-  @isSafari:        -> !!safari
+  @isSafari:        -> !!simpleBrowserInfo.safari
 
   # these names are consistent with my lowerCamelCase scheme (they parse with codeWords), and make sense
-  @iOSDetect:       -> !!iOS
-  @androidDetect:   -> !!android
-  @iPhoneDetect:    -> !!iPhone
-  @iPadDetect:      -> !!iPad
-  @nativeAppDetect: -> !!nativeApp
-  @isTouchDevice:   -> !!touch
-  @isIe11:          -> !!ie11 # https://stackoverflow.com/questions/21825157/internet-explorer-11-detection
+  @nativeAppDetect: -> !!simpleBrowserInfo.nativeApp
+  @isTouchDevice:   -> !!simpleBrowserInfo.touch
+  @iOSDetect:       -> simpleBrowserInfo.os       == "iOS"
+  @androidDetect:   -> simpleBrowserInfo.os       == "android"
+  @iPhoneDetect:    -> simpleBrowserInfo.device   == "iPhone"
+  @iPadDetect:      -> simpleBrowserInfo.device   == "iPad"
+  @isIe11:          -> simpleBrowserInfo.browser  == "ie11" # https://stackoverflow.com/questions/21825157/internet-explorer-11-detection
 
   @getOrientationAngle: -> global.screen?.orientation?.angle ? global.orientation
 
