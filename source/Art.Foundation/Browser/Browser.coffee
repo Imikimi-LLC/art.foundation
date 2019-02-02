@@ -13,6 +13,8 @@ defineModule module, class Browser
 
   @iPhoneDeviceInformation:
 
+    # http://iosres.com/
+    # https://www.paintcodeapp.com/news/ultimate-guide-to-iphone-resolutions
     iPhonePointSizes: iPhonePointSizes =
       iPhone4:      [320,   480]
       iPhone5:      [320,   568]
@@ -20,6 +22,7 @@ defineModule module, class Browser
       iPhoneX:      [375,   812]
       iPhone6Plus:  [414,   736]
       iPhoneXSMax:  [414,   896]
+      iPhoneXR:     [414,   896]
 
     iPhoneDisplayScales: iPhoneDisplayScales =
       iPhone4:      2
@@ -28,6 +31,7 @@ defineModule module, class Browser
       iPhone6Plus:  3
       iPhoneX:      3
       iPhoneXSMax:  3
+      iPhoneXR:     2
 
     iPhoneDiagonalSizeInches: iPhoneDiagonalSizeInches =
       iPhone4:      3.5
@@ -38,14 +42,21 @@ defineModule module, class Browser
       iPhoneXSMax:  6.5
       iPhoneXR:     6.1
 
-    iPhonePixelSizes: object iPhoneDisplayScales, (pixelsPerPoint, model) ->
+    iPhonePixelsPerInch: iPhonePixelsPerInch =
+      iPhone4:      326
+      iPhone5:      326
+      iPhone6:      326
+      iPhone6Plus:  401
+      iPhoneX:      458
+      iPhoneXSMax:  458
+      iPhoneXR:     326
+
+    iPhonePixelSizes: iPhonePixelSizes = object iPhoneDisplayScales, (pixelsPerPoint, model) ->
       [x, y] = iPhonePointSizes[model]
       [x * pixelsPerPoint, y * pixelsPerPoint]
 
     iPhonePointsPerInch: object iPhonePointSizes, ([x, y], model) ->
-      diagPointLength = Math.sqrt x * x + y * y
-      diagInchLength  = iPhoneDiagonalSizeInches[model]
-      diagPointLength / diagPointLength
+      Math.sqrt(x * x + y * y) / iPhoneDiagonalSizeInches[model]
 
   @getAgent: getAgent = ->
     navigator = global.navigator ? ""
