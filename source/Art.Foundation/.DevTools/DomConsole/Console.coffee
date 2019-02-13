@@ -10,7 +10,7 @@ Foundation = require 'art-foundation'
 Atomic = require 'art-atomic'
 ToolBar = require './ToolBar'
 
-{rgbColor, Color, point, point0} = Atomic
+{isColorOrColorString, rgbColor, Color, point, point0} = Atomic
 {
   BaseObject, inspect, clone, merge, nextTick, timeout, flatten,
   isArray, isString, isFunction
@@ -316,13 +316,10 @@ module.exports = createWithPostCreate class Console extends BaseObject
         color:            if clr.perceptualLightness < .8 && clr.a > .25 then 'white' else 'black'
       "#{displayString}"
 
-  isColor = (obj) ->
-    (obj instanceof Color) || (isString(obj) && colorRegExp.test obj)
-
   toDom: (inspectedObject, options={}) ->
     unless inspectedObject? then @literalToDom inspectedObject
     else if inspectedObject instanceof InspectedObjectLiteral
-      if isColor inspectedObject.literal then @colorToDom inspectedObject.literal
+      if isColorOrColorString inspectedObject.literal then @colorToDom inspectedObject.literal
       else if inspectedObject.isError
         console.error inspectedObject.literal
         @errorLiteralToDom inspectedObject.literal
@@ -332,7 +329,7 @@ module.exports = createWithPostCreate class Console extends BaseObject
       else
         literalToDomHelper "literal", inspectedObject.literal
     else if isHTMLImageElement inspectedObject then imgToDom inspectedObject
-    else if isColor inspectedObject then @colorToDom inspectedObject
+    else if isColorOrColorString inspectedObject then @colorToDom inspectedObject
     else if isPlainArray  inspectedObject then @arrayToDom inspectedObject, options
     else if isPlainObject inspectedObject then @objectToDom inspectedObject, options
     else
