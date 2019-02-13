@@ -124,9 +124,11 @@ defineModule module, class Browser
   simpleBrowserInfo:      computed at load
   ###
   @getSimpleBrowserInfo:
+
     unless global.navigator
       -> {}
     else ->
+      artBrowserUserAgent = getAgent()
 
       os: switch
         when iOS          = /ipad|ipod|iphone/i.test artBrowserUserAgent then 'iOS'
@@ -147,7 +149,6 @@ defineModule module, class Browser
         when chrome  = /Chrome\/\d/i.test artBrowserUserAgent then 'chrome'
         else 'other'
 
-      touch:          touch = document.documentElement.ontouchstart != undefined
       fakeNativeApp:  fakeNativeApp = !!(getEnv().fakeNative || getEnv().fakeNativeApp)
       nativeApp:      nativeApp = !!(fakeNativeApp || global.cordova) # NOTE: 'native' is a javascript reserve-word
 
@@ -158,6 +159,8 @@ defineModule module, class Browser
         when iPhone = /iphone|ipod/i.test artBrowserUserAgent then 'iPhone'
         when iPad   = /ipad/i.test artBrowserUserAgent        then 'iPad'
         else 'other'
+
+      touch: touch = iPhone || iPad || document.documentElement.ontouchstart?
 
       deviceMajorScreenSize: deviceMajorScreenSize = max screen.availWidth, screen.availHeight
       deviceMinorScreenSize: deviceMinorScreenSize = min screen.availWidth, screen.availHeight
@@ -174,7 +177,7 @@ defineModule module, class Browser
           else 'other'
 
       deviceType:
-        if touch
+        if touch || iPad || iPhone
           ###
           Why 600?
 
