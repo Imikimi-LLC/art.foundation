@@ -7,6 +7,5 @@ module.exports
 .addModules
   ArtFoundationConfig: require './ArtFoundationConfig'
   Binary:              require './Binary'             
-require './Browser'
 require './ForHumans'
 require './Tools'

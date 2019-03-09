@@ -3,6 +3,5 @@
 
 module.exports = (require 'neptune-namespaces').addNamespace 'Art.Foundation', class Foundation extends Neptune.PackageNamespace
   @version: require('../../package.json').version
-require './Browser/namespace';
 require './ForHumans/namespace';
 require './Tools/namespace'

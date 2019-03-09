@@ -3,6 +3,3 @@
 
 module.exports = require './namespace'
 module.exports
-.addModules
-  DomElementFactories: require './dom_element_factories'
-  Uri:                 require './Uri'                  

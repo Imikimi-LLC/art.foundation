@@ -1,13 +1,17 @@
 
 module.exports = [
+
   require 'art-standard-lib'
-  require './ForHumans'
   require "art-class-system"
   require "art-config"
-  Epoch: require('art-epoched-state').EpochClass
+  require 'art-binary'
 
-  require "./Binary"
+  require './ForHumans'
   require "./Tools"
+
+  Epoch:    require('art-epoched-state').EpochClass
+  Browser:  require 'art-browser-tools'
+  Binary:   require 'art-binary'
 
   package: _package = require "art-foundation/package.json"
   version: _package.version
