@@ -51,7 +51,7 @@
     font-family: Monaco, monospace; }
   .domConsole .logLine {
     font-family: Monaco, monospace;
-    font-size: 12px;
+    font-size: 11px;
     color: #aaaaaa;
     border-right: 2px solid transparent; }
     .domConsole .logLine .literal {
