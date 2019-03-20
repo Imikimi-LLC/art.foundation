@@ -84,7 +84,7 @@ import &ArtStandardLib
       arg = null if arg == true
       args = compactFlatten [] arg
 
-      log [title]: {}
+      log.full [title]: {}
         command
         &process.title
         inputs: args
@@ -93,8 +93,8 @@ import &ArtStandardLib
 
       Promise.resolve beforeActions? commander
       .then  (beforeActionsOptions) -> action merge beforeActionsOptions, {} args
-      .then  (out)   -> log [title]: {} command, output: out
-      .catch (error) -> log [title]: {} command, error
+      .then  (out)   -> log.full [title]: {} command, output: out
+      .catch (error) -> log.full [title]: {} command, error
 
   parsed = commander
   .parse process.argv
