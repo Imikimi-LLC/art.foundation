@@ -1,5 +1,5 @@
 Foundation = require 'art-foundation'
-{Div, createObjectTreeFactory} = Foundation.Browser.DomElementFactories
+{Div} = Foundation.Browser.DomElementFactories
 {merge, BaseObject} = Foundation
 {createObjectTreeFactory} = require 'art-object-tree-factory'
 
