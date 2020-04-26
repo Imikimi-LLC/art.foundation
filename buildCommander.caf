@@ -42,9 +42,10 @@ import &ArtStandardLib
   {version, name} = options.package
   commander.version "#{name} v#{version}"
   commander.option "-v, --verbose"
+  commander.option "-q, --quiet"
 
   actionTaken = false
-  letterAssignments = {}
+  letterAssignments = v: true q: true
   actionsToLetters = {}
   assignLetters = (offset = 0) ->
     allAssigned = true
@@ -84,20 +85,23 @@ import &ArtStandardLib
       arg = null if arg == true
       args = compactFlatten [] arg
 
-      log.full [title]: {}
-        command
-        &process.title
-        inputs: args
+      unless quiet
+        log.full [title]: {}
+          command
+          &process.title
+          inputs: args
 
       actionTaken = true
 
       Promise.resolve beforeActions? commander
-      .then  (beforeActionsOptions) -> action merge beforeActionsOptions, {} args
-      .then  (out)   -> log.full [title]: {} command, output: out
+      .then  (beforeActionsOptions) -> action merge beforeActionsOptions, {} args, quiet, verbose
+      .then  (out)   -> !quiet && log.full [title]: {} command, output: out
       .catch (error) -> log.full [title]: {} command, error
 
   parsed = commander
   .parse process.argv
+
+  {quiet, verbose} = parsed
 
   each action, command in actionMap
     if parsed[command]
